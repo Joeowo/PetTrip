@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.0360103">
+  <test-suite type="TestSuite" id="1000" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.036010" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1006" name="PetTrip.Tests.EditMode.dll" fullname="C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/unity/PetTrip/Library/ScriptAssemblies/PetTrip.Tests.EditMode.dll" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.030465" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="36676" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1007" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.030215" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1008" name="Tests" fullname="PetTrip.Tests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.030090" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="SceneSnapshotValidationTests" fullname="PetTrip.Tests.SceneSnapshotValidationTests" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.029259" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1005" name="OutOfBoundsPointFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.OutOfBoundsPointFails" methodname="OutOfBoundsPointFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="244424876" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.011018" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1002" name="ValidFixturePasses" fullname="PetTrip.Tests.SceneSnapshotValidationTests.ValidFixturePasses" methodname="ValidFixturePasses" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="620199366" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.003145" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1004" name="VehicleAssetFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.VehicleAssetFails" methodname="VehicleAssetFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="1014839926" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.000534" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+            </test-case>
+            <test-case id="1003" name="WrongVersionFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.WrongVersionFails" methodname="WrongVersionFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="600547871" result="Passed" start-time="2026-08-12 17:46:01Z" end-time="2026-08-12 17:46:01Z" duration="0.000417" asserts="0">
+              <properties>
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[Saving results to: C:/Users/Mechrevo/AppData/LocalLow/DefaultCompany/PetTrip\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

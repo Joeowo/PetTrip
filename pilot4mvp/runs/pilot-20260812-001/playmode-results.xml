@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-12 17:52:58Z" end-time="2026-08-12 17:52:59Z" duration="0.5148368">
+  <test-suite type="TestSuite" id="1008" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-12 17:52:58Z" end-time="2026-08-12 17:52:59Z" duration="0.514837" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1003" name="PetTrip.Tests.PlayMode.dll" fullname="C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/unity/PetTrip/Library/ScriptAssemblies/PetTrip.Tests.PlayMode.dll" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-12 17:52:58Z" end-time="2026-08-12 17:52:59Z" duration="0.508195" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="21220" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1004" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-12 17:52:58Z" end-time="2026-08-12 17:52:59Z" duration="0.507679" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1005" name="Tests" fullname="PetTrip.Tests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-12 17:52:58Z" end-time="2026-08-12 17:52:59Z" duration="0.507415" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestFixture" id="1001" name="Session1SceneConsumptionTests" fullname="PetTrip.Tests.Session1SceneConsumptionTests" classname="PetTrip.Tests.Session1SceneConsumptionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-12 17:52:58Z" end-time="2026-08-12 17:52:59Z" duration="0.506574" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-case id="1002" name="SnapshotBuildsSceneAndCapturesEvidence" fullname="PetTrip.Tests.Session1SceneConsumptionTests.SnapshotBuildsSceneAndCapturesEvidence" methodname="SnapshotBuildsSceneAndCapturesEvidence" classname="PetTrip.Tests.Session1SceneConsumptionTests" runstate="Runnable" seed="223819887" result="Passed" start-time="2026-08-12 17:52:58Z" end-time="2026-08-12 17:52:59Z" duration="0.497043" asserts="0">
+              <properties>
+                <property name="_JOINTYPE" value="UnityCombinatorial" />
+                <property name="retryIteration" value="0" />
+                <property name="repeatIteration" value="0" />
+              </properties>
+              <output><![CDATA[PETTRIP_SNAPSHOT_LOAD_OK schema=0.1 scene=session1_beach canvas=512x288 layers=3 interactions=1 build_slots=1
+PETTRIP_INTERACTION_OK id=pet_wave
+PETTRIP_SCREENSHOT_OK path=C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\unity\PetTrip\TestArtifacts\Session1\unity-screenshot.png
+Saving results to: C:/Users/Mechrevo/AppData/LocalLow/DefaultCompany/PetTrip\TestResults.xml
+]]></output>
+            </test-case>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
