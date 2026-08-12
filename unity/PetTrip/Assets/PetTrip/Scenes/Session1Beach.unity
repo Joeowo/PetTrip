@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &84801606
+--- !u!1 &632809016
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 84801608}
-  - component: {fileID: 84801607}
+  - component: {fileID: 632809018}
+  - component: {fileID: 632809017}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -136,13 +136,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!20 &84801607
+--- !u!20 &632809017
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 84801606}
+  m_GameObject: {fileID: 632809016}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -187,13 +187,13 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &84801608
+--- !u!4 &632809018
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 84801606}
+  m_GameObject: {fileID: 632809016}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
@@ -202,7 +202,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1567321988
+--- !u!1 &1069082372
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -210,10 +210,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1567321992}
-  - component: {fileID: 1567321991}
-  - component: {fileID: 1567321990}
-  - component: {fileID: 1567321989}
+  - component: {fileID: 1069082376}
+  - component: {fileID: 1069082375}
+  - component: {fileID: 1069082374}
+  - component: {fileID: 1069082373}
   m_Layer: 0
   m_Name: Session1Runtime
   m_TagString: Untagged
@@ -221,55 +221,55 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1567321989
+--- !u!114 &1069082373
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1567321988}
+  m_GameObject: {fileID: 1069082372}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c348acc36a334e4a8248b11a82c55cc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PetTrip.SceneSnapshotLoader
-  sceneBuilder: {fileID: 1567321990}
---- !u!114 &1567321990
+  m_EditorClassIdentifier: PetTrip.Runtime::PetTrip.SceneSnapshotLoader
+  sceneBuilder: {fileID: 1069082374}
+--- !u!114 &1069082374
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1567321988}
+  m_GameObject: {fileID: 1069082372}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a266b1fc7c40c644ab1e481fda96f164, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PetTrip.SnapshotSceneBuilder
-  assetCatalog: {fileID: 1567321991}
---- !u!114 &1567321991
+  m_EditorClassIdentifier: PetTrip.Runtime::PetTrip.SnapshotSceneBuilder
+  assetCatalog: {fileID: 1069082375}
+--- !u!114 &1069082375
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1567321988}
+  m_GameObject: {fileID: 1069082372}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08fdcb9824aa7284f862b0995b5fb4a1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PetTrip.SpriteAssetCatalog
-  beachBackground: {fileID: 0}
-  lighthouse: {fileID: 0}
-  pet: {fileID: 0}
-  smallShelter: {fileID: 0}
---- !u!4 &1567321992
+  m_EditorClassIdentifier: PetTrip.Runtime::PetTrip.SpriteAssetCatalog
+  beachBackground: {fileID: 21300000, guid: 99e3e8058eae36c489db38c1ed4b1cbc, type: 3}
+  lighthouse: {fileID: 21300000, guid: a45f62616aab84a4db066e83dc466e67, type: 3}
+  pet: {fileID: 21300000, guid: b27df008629e67946a6cf167496d5da7, type: 3}
+  smallShelter: {fileID: 21300000, guid: 0499d930aa8bbba45be160567557a190, type: 3}
+--- !u!4 &1069082376
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1567321988}
+  m_GameObject: {fileID: 1069082372}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -282,5 +282,5 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 84801608}
-  - {fileID: 1567321992}
+  - {fileID: 632809018}
+  - {fileID: 1069082376}

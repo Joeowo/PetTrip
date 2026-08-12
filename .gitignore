@@ -21,6 +21,7 @@
 # Unity test output
 TestArtifacts/
 unity/**/TestResults/
+unity-*.log
 
 # IDE and operating system files
 .idea/

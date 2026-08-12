@@ -77,13 +77,17 @@ namespace PetTrip.Editor
 
             var importer = (TextureImporter)AssetImporter.GetAtPath(path);
             importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
             importer.spritePixelsPerUnit = 16;
             importer.filterMode = FilterMode.Point;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.mipmapEnabled = false;
             importer.alphaIsTransparency = true;
             importer.SaveAndReimport();
-            return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(path);
+            if (sprite == null) throw new InvalidDataException("Sprite import failed: " + path);
+            return sprite;
         }
 
         private static void CreateScene(Sprite background, Sprite lighthouse, Sprite pet, Sprite shelter)
