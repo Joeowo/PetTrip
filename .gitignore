@@ -1,0 +1,59 @@
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Claude and local planning state
+.hermes/
+.claude/
+
+# Unity generated directories
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+[Rr]ecordings/
+[Bb]uild/
+[Bb]uilds/
+
+# Unity test output
+TestArtifacts/
+unity/**/TestResults/
+
+# IDE and operating system files
+.idea/
+.vs/
+.vscode/
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Python caches reserved for later pilot sessions
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local databases and transient run files
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
