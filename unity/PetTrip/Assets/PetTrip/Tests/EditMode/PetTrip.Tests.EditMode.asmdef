@@ -1,0 +1,7 @@
+{
+  "name": "PetTrip.Tests.EditMode",
+  "references": ["PetTrip.Runtime"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": false
+}

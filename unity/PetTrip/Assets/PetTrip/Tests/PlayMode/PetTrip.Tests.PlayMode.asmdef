@@ -1,0 +1,6 @@
+{
+  "name": "PetTrip.Tests.PlayMode",
+  "references": ["PetTrip.Runtime"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "autoReferenced": false
+}
