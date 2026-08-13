@@ -552,6 +552,7 @@ Pilot 可以只有一个内部 API Client，但数据库关系必须保留文件
 | `AUTHENTICATION_FAILED` | API Key 缺失或错误 | 否 |
 | `RESOURCE_NOT_FOUND` | Session、Run 或文件不存在 | 否 |
 | `VALIDATION_ERROR` | 请求字段不合法 | 否 |
+| `IDEMPOTENCY_KEY_REUSED` | 同一幂等键用于不同请求体 | 否 |
 | `FILE_TYPE_UNSUPPORTED` | 文件类型不支持 | 否 |
 | `FILE_TOO_LARGE` | 文件超过配置值 | 否 |
 | `FILE_DECODE_FAILED` | 图片无法解码 | 否 |
