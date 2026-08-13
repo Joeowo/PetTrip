@@ -36,14 +36,15 @@
 
 ## Implementation Decisions
 
-- 只测试一条主路线：`Responses -> WorldSpec -> ScenePlan -> OpenAI Images ->
+- 只测试一条主路线：`Responses -> WorldSpec -> ScenePlan -> Images API ->
   asset manifest -> SceneSnapshot -> Unity`。
 - `SceneSnapshot` 是唯一跨 Unity 的内容边界。Unity 不读取 Prompt、OpenAI 请求
   响应、临时路径或模型私有字段。
 - 内容服务使用 Python 3.12、FastAPI、Pydantic v2、Pillow、OpenCV 和 SQLite。
 - Unity 使用 Unity 6 LTS、URP 2D Renderer、C# 和 `UnityWebRequest`。
-- 图片主提供方是 OpenAI Images API；模型 ID 保持配置化，技术路线默认
-  `image-2`。
+- 图片生成通过 OpenAI 兼容的 Images API 接入；Base URL 和模型 ID 必须保持配置化。
+  技术路线默认 `image-2`，会话 3 已验证的兼容网关实际模型 ID 为
+  `gpt-image-2`。
 - Vision Worker、ComfyUI、MCP、队列、Addressables 和 Codex 演进闭环不进入这四个
   会话。它们需要在主链通过后单独安排。
 - 每次运行使用一个 `run_id`，并保存输入、结构化产物、资产、Snapshot、截图、报告
@@ -79,19 +80,63 @@ JSON、纹理或 Sprite 创建错误。
 通过门槛：Unity 只通过 HTTP 取得的文件成功加载，且 Snapshot 不含绝对路径或生成
 模型字段。
 
-### 会话 3：OpenAI -> 内容服务 -> Unity
+### 会话 3：外部模型 -> 内容服务 -> Unity
 
-只在本地链路通过后，接入真实外部模型，明确隔离认证和模型可用性问题。
+只在本地链路通过后，接入真实外部模型，明确隔离认证、端点兼容性和模型可用性
+问题。OpenAI 兼容网关的可用性不能视为 OpenAI 官方端点已经通过验证。
 
-1. 检查用户是否已提供 `OPENAI_API_KEY`、可用的 Responses 模型，以及 Images 模型
-   `image-2` 的访问权限。
+1. 检查用户是否已提供 `OPENAI_BASE_URL`、`OPENAI_API_KEY`、可用的 Responses
+   模型及端点，以及可用的 Images 模型。
 2. 任一项缺失时，向用户申请该项，并停止；不得测试猜测的模型 ID，也不得改用假图。
 3. 用 Responses Structured Outputs 生成并由 Pydantic 直接校验 WorldSpec。
-4. 用 OpenAI Images API 生成概念图，保存为真实 PNG 和 `ImageArtifact` metadata。
-5. 用 Pillow/OpenCV 将图片规范化，更新 manifest，构建 Snapshot，并由 Unity 加载。
+4. 用 OpenAI 兼容的 Images API 生成概念图；若返回 `b64_json`，先 Base64 解码，
+   再保存为真实 PNG 和 `ImageArtifact` metadata。
+5. 用 Pillow/OpenCV 将图片规范化到 `512 x 288`，更新 manifest，构建 Snapshot，
+   并由 Unity 加载。
 
 通过门槛：真实 API 产物可被 Pillow 重新打开，哈希与 manifest 一致，Unity 成功加载；
 失败时能区分鉴权、模型不可用、内容策略、超时或解码错误。
+
+#### 会话 3 最小输入输出
+
+会话 3 只接入一组已经明确确认的外部模型配置，并沿用海边灯塔固定场景。
+
+- 输入：`OPENAI_BASE_URL`、只存在于环境变量中的 `OPENAI_API_KEY`、明确可用的
+  Responses 模型 ID、`gpt-image-2` Images 模型 ID，以及固定场景文本。
+- 中间输出：Responses Structured Outputs 生成且未经人工修补的 `WorldSpec`、原始
+  Images 响应、解码后的原始 PNG、`ImageArtifact` metadata，以及规范化后的
+  `512 x 288` PNG。
+- 最终输出：更新后的 asset manifest、通过 JSON Schema 的 `SceneSnapshot`、Unity
+  加载截图和加载日志。
+- 禁止输入：猜测的模型 ID、假图、手工修补后的 `WorldSpec`，以及提交到仓库或写入
+  日志的 API Key。
+
+#### 会话 3 开始前状态（2026-08-13）
+
+Images 环节已有一个真实可用探针，但 Responses Structured Outputs 环节尚未确认。
+
+- 可用 Base URL：`https://5202828.xyz/v1`。凭证只通过环境变量提供，不写入 Git、
+  日志或运行产物。
+- `GET /v1/models` 返回 `200`，模型列表包含 `gpt-image-2`。
+- `POST /v1/images/generations` 使用 `gpt-image-2` 返回 `200`；一次实测耗时约
+  36.2 秒，响应为 `b64_json`。解码后的 RGB 图片为 `1402 x 1122`，Pillow 可重新
+  打开，确认不是占位内容。
+- 请求尺寸不能视为最终尺寸保证。一次 `1024 x 1024` 请求返回了
+  `1402 x 1122`，因此必须以解码后的实际尺寸为准，再由 Pillow/OpenCV 规范化到
+  `512 x 288`。
+- `gpt-image-2` 不支持 `POST /v1/chat/completions`；该请求实测返回 `400`。图片生成
+  必须调用 `POST /v1/images/generations`。
+- Images 请求超时必须设置为至少 120 秒，避免把正常生成时间误判为失败。
+- 另一个已测试的候选网关虽然能返回模型列表，但 `/v1/images/generations` 持续返回
+  `502`，不用于会话 3。
+
+<!-- prettier-ignore -->
+> [!IMPORTANT]
+> 当前只确认了 Images 环节。开始会话 3 实现前，必须先用用户明确指定的 Responses
+> 模型验证该 Base URL 支持 `POST /v1/responses` 的 Structured Outputs；如果只能使用
+> `POST /v1/chat/completions` 和 `response_format: json_schema`，必须先确认这是否作为本次
+> 先行测试的可接受适配。端点、模型或结构化输出能力任一项未确认时，向用户报告缺项并
+> 停止，不得自行猜测模型或跳过 WorldSpec 环节。
 
 ### 会话 4：Unity -> 报告/SQLite -> 重放
 
@@ -128,5 +173,7 @@ Worker、MCP、Codex 改进 Workflow、多人、经济系统、开放世界、Ad
 事项或添加 `ready-for-agent` 标签。本文件是对应的本地规格；如后续提供任务系统，
 可原样发布并添加该标签。
 
-下一次会话从“会话 1：检查 Unity 项目与环境”开始。若环境不存在，将直接说明需要
-用户提供的具体内容，不会进行后续实现。
+下一次会话从“会话 3：验证 Responses Structured Outputs 前置条件”开始。Images
+环节已经具备真实可用路径，但 Responses 端点、模型和结构化输出能力尚未确认；任一项
+缺失时，将直接说明需要用户提供或确认的具体内容，不会继续执行图片生成或 Unity
+加载。
