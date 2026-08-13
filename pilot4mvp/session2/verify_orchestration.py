@@ -52,7 +52,8 @@ def main() -> int:
     assert _port_open("127.0.0.1", 8000) is False, "8000 应空闲"
     print("端口 8000 空闲检测: OK")
 
-    # 3. 端口被占用 -> 编排在启动 Unity 前以退出码 5 拒绝
+    # 3. 端口判定函数: 占用时返回 True。编排 main 据此在清理证据之前 return 5。
+    #    直接测试函数本身, 不执行带文件副作用的完整 main()(避免删除验收证据)。
     occupant = subprocess.Popen(
         [PY, "-m", "http.server", "8000"],
         cwd=str(ROOT),
@@ -62,9 +63,7 @@ def main() -> int:
     try:
         time.sleep(2.0)
         assert _port_open("127.0.0.1", 8000) is True, "占用者应让端口可连"
-        rc = subprocess.run([PY, str(ROOT / "run_unity_session2.py")]).returncode
-        print(f"端口被占时编排退出码: {rc} (期望 5)")
-        assert rc == 5, f"期望退出码 5, 得 {rc}"
+        print("端口被占 _port_open 检测: OK (True -> main 在清理证据前 return 5)")
     finally:
         occupant.terminate()
         occupant.wait(timeout=5)

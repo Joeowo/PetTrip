@@ -88,18 +88,18 @@ def main() -> int:
     unity_log = EVIDENCE / "playmode.log"
     screenshot_dst = EVIDENCE / "unity-screenshot.png"
 
-    # 清理旧证据: 编排目录 + Unity 工程内截图源, 确保新证据来自本次运行
-    for stale in (test_results, unity_log, screenshot_dst, SESSION2_SCREENSHOT_SRC):
-        if stale.exists():
-            stale.unlink()
-
-    # 启动前确认端口空闲, 避免测到残留的旧内容服务
+    # 端口检查必须在任何证据清理之前: 端口被占时直接退出, 不破坏现有验收证据
     if _port_open(HOST, PORT):
         print(
             f"    失败: {HOST}:{PORT} 已被占用, 可能有残留内容服务, 请先释放端口",
             file=sys.stderr,
         )
         return 5
+
+    # 端口可用、确认开始新运行后, 才清理旧证据(编排目录 + Unity 工程内截图源)
+    for stale in (test_results, unity_log, screenshot_dst, SESSION2_SCREENSHOT_SRC):
+        if stale.exists():
+            stale.unlink()
 
     print("[1/4] 启动内容服务...")
     server_log = EVIDENCE / "content-service.log"
