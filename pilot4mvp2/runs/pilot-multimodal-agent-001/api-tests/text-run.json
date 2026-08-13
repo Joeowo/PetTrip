@@ -1,0 +1,12 @@
+{
+  "create_status": 202,
+  "run_id": "run_01KZXMCE72CEG7A4GSD0WYM6MX",
+  "statuses_observed": [
+    "queued",
+    "running",
+    "succeeded"
+  ],
+  "terminal_status": "succeeded",
+  "assistant_text": "可以，我能回复文本。",
+  "error": null
+}

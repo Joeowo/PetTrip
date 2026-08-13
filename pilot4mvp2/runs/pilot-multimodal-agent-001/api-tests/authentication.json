@@ -1,0 +1,8 @@
+{
+  "health_status": "ok",
+  "missing_key_status": 401,
+  "missing_key_error": "AUTHENTICATION_FAILED",
+  "wrong_key_status": 401,
+  "wrong_key_error": "AUTHENTICATION_FAILED",
+  "correct_key_status": 201
+}

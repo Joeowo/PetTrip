@@ -1,0 +1,7 @@
+{
+  "session": 1,
+  "passed": true,
+  "provider_protocol": "openai-compatible-chat-completions",
+  "model_configured": true,
+  "log_has_request_id": true
+}
