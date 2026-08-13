@@ -6,7 +6,7 @@ namespace PetTrip
     public sealed class SnapshotSceneBuilder : MonoBehaviour
     {
         private const string GeneratedRootName = "GeneratedScene";
-        [SerializeField] private SpriteAssetCatalog assetCatalog;
+        [SerializeField] private SpriteProvider assetCatalog;
 
         public GameObject Build(SceneSnapshot snapshot)
         {

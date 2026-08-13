@@ -1,0 +1,7 @@
+{
+  "theme": "seaside",
+  "landmark": "lighthouse",
+  "canvas_width": 512,
+  "canvas_height": 288,
+  "pixels_per_unit": 16
+}

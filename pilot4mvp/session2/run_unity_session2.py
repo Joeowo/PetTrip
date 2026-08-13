@@ -1,0 +1,176 @@
+"""会话2 Unity PlayMode 端到端验证编排。
+
+启动 Python 内容服务 -> 运行 Unity PlayMode 测试 -> 解析结果 XML 判定真通过 ->
+断言本次新生成的截图 -> 关闭服务。
+
+防假通过措施:
+- 端口归属: 启动前确认 127.0.0.1:8000 空闲(被占即报错, 不测残留旧服务); health 通过后
+  确认子进程仍存活(端口被占会导致子进程绑定失败退出)。
+- 不复用旧结果: 跑前清理编排证据目录, 同时清理 Unity 工程内 TestArtifacts/Session2/
+  旧截图, 确保截图来自本次测试。
+- 测试存在性: 解析 XML 不只看 total>0, 必须定位到 Session2HttpLoadingTests 且 Passed,
+  避免"只跑了会话1 + 复用旧会话2 截图"的假通过。
+- 判定以 XML 为准, 不依赖 Unity 退出码; 截图缺失即失败(非警告)。
+- log 文件名为 playmode.log(非 unity-playmode.log), 避开 .gitignore 的 unity-*.log。
+
+前置: Session2Beach 场景已由 Session2ProjectBootstrap.Create 生成。
+运行: pilot4mvp/.venv/Scripts/python.exe pilot4mvp/session2/run_unity_session2.py
+"""
+
+from __future__ import annotations
+
+import shutil
+import socket
+import subprocess
+import sys
+import time
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+import httpx
+
+ROOT = Path(__file__).resolve().parent
+PROJECT = ROOT.parents[1] / "unity" / "PetTrip"
+UNITY_EXE = r"C:\Program Files\Unity\Hub\Editor\6000.3.21f1\Editor\Unity.exe"
+EVIDENCE = ROOT.parent / "runs" / "session2-unity"
+VENV_PY = ROOT.parent / ".venv" / "Scripts" / "python.exe"
+HOST = "127.0.0.1"
+PORT = 8000
+BASE_URL = f"http://{HOST}:{PORT}"
+SESSION2_SCREENSHOT_SRC = PROJECT / "TestArtifacts" / "Session2" / "unity-screenshot.png"
+SESSION2_TEST_MARKER = "Session2HttpLoadingTests"
+
+
+def _port_open(host: str, port: int) -> bool:
+    """探测 (host, port) 是否已有监听者。"""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(0.5)
+        return sock.connect_ex((host, port)) == 0
+
+
+def wait_health(timeout: float = 20.0) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        try:
+            if httpx.get(f"{BASE_URL}/health", timeout=2).status_code == 200:
+                return True
+        except Exception:  # noqa: BLE001
+            pass
+        time.sleep(0.3)
+    return False
+
+
+def parse_test_summary(xml_path: Path) -> dict:
+    """解析 NUnit <test-run> 根节点的汇总属性。"""
+    tree = ET.parse(xml_path)
+    root = tree.getroot()
+    return {
+        "result": root.get("result"),
+        "total": int(root.get("total") or 0),
+        "passed": int(root.get("passed") or 0),
+        "failed": int(root.get("failed") or 0),
+        "skipped": int(root.get("skipped") or 0),
+    }
+
+
+def find_session2_result(xml_path: Path) -> str | None:
+    """定位会话2 测试用例的 result; 未找到返回 None。"""
+    tree = ET.parse(xml_path)
+    for case in tree.iter("test-case"):
+        if SESSION2_TEST_MARKER in (case.get("fullname") or ""):
+            return case.get("result")
+    return None
+
+
+def main() -> int:
+    EVIDENCE.mkdir(parents=True, exist_ok=True)
+    test_results = EVIDENCE / "playmode-results.xml"
+    unity_log = EVIDENCE / "playmode.log"
+    screenshot_dst = EVIDENCE / "unity-screenshot.png"
+
+    # 端口检查必须在任何证据清理之前: 端口被占时直接退出, 不破坏现有验收证据
+    if _port_open(HOST, PORT):
+        print(
+            f"    失败: {HOST}:{PORT} 已被占用, 可能有残留内容服务, 请先释放端口",
+            file=sys.stderr,
+        )
+        return 5
+
+    # 端口可用、确认开始新运行后, 才清理旧证据(编排目录 + Unity 工程内截图源)
+    for stale in (test_results, unity_log, screenshot_dst, SESSION2_SCREENSHOT_SRC):
+        if stale.exists():
+            stale.unlink()
+
+    print("[1/4] 启动内容服务...")
+    server_log = EVIDENCE / "content-service.log"
+    with server_log.open("w", encoding="utf-8") as server_output:
+        server = subprocess.Popen(
+            [str(VENV_PY), str(ROOT / "run_server.py")],
+            cwd=str(ROOT),
+            stdout=server_output,
+            stderr=subprocess.STDOUT,
+        )
+    try:
+        if not wait_health():
+            print("    失败: 内容服务未就绪, 见 content-service.log", file=sys.stderr)
+            return 1
+        # 健康响应必须来自本次子进程: 端口若被占, 子进程会绑定失败并退出
+        if server.poll() is not None:
+            print(
+                "    失败: 内容服务子进程已退出(端口绑定失败?), 见 content-service.log",
+                file=sys.stderr,
+            )
+            return 6
+        run_id = httpx.get(f"{BASE_URL}/run-id", timeout=5).json()["run_id"]
+        print(f"    服务就绪 run_id={run_id}")
+
+        print("[2/4] 运行 Unity PlayMode 测试...")
+        # 不加 -nographics(PlayMode 需真实 GfxDevice) 与 -quit(与 -runTests 重复且可能提前退出)
+        cmd = [
+            UNITY_EXE, "-batchmode",
+            "-projectPath", str(PROJECT),
+            "-runTests",
+            "-testPlatform", "PlayMode",
+            "-testResults", str(test_results),
+            "-logFile", str(unity_log),
+        ]
+        completed = subprocess.run(cmd, cwd=str(PROJECT.parent))
+        print(f"    Unity 进程退出码={completed.returncode} (仅参考, 判定以 XML 为准)")
+
+        print("[3/4] 解析结果 XML 判定真通过...")
+        if not test_results.exists():
+            print("    失败: 测试未生成结果 XML(测试可能未启动/被跳过), 见 playmode.log", file=sys.stderr)
+            return 2
+        summary = parse_test_summary(test_results)
+        session2_result = find_session2_result(test_results)
+        print(f"    汇总: {summary}")
+        print(f"    会话2 测试结果: {session2_result}")
+        if (summary["result"] != "Passed" or summary["failed"] != 0
+                or summary["skipped"] != 0 or summary["total"] == 0):
+            print(f"    失败: 测试未全部通过 {summary}", file=sys.stderr)
+            return 3
+        if session2_result != "Passed":
+            print(
+                f"    失败: 未找到通过状态的会话2 测试(只跑了会话1?) session2={session2_result}",
+                file=sys.stderr,
+            )
+            return 7
+
+        print("[4/4] 校验截图证据(本次新生成)...")
+        if not SESSION2_SCREENSHOT_SRC.exists():
+            print("    失败: 本次测试未生成截图", file=sys.stderr)
+            return 4
+        shutil.copy2(SESSION2_SCREENSHOT_SRC, screenshot_dst)
+        print(f"    通过: 截图已复制到 {screenshot_dst.name}")
+        print("ALL_CHECKS_PASSED")
+        return 0
+    finally:
+        server.terminate()
+        try:
+            server.wait(timeout=5)
+        except Exception:  # noqa: BLE001
+            server.kill()
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

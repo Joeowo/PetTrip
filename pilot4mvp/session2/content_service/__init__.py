@@ -1,0 +1,51 @@
+"""PetTrip 会话2 内容服务包。"""
+
+from .models import (
+    ActivityZone,
+    ActivityZonePlan,
+    AssetEntry,
+    AssetManifest,
+    BuildSlot,
+    BuildSlotPlan,
+    Canvas,
+    Interaction,
+    InteractionPlan,
+    Layer,
+    LayerPlan,
+    Point,
+    ScenePlan,
+    SceneSnapshot,
+    WorldSpec,
+)
+from .snapshot_builder import (
+    build_asset_manifest,
+    build_snapshot,
+    default_world_spec,
+    plan_scene,
+    validate_snapshot,
+    validate_snapshot_dict,
+)
+
+__all__ = [
+    "ActivityZone",
+    "ActivityZonePlan",
+    "AssetEntry",
+    "AssetManifest",
+    "BuildSlot",
+    "BuildSlotPlan",
+    "Canvas",
+    "Interaction",
+    "InteractionPlan",
+    "Layer",
+    "LayerPlan",
+    "Point",
+    "ScenePlan",
+    "SceneSnapshot",
+    "WorldSpec",
+    "build_asset_manifest",
+    "build_snapshot",
+    "default_world_spec",
+    "plan_scene",
+    "validate_snapshot",
+    "validate_snapshot_dict",
+]

@@ -1,0 +1,12 @@
+# PetTrip 会话2 内容服务依赖
+# 解释器: Python 3.12
+# 规格会话2步骤1: FastAPI / Pydantic v2 / Pillow / OpenCV / JSON Schema
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+pydantic==2.13.4
+pillow==12.3.0
+opencv-python==5.0.0.93
+jsonschema==4.26.0
+# 测试与运行时自检
+httpx==0.28.1
+pytest==9.1.1

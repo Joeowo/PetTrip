@@ -1,0 +1,54 @@
+{
+  "run_id": "session2-20260813-035509-c873",
+  "base_url": "http://127.0.0.1:8000",
+  "snapshot": {
+    "schema_version": "0.1",
+    "scene_id": "session1_beach",
+    "layer_count": 3,
+    "interaction_count": 1,
+    "build_slot_count": 1
+  },
+  "assets": [
+    {
+      "asset_id": "beach_background",
+      "status": 200,
+      "bytes": 3707,
+      "sha256": "f2509260a5b1611b39f06d7e625d045af2faad7a4312258567509d313816c0b8",
+      "decoded_size": [
+        512,
+        288
+      ]
+    },
+    {
+      "asset_id": "lighthouse",
+      "status": 200,
+      "bytes": 760,
+      "sha256": "7cad8fff2c78d03241ad1988aa41d5b17bae294b4568348f6b8f0ad4c4d90bef",
+      "decoded_size": [
+        80,
+        160
+      ]
+    },
+    {
+      "asset_id": "pet",
+      "status": 200,
+      "bytes": 351,
+      "sha256": "37f20fed4c9759fa4a10c6079ed9cbcb4ea6b8a00b201f9b32dd64d34f504de8",
+      "decoded_size": [
+        64,
+        64
+      ]
+    },
+    {
+      "asset_id": "small_shelter",
+      "status": 200,
+      "bytes": 468,
+      "sha256": "22db22cdbd27600fb9e9729f3408000322609bbc97d66fdb99cb8e8612af076b",
+      "decoded_size": [
+        96,
+        72
+      ]
+    }
+  ],
+  "negative_unknown_asset_status": 404
+}

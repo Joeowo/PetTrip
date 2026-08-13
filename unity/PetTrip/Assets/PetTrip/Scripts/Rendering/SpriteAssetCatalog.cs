@@ -2,14 +2,14 @@ using UnityEngine;
 
 namespace PetTrip
 {
-    public sealed class SpriteAssetCatalog : MonoBehaviour
+    public sealed class SpriteAssetCatalog : SpriteProvider
     {
         [SerializeField] private Sprite beachBackground;
         [SerializeField] private Sprite lighthouse;
         [SerializeField] private Sprite pet;
         [SerializeField] private Sprite smallShelter;
 
-        public Sprite Resolve(string assetId)
+        public override Sprite Resolve(string assetId)
         {
             switch (assetId)
             {

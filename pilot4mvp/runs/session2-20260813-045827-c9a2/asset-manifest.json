@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1",
+  "assets": [
+    {
+      "asset_id": "beach_background",
+      "kind": "sprite",
+      "filename": "beach_background.png",
+      "width": 512,
+      "height": 288
+    },
+    {
+      "asset_id": "lighthouse",
+      "kind": "sprite",
+      "filename": "lighthouse.png",
+      "width": 80,
+      "height": 160
+    },
+    {
+      "asset_id": "pet",
+      "kind": "sprite",
+      "filename": "pet.png",
+      "width": 64,
+      "height": 64
+    },
+    {
+      "asset_id": "small_shelter",
+      "kind": "sprite",
+      "filename": "small_shelter.png",
+      "width": 96,
+      "height": 72
+    }
+  ]
+}
