@@ -8,5 +8,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/PetTrip/Scenes/Session1Beach.unity
     guid: 55c5cc69e753c9f4290cf05aea4dec4c
+  - enabled: 1
+    path: Assets/PetTrip/Scenes/Session2Beach.unity
+    guid: 4522d115e856d134bb2362b1140c785d
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
