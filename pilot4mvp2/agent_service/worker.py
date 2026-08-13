@@ -7,8 +7,9 @@ import json
 import logging
 from contextlib import suppress
 
-from .chat_provider import ChatMessage, ChatModelProvider, ChatProviderError
-from .errors import CHAT_PROVIDER_UNAVAILABLE
+from .chat_provider import ChatMessage, ChatModelProvider, ChatProviderError, VisionImage
+from .errors import CHAT_PROVIDER_UNAVAILABLE, INTERNAL_ERROR
+from .file_storage import LocalFileIntegrityError, LocalImageStorage
 from .ids import new_id
 from .storage import Storage
 
@@ -16,7 +17,7 @@ LOGGER = logging.getLogger("uvicorn.error")
 
 
 class RunWorker:
-    """轮询 queued Run，按会话历史调用文本模型。"""
+    """轮询 queued Run，使用文本历史和当前 Run 图片调用 Chat/Vision 模型。"""
 
     def __init__(
         self,
@@ -24,8 +25,10 @@ class RunWorker:
         storage: Storage,
         provider: ChatModelProvider,
         poll_interval: float,
+        file_storage: LocalImageStorage | None = None,
     ) -> None:
         self._storage = storage
+        self._file_storage = file_storage
         self._provider = provider
         self._poll_interval = poll_interval
         self._task: asyncio.Task[None] | None = None
@@ -52,13 +55,49 @@ class RunWorker:
 
         request_id = new_id("req")
         try:
-            messages = [
-                ChatMessage(role=row["role"], content=row["content_text"] or "")
-                for row in self._storage.list_messages_for_run(
-                    run["session_id"], run["api_client_id"], run["id"]
+            messages: list[ChatMessage] = []
+            for row in self._storage.list_messages_for_run(
+                run["session_id"], run["api_client_id"], run["id"]
+            ):
+                images: tuple[VisionImage, ...] = ()
+                if row["run_id"] == run["id"] and row["role"] == "user":
+                    file_rows = self._storage.list_input_files_for_message(
+                        row["id"], run["api_client_id"]
+                    )
+                    if file_rows and self._file_storage is None:
+                        raise RuntimeError("缺少本地图片存储。")
+                    loaded_images: list[VisionImage] = []
+                    for file_row in file_rows:
+                        data = await asyncio.to_thread(
+                            self._file_storage.read_verified,  # type: ignore[union-attr]
+                            file_row,
+                        )
+                        loaded_images.append(
+                            VisionImage(
+                                mime_type=file_row["mime_type"],
+                                data=data,
+                            )
+                        )
+                    images = tuple(loaded_images)
+                messages.append(
+                    ChatMessage(
+                        role=row["role"],
+                        content=row["content_text"] or "",
+                        images=images,
+                    )
                 )
-            ]
             assistant_text = await self._provider.complete(messages)
+        except LocalFileIntegrityError:
+            LOGGER.error(
+                "local_file_failed request_id=%s run_id=%s error_type=LocalFileIntegrityError",
+                request_id,
+                run["id"],
+            )
+            self._storage.mark_run_failed(
+                run["id"],
+                error_code=INTERNAL_ERROR,
+                error_message="输入图片不可用，请重新上传。",
+            )
         except ChatProviderError:
             LOGGER.warning(
                 "provider_failed request_id=%s run_id=%s error_type=ChatProviderError",

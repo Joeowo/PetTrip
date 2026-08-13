@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+import base64
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -13,9 +15,16 @@ class ChatProviderError(RuntimeError):
 
 
 @dataclass(frozen=True)
+class VisionImage:
+    mime_type: str
+    data: bytes
+
+
+@dataclass(frozen=True)
 class ChatMessage:
     role: str
     content: str
+    images: tuple[VisionImage, ...] = ()
 
 
 class ChatModelProvider(Protocol):
@@ -44,12 +53,30 @@ class OpenAICompatibleChatProvider:
         self._temperature = temperature
         self._max_tokens = max_tokens
 
+    @staticmethod
+    def _message_payload(message: ChatMessage) -> dict[str, Any]:
+        if not message.images:
+            return {"role": message.role, "content": message.content}
+        content: list[dict[str, Any]] = [{"type": "text", "text": message.content}]
+        for image in message.images:
+            encoded = base64.b64encode(image.data).decode("ascii")
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:{image.mime_type};base64,{encoded}",
+                    },
+                }
+            )
+        return {"role": message.role, "content": content}
+
     async def complete(self, messages: list[ChatMessage]) -> str:
+        encoded_messages = await asyncio.to_thread(
+            lambda: [self._message_payload(message) for message in messages]
+        )
         payload = {
             "model": self._model,
-            "messages": [
-                {"role": message.role, "content": message.content} for message in messages
-            ],
+            "messages": encoded_messages,
             "temperature": self._temperature,
             "max_tokens": self._max_tokens,
         }

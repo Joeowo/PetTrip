@@ -1,0 +1,8 @@
+{
+  "session": 2,
+  "passed": true,
+  "provider_protocol": "openai-compatible-chat-completions-vision-data-url",
+  "vision_understood": true,
+  "downloaded_hash_matches": true,
+  "sqlite_without_binary": true
+}

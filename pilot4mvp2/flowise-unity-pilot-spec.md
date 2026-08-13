@@ -754,3 +754,22 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 
 第一段代码只实现鉴权、SQLite、纯文本 Run 和 `curl` 验证。该链路通过后再增加文件与
 图片模型，避免同时调试网络、数据库、Chat/Vision 和图片生成。
+
+### 16.1 会话 2 已锁定参数
+
+会话 2 使用以下输入图片约束，所有值都可通过服务端环境变量覆盖：
+
+- 最大上传大小为 10 MiB（`MAX_UPLOAD_BYTES=10485760`）。
+- 图片宽和高分别不超过 4096 像素（`MAX_IMAGE_DIMENSION=4096`）。
+- 图片总像素不超过 20,000,000（`MAX_IMAGE_PIXELS=20000000`）。
+- 本会话只允许 PNG 和 JPEG；WebP 不进入本轮验收范围。
+- 同一 Run 最多引用四张图片，同一 `file_id` 不能重复，且附件总字节数不超过 10 MiB。
+- 上传入口在 multipart 解析前完成 Bearer 鉴权和有界请求体读取，避免匿名超大请求先耗尽
+  临时磁盘。
+- 对话历史保留成功 Run 的文本，但只把当前 Run 的图片附件发送给 Vision 模型，避免每轮
+  重复发送历史图片导致请求体和模型成本持续增长。
+
+Chat/Vision Provider 使用 OpenAI-compatible Chat Completions 多模态内容格式。服务端从
+本地文件存储读取图片，仅在出站请求内存中临时编码为 `image_url` data URL。Base64 不写入
+SQLite、Run、消息历史、日志、响应或证据。真实网关是否接受该格式必须由会话 2 在线验收
+确认；离线协议测试不能替代真实模型验证。

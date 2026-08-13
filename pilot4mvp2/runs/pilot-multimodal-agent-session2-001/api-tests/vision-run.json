@@ -1,0 +1,13 @@
+{
+  "upload_status": 201,
+  "file_id": "file_01KZXYRK22GH95DD13RV21GRS9",
+  "question": "图片左半边和右半边分别是什么颜色？只输出 JSON 对象，键必须是 left 和 right，值使用英文颜色名；不要输出其他内容。",
+  "statuses_observed": [
+    "queued",
+    "running",
+    "succeeded"
+  ],
+  "terminal_status": "succeeded",
+  "assistant_text": "{\"left\":\"red\",\"right\":\"blue\"}",
+  "error": null
+}
