@@ -98,6 +98,14 @@ def test_text_run_and_idempotency_contract(tmp_path: Path) -> None:
         repeated = client.post("/api/v1/runs", headers=headers, json=payload)
         assert repeated.status_code == 202
         assert repeated.json()["run_id"] == run_id
+
+        explicit_empty_attachments = client.post(
+            "/api/v1/runs",
+            headers=headers,
+            json={**payload, "input": {"text": "请确认文本能力", "attachments": []}},
+        )
+        assert explicit_empty_attachments.status_code == 202
+        assert explicit_empty_attachments.json()["run_id"] == run_id
         assert provider.call_count == 1
 
         conflict_payload = {

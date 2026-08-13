@@ -47,6 +47,9 @@ class Settings:
     pilot_api_key: str
     worker_poll_interval: float
     max_text_chars: int
+    max_upload_bytes: int = 10 * 1024 * 1024
+    max_image_dimension: int = 4096
+    max_image_pixels: int = 20_000_000
 
 
 def load_settings(
@@ -86,4 +89,7 @@ def load_settings(
         pilot_api_key=env["PILOT_API_KEY"],
         worker_poll_interval=float(env.get("WORKER_POLL_INTERVAL", "0.2")),
         max_text_chars=int(env.get("MAX_TEXT_CHARS", "8000")),
+        max_upload_bytes=int(env.get("MAX_UPLOAD_BYTES", str(10 * 1024 * 1024))),
+        max_image_dimension=int(env.get("MAX_IMAGE_DIMENSION", "4096")),
+        max_image_pixels=int(env.get("MAX_IMAGE_PIXELS", "20000000")),
     )

@@ -25,6 +25,9 @@ def authenticated_client_id(
     credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_BEARER)],
 ) -> str:
     """验证 Bearer Key 并返回当前 API client 的不透明 ID。"""
+    preauthenticated = getattr(request.state, "api_client_id", None)
+    if isinstance(preauthenticated, str):
+        return preauthenticated
     token = credentials.credentials if credentials is not None else None
     storage: Storage = request.app.state.storage
     client_id = storage.find_active_api_client_by_hash(hash_api_key(token)) if token else None

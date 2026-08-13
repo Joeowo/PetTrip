@@ -3,8 +3,10 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+import pytest
+
 from pilot4mvp2.agent_service.auth import hash_api_key
-from pilot4mvp2.agent_service.storage import Storage
+from pilot4mvp2.agent_service.storage import FileReferenceError, Storage
 
 
 def _create_queued_run(storage: Storage) -> tuple[str, str]:
@@ -125,6 +127,33 @@ def test_expired_api_key_is_rejected(tmp_path: Path) -> None:
             ("2999-01-01T00:00:00Z", client_id),
         )
         assert storage.find_active_api_client_by_hash(key_hash) == client_id
+    finally:
+        storage.close()
+
+
+def test_invalid_file_reference_rolls_back_run_transaction(tmp_path: Path) -> None:
+    storage = Storage(tmp_path / "agent.db", recover=False)
+    try:
+        client_id = storage.upsert_api_client(hash_api_key("test-key"), "test-client")
+        session = storage.create_session(client_id)
+        with pytest.raises(FileReferenceError):
+            storage.create_run(
+                api_client_id=client_id,
+                session_id=session["id"],
+                request_input={
+                    "text": "无效附件",
+                    "attachments": [
+                        {"file_id": "file_missing", "purpose": "vision_input"}
+                    ],
+                },
+                response_format={"modalities": ["text"]},
+                idempotency_key="bad-file",
+                idempotency_body_hash="bad-file-hash",
+            )
+
+        for table in ("runs", "messages", "message_files", "run_events"):
+            count = storage._conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+            assert count == 0
     finally:
         storage.close()
 

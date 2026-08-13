@@ -7,12 +7,22 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class InputAttachment(BaseModel):
+    """客户端通过本地文件资源 ID 引用一张图片。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    file_id: str = Field(min_length=1)
+    purpose: Literal["vision_input", "reference_image"]
+
+
 class TextInput(BaseModel):
-    """仅允许纯文本输入。"""
+    """文本与可选图片附件输入。"""
 
     model_config = ConfigDict(extra="forbid")
 
     text: str = Field(min_length=1)
+    attachments: list[InputAttachment] = Field(default_factory=list, max_length=4)
 
 
 class TextResponseFormat(BaseModel):

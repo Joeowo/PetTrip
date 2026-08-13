@@ -1,9 +1,8 @@
 """SQLite 持久化层（spec §8）。
 
 单进程 Pilot 使用一个共享 SQLite 连接，所有访问由进程内锁串行化；启用 WAL、
-``busy_timeout`` 与外键。表结构覆盖 spec §8.1 的全部七张表（会话 1 仅写入
-``api_clients/sessions/messages/runs/run_events``，``files/message_files`` 为后续
-会话预留）。
+``busy_timeout`` 与外键。表结构覆盖 spec §8.1 的全部七张表；会话 2 使用
+``files/message_files`` 保存图片元数据及消息附件关系。
 
 图片二进制不入库；本层只保存相对路径与元数据。Base64、密钥、绝对路径均不落库。
 """
@@ -43,6 +42,14 @@ def _is_expired(value: str | None) -> bool:
 
 class IdempotencyKeyReusedError(ValueError):
     """同一客户端把幂等键用于不同请求体。"""
+
+
+class FileReferenceError(ValueError):
+    """附件不存在、不属于当前客户端，或用途不一致。"""
+
+
+class AttachmentTooLargeError(ValueError):
+    """单个 Run 的附件总字节数超过允许上限。"""
 
 
 # ---- 模式 -----------------------------------------------------------------
@@ -287,6 +294,74 @@ class Storage:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def list_input_files_for_message(
+        self,
+        message_id: str,
+        api_client_id: str,
+    ) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT f.* FROM files f "
+                "JOIN message_files mf ON mf.file_id = f.id "
+                "WHERE mf.message_id = ? AND mf.role = 'input' "
+                "AND f.api_client_id = ? ORDER BY mf.rowid ASC",
+                (message_id, api_client_id),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    # -- Files --------------------------------------------------------------
+    def create_file(
+        self,
+        *,
+        file_id: str,
+        api_client_id: str,
+        source: str,
+        purpose: str,
+        mime_type: str,
+        size_bytes: int,
+        sha256: str,
+        width: int,
+        height: int,
+        rel_path: str,
+    ) -> dict[str, Any]:
+        if Path(rel_path).is_absolute():
+            raise ValueError("文件记录只能保存相对路径。")
+        now = utcnow_iso()
+        with self._transaction() as conn:
+            conn.execute(
+                "INSERT INTO files(id, api_client_id, source, purpose, mime_type, "
+                "size_bytes, sha256, width, height, rel_path, created_at) "
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    file_id,
+                    api_client_id,
+                    source,
+                    purpose,
+                    mime_type,
+                    size_bytes,
+                    sha256,
+                    width,
+                    height,
+                    rel_path,
+                    now,
+                ),
+            )
+            row = conn.execute("SELECT * FROM files WHERE id = ?", (file_id,)).fetchone()
+        return dict(row)
+
+    def get_file(self, file_id: str, api_client_id: str) -> dict[str, Any] | None:
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT * FROM files WHERE id = ? AND api_client_id = ?",
+                (file_id, api_client_id),
+            ).fetchone()
+        return _row_to_dict(row)
+
+    def list_file_paths(self) -> set[str]:
+        with self._lock:
+            rows = self._conn.execute("SELECT rel_path FROM files").fetchall()
+        return {row["rel_path"] for row in rows}
+
     # -- Runs --------------------------------------------------------------
     def find_run_by_idempotency(
         self, api_client_id: str, idempotency_key: str
@@ -307,6 +382,7 @@ class Storage:
         response_format: dict[str, Any],
         idempotency_key: str,
         idempotency_body_hash: str,
+        max_attachment_bytes: int | None = None,
     ) -> dict[str, Any]:
         """原子查找或创建 queued Run，并写入用户消息与 ``run.queued`` 事件。"""
         run_id = new_id("run")
@@ -336,7 +412,7 @@ class Storage:
                     now,
                 ),
             )
-            self._insert_message(
+            message_id = self._insert_message(
                 conn,
                 session_id=session_id,
                 run_id=run_id,
@@ -344,6 +420,26 @@ class Storage:
                 content_text=request_input.get("text") or "",
                 structured_data=None,
             )
+            attachment_bytes = 0
+            for attachment in request_input.get("attachments") or []:
+                file_row = conn.execute(
+                    "SELECT id, purpose, size_bytes FROM files "
+                    "WHERE id = ? AND api_client_id = ? AND source = 'user_upload'",
+                    (attachment["file_id"], api_client_id),
+                ).fetchone()
+                if file_row is None or file_row["purpose"] != attachment["purpose"]:
+                    raise FileReferenceError(attachment["file_id"])
+                attachment_bytes += file_row["size_bytes"]
+                if (
+                    max_attachment_bytes is not None
+                    and attachment_bytes > max_attachment_bytes
+                ):
+                    raise AttachmentTooLargeError(attachment_bytes)
+                conn.execute(
+                    "INSERT INTO message_files(message_id, file_id, role) "
+                    "VALUES(?, ?, 'input')",
+                    (message_id, file_row["id"]),
+                )
             self._insert_event(
                 conn,
                 run_id=run_id,
