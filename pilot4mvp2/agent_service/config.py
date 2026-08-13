@@ -50,6 +50,16 @@ class Settings:
     max_upload_bytes: int = 10 * 1024 * 1024
     max_image_dimension: int = 4096
     max_image_pixels: int = 20_000_000
+    image_base_url: str = ""
+    image_api_key: str = ""
+    image_model: str = "gpt-image-2"
+    image_timeout: float = 120.0
+    image_request_size: str = "1024x1024"
+    image_generation_path: str = "/images/generations"
+    image_canvas_width: int = 1024
+    image_canvas_height: int = 1024
+    image_max_decoded_bytes: int = 20 * 1024 * 1024
+    image_max_pixels: int = 20_000_000
 
 
 def load_settings(
@@ -92,4 +102,16 @@ def load_settings(
         max_upload_bytes=int(env.get("MAX_UPLOAD_BYTES", str(10 * 1024 * 1024))),
         max_image_dimension=int(env.get("MAX_IMAGE_DIMENSION", "4096")),
         max_image_pixels=int(env.get("MAX_IMAGE_PIXELS", "20000000")),
+        image_base_url=env.get("IMAGE_BASE_URL", env.get("CHAT_BASE_URL", "")).rstrip("/"),
+        image_api_key=env.get("IMAGE_API_KEY", env.get("CHAT_API_KEY", "")),
+        image_model=env.get("IMAGE_MODEL", "gpt-image-2"),
+        image_timeout=float(env.get("IMAGE_TIMEOUT", "120")),
+        image_request_size=env.get("IMAGE_REQUEST_SIZE", "1024x1024"),
+        image_generation_path=env.get("IMAGE_GENERATION_PATH", "/images/generations"),
+        image_canvas_width=int(env.get("IMAGE_CANVAS_WIDTH", "1024")),
+        image_canvas_height=int(env.get("IMAGE_CANVAS_HEIGHT", "1024")),
+        image_max_decoded_bytes=int(
+            env.get("IMAGE_MAX_DECODED_BYTES", str(20 * 1024 * 1024))
+        ),
+        image_max_pixels=int(env.get("IMAGE_MAX_PIXELS", "20000000")),
     )

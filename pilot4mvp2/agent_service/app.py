@@ -17,6 +17,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from .auth import AuthenticatedClientId, hash_api_key
 from .chat_provider import ChatModelProvider, OpenAICompatibleChatProvider
 from .config import Settings, load_settings
+from .image_provider import ImageGenerationProvider, OpenAICompatibleImageProvider
 from .errors import (
     AUTHENTICATION_FAILED,
     FILE_TOO_LARGE,
@@ -69,7 +70,9 @@ def _file_response(file_row: dict[str, Any], request_id: str) -> dict[str, Any]:
     }
 
 
-def _run_response(run: dict[str, Any], request_id: str) -> dict[str, Any]:
+def _run_response(
+    run: dict[str, Any], request_id: str, output_files: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
     response: dict[str, Any] = {
         "run_id": run["id"],
         "session_id": run["session_id"],
@@ -77,13 +80,33 @@ def _run_response(run: dict[str, Any], request_id: str) -> dict[str, Any]:
         "request_id": request_id,
     }
     if run["status"] == "succeeded":
-        response["output"] = {"text": run["output_text"]}
+        output: dict[str, Any] = {}
+        if run["output_text"] is not None:
+            output["text"] = run["output_text"]
+        if output_files:
+            output["attachments"] = [
+                {
+                    "file_id": row["id"],
+                    "source": row["source"],
+                    "purpose": row["purpose"],
+                    "mime_type": row["mime_type"],
+                    "size_bytes": row["size_bytes"],
+                    "sha256": row["sha256"],
+                    "width": row["width"],
+                    "height": row["height"],
+                    "created_at": row["created_at"],
+                    "download_url": f"/api/v1/files/{row['id']}/content",
+                }
+                for row in output_files
+            ]
+        response["output"] = output
     elif run["status"] == "failed":
         response["error"] = {
             "code": run["error_code"],
             "message": run["error_message"],
             "retryable": run["error_code"] in {
                 "CHAT_PROVIDER_UNAVAILABLE",
+                "IMAGE_PROVIDER_UNAVAILABLE",
                 "SERVICE_RESTARTED",
             },
         }
@@ -94,6 +117,7 @@ def create_app(
     *,
     settings: Settings | None = None,
     provider: ChatModelProvider | None = None,
+    image_provider: ImageGenerationProvider | None = None,
     start_worker: bool = True,
 ) -> FastAPI:
     """构建可注入 Provider 和临时数据库的会话 1 服务。"""
@@ -113,10 +137,24 @@ def create_app(
         temperature=resolved_settings.chat_temperature,
         max_tokens=resolved_settings.chat_max_tokens,
     )
+    resolved_image_provider = image_provider or OpenAICompatibleImageProvider(
+        base_url=resolved_settings.image_base_url,
+        api_key=resolved_settings.image_api_key,
+        model=resolved_settings.image_model,
+        timeout_seconds=resolved_settings.image_timeout,
+        request_size=resolved_settings.image_request_size,
+        max_decoded_bytes=resolved_settings.image_max_decoded_bytes,
+        max_image_pixels=resolved_settings.image_max_pixels,
+        generation_path=resolved_settings.image_generation_path,
+    )
     worker = RunWorker(
         storage=storage,
         file_storage=file_storage,
         provider=resolved_provider,
+        image_provider=resolved_image_provider,
+        image_canvas_width=resolved_settings.image_canvas_width,
+        image_canvas_height=resolved_settings.image_canvas_height,
+        image_max_pixels=resolved_settings.image_max_pixels,
         poll_interval=resolved_settings.worker_poll_interval,
     )
 
@@ -325,8 +363,9 @@ def create_app(
             raise ApiError(VALIDATION_ERROR, "缺少 Idempotency-Key。", status=400)
         if len(body.input.text) > resolved_settings.max_text_chars:
             raise ApiError(VALIDATION_ERROR, "输入文本过长。", status=400)
-        if not body.response_format.is_text_only():
-            raise ApiError(VALIDATION_ERROR, "会话 2 只支持文本输出。", status=400)
+        modalities = body.response_format.modalities
+        if len(set(modalities)) != len(modalities):
+            raise ApiError(VALIDATION_ERROR, "输出模态不能重复。", status=400)
         if storage.get_session(body.session_id, api_client_id) is None:
             raise ApiError(RESOURCE_NOT_FOUND, "会话不存在。", status=404)
         attachment_ids = [item.file_id for item in body.input.attachments]
@@ -354,7 +393,12 @@ def create_app(
             raise ApiError(FILE_TOO_LARGE, "Run 附件总大小超过允许范围。") from exc
         except FileReferenceError as exc:
             raise ApiError(RESOURCE_NOT_FOUND, "附件不存在。", status=404) from exc
-        return _run_response(run, request.state.request_id)
+        output_files = (
+            storage.list_output_files_for_run(run["id"], api_client_id)
+            if run["status"] == "succeeded"
+            else []
+        )
+        return _run_response(run, request.state.request_id, output_files)
 
     @app.get("/api/v1/runs/{run_id}")
     async def get_run(
@@ -365,6 +409,37 @@ def create_app(
         run = storage.get_run(run_id, api_client_id)
         if run is None:
             raise ApiError(RESOURCE_NOT_FOUND, "Run 不存在。", status=404)
-        return _run_response(run, request.state.request_id)
+        output_files = (
+            storage.list_output_files_for_run(run_id, api_client_id)
+            if run["status"] == "succeeded"
+            else []
+        )
+        return _run_response(run, request.state.request_id, output_files)
+
+    @app.get("/api/v1/runs/{run_id}/events")
+    async def get_run_events(
+        run_id: str,
+        request: Request,
+        api_client_id: AuthenticatedClientId,
+    ) -> dict[str, Any]:
+        run = storage.get_run(run_id, api_client_id)
+        if run is None:
+            raise ApiError(RESOURCE_NOT_FOUND, "Run 不存在。", status=404)
+        events = storage.list_events(run_id, api_client_id)
+        return {
+            "run_id": run_id,
+            "events": [
+                {
+                    "event_id": event["id"],
+                    "event_type": event["event_type"],
+                    "payload": json.loads(event["payload"])
+                    if event["payload"]
+                    else None,
+                    "created_at": event["created_at"],
+                }
+                for event in events
+            ],
+            "request_id": request.state.request_id,
+        }
 
     return app

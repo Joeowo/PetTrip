@@ -118,7 +118,7 @@ def test_text_run_and_idempotency_contract(tmp_path: Path) -> None:
         assert provider.call_count == 1
 
 
-def test_session_ownership_and_text_only_validation(tmp_path: Path) -> None:
+def test_session_ownership_and_modality_validation(tmp_path: Path) -> None:
     settings = _settings(tmp_path)
     app = create_app(settings=settings, provider=FakeProvider(), start_worker=False)
     with TestClient(app) as client:
@@ -126,7 +126,7 @@ def test_session_ownership_and_text_only_validation(tmp_path: Path) -> None:
         base = {
             "session_id": session_id,
             "input": {"text": "hello"},
-            "response_format": {"modalities": ["text", "image"]},
+            "response_format": {"modalities": ["text", "image", "image"]},
         }
         invalid = client.post(
             "/api/v1/runs",

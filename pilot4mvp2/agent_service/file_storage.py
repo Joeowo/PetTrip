@@ -14,7 +14,7 @@ from dataclasses import dataclass
 from io import BytesIO
 from pathlib import Path
 
-from PIL import Image, UnidentifiedImageError
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 from .errors import (
     FILE_DECODE_FAILED,
@@ -49,7 +49,9 @@ class LocalImageStorage:
     def __init__(self, data_dir: str | Path) -> None:
         self._data_dir = Path(data_dir).resolve()
         self._input_dir = self._data_dir / "files" / "input"
+        self._generated_dir = self._data_dir / "files" / "generated"
         self._input_dir.mkdir(parents=True, exist_ok=True)
+        self._generated_dir.mkdir(parents=True, exist_ok=True)
 
     def validate_and_store(
         self,
@@ -131,6 +133,60 @@ class LocalImageStorage:
             height=height,
         )
 
+    def normalize_and_store_generated(
+        self,
+        *,
+        file_id: str,
+        data: bytes,
+        target_width: int,
+        target_height: int,
+        max_pixels: int,
+    ) -> StoredImage:
+        """Normalize a validated Provider image to a PNG canvas and atomically store it."""
+        if target_width <= 0 or target_height <= 0:
+            raise ValueError("目标画布尺寸必须为正数。")
+        if target_width * target_height > max_pixels:
+            raise ValueError("目标画布像素数量超过允许范围。")
+        try:
+            with Image.open(BytesIO(data)) as source:
+                source.load()
+                image = ImageOps.fit(
+                    source.convert("RGBA"),
+                    (target_width, target_height),
+                    method=Image.Resampling.LANCZOS,
+                    centering=(0.5, 0.5),
+                )
+                output = BytesIO()
+                image.save(output, format="PNG", optimize=False)
+        except (UnidentifiedImageError, OSError, ValueError) as exc:
+            raise LocalFileIntegrityError("生成图片无法规范化。") from exc
+
+        normalized = output.getvalue()
+        target = self._generated_dir / f"{file_id}.png"
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix=f".{file_id}-",
+            suffix=".tmp",
+            dir=self._generated_dir,
+        )
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(normalized)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, target)
+        except Exception:
+            temporary.unlink(missing_ok=True)
+            raise
+        return StoredImage(
+            rel_path=target.relative_to(self._data_dir).as_posix(),
+            mime_type="image/png",
+            size_bytes=len(normalized),
+            sha256=hashlib.sha256(normalized).hexdigest(),
+            width=target_width,
+            height=target_height,
+        )
+
     def store_bytes(self, file_id: str, data: bytes) -> str:
         """为内部测试保存不会覆盖既有资源的受控字节。"""
         target = self._input_dir / f"{file_id}.bin"
@@ -177,13 +233,14 @@ class LocalImageStorage:
         self.resolve(rel_path).unlink(missing_ok=True)
 
     def remove_untracked_files(self, tracked_rel_paths: set[str]) -> int:
-        """删除输入目录中没有 SQLite 元数据记录的孤儿文件。"""
+        """删除输入和生成目录中没有 SQLite 元数据记录的孤儿文件。"""
         removed = 0
-        for path in self._input_dir.iterdir():
-            if not path.is_file() or path.name.startswith("."):
-                continue
-            rel_path = path.relative_to(self._data_dir).as_posix()
-            if rel_path not in tracked_rel_paths:
-                path.unlink()
-                removed += 1
+        for directory in (self._input_dir, self._generated_dir):
+            for path in directory.iterdir():
+                if not path.is_file() or path.name.startswith("."):
+                    continue
+                rel_path = path.relative_to(self._data_dir).as_posix()
+                if rel_path not in tracked_rel_paths:
+                    path.unlink()
+                    removed += 1
         return removed

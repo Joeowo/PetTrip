@@ -26,14 +26,20 @@ class TextInput(BaseModel):
 
 
 class TextResponseFormat(BaseModel):
-    """会话 1 仅接受文本输出。"""
+    """声明本次 Run 需要的文本和/或图片输出。"""
 
     model_config = ConfigDict(extra="forbid")
 
-    modalities: list[Literal["text"]] = Field(min_length=1, max_length=1)
+    modalities: list[Literal["text", "image"]] = Field(min_length=1, max_length=2)
 
     def is_text_only(self) -> bool:
         return self.modalities == ["text"]
+
+    def wants_image(self) -> bool:
+        return "image" in self.modalities
+
+    def wants_text(self) -> bool:
+        return "text" in self.modalities
 
 
 class CreateRunRequest(BaseModel):

@@ -309,6 +309,21 @@ class Storage:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def list_output_files_for_run(
+        self, run_id: str, api_client_id: str
+    ) -> list[dict[str, Any]]:
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT f.* FROM files f "
+                "JOIN message_files mf ON mf.file_id = f.id "
+                "JOIN messages m ON m.id = mf.message_id "
+                "JOIN runs r ON r.id = m.run_id "
+                "WHERE r.id = ? AND r.api_client_id = ? AND mf.role = 'output' "
+                "ORDER BY mf.rowid ASC",
+                (run_id, api_client_id),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     # -- Files --------------------------------------------------------------
     def create_file(
         self,
@@ -467,7 +482,7 @@ class Storage:
             row = conn.execute(
                 "UPDATE runs SET status = 'running', started_at = ? "
                 "WHERE id = (SELECT id FROM runs WHERE status = 'queued' "
-                "            ORDER BY created_at ASC, id ASC LIMIT 1) "
+                "            ORDER BY rowid ASC LIMIT 1) "
                 "RETURNING *",
                 (now,),
             ).fetchone()
@@ -484,18 +499,38 @@ class Storage:
         self,
         run_id: str,
         *,
-        assistant_text: str,
+        assistant_text: str | None,
         structured_data: dict[str, Any] | None = None,
+        output_file: dict[str, Any] | None = None,
     ) -> None:
-        """在单事务内写入助手消息、Run 输出与 ``message.created``/``run.completed``。"""
+        """在单事务内写入助手消息、输出文件关系与完成事件。"""
         now = utcnow_iso()
         with self._transaction() as conn:
             run = conn.execute(
-                "SELECT session_id FROM runs WHERE id = ? AND status = 'running'", (run_id,)
+                "SELECT session_id, api_client_id FROM runs "
+                "WHERE id = ? AND status = 'running'",
+                (run_id,),
             ).fetchone()
             if run is None:
                 return
-            self._insert_message(
+            if output_file is not None:
+                conn.execute(
+                    "INSERT INTO files(id, api_client_id, source, purpose, mime_type, "
+                    "size_bytes, sha256, width, height, rel_path, created_at) "
+                    "VALUES(?, ?, 'agent_generated', 'generated_image', ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        output_file["id"],
+                        run["api_client_id"],
+                        output_file["mime_type"],
+                        output_file["size_bytes"],
+                        output_file["sha256"],
+                        output_file["width"],
+                        output_file["height"],
+                        output_file["rel_path"],
+                        now,
+                    ),
+                )
+            message_id = self._insert_message(
                 conn,
                 session_id=run["session_id"],
                 run_id=run_id,
@@ -503,15 +538,34 @@ class Storage:
                 content_text=assistant_text,
                 structured_data=structured_data,
             )
+            if output_file is not None:
+                conn.execute(
+                    "INSERT INTO message_files(message_id, file_id, role) "
+                    "VALUES(?, ?, 'output')",
+                    (message_id, output_file["id"]),
+                )
+                self._insert_event(
+                    conn,
+                    run_id=run_id,
+                    event_type="artifact.created",
+                    payload={"file_id": output_file["id"]},
+                )
             self._insert_event(
                 conn, run_id=run_id, event_type="message.created", payload={"role": "assistant"}
+            )
+            output_attachment = (
+                {"file_id": output_file["id"]} if output_file is not None else None
             )
             conn.execute(
                 "UPDATE runs SET status = 'succeeded', output_text = ?, "
                 "output_structured = ?, completed_at = ? WHERE id = ? AND status = 'running'",
                 (
                     assistant_text,
-                    json.dumps(structured_data, ensure_ascii=False) if structured_data else None,
+                    json.dumps(output_attachment, ensure_ascii=False)
+                    if output_attachment
+                    else json.dumps(structured_data, ensure_ascii=False)
+                    if structured_data
+                    else None,
                     now,
                     run_id,
                 ),
