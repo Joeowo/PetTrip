@@ -55,9 +55,17 @@ Python 内容服务 --HTTP--> Unity UnityWebRequest
 
 ## 编排防假通过
 
-`run_unity_session2.py`：跑前清理旧证据 → 解析结果 XML 判真通过（**不依赖 Unity 退出码**，
-`result=Passed & failed=0 & skipped=0 & total>0`）→ 断言截图存在 → 失败非 0 退出。避免复用旧
-结果或"退出码 0 但测试被跳过"的假通过。
+`run_unity_session2.py` 多重防假通过：
+- **端口归属**：启动前确认 `127.0.0.1:8000` 空闲（被占即退出码 5）；health 通过后确认子进程仍存活
+  （绑定失败退出码 6），避免测到残留旧服务。
+- **不复用旧结果**：跑前清理编排证据目录，并删除 Unity 工程内 `TestArtifacts/Session2/` 旧截图源，
+  确保截图来自本次测试。
+- **测试存在性**：解析 XML 不仅看 `total>0`，必须定位 `Session2HttpLoadingTests` 且 `Passed`
+  （退出码 7），避免"只跑会话1 + 复用旧会话2 截图"的假通过。
+- 以 XML 判真通过（**不依赖 Unity 退出码**），截图缺失即失败（非警告）。
+
+防假通过逻辑由 `pilot4mvp/session2/verify_orchestration.py` 离线验证（不跑 Unity）：会话2 测试缺失
+返回 None、端口被占时编排退出码 5。
 
 ## 适用范围
 
