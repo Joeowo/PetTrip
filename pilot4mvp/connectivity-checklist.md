@@ -38,10 +38,10 @@ pilot4mvp/runs/pilot-20260812-001/
 
 - [ ] 使用 Python 3.12，并安装 FastAPI、Pydantic v2、OpenAI SDK、Pillow、
   OpenCV 和 JSON Schema 校验库。
-- [ ] 设置 `OPENAI_API_KEY`；密钥不得写入日志或产物。
-- [ ] 显式配置当前账号可用的 Responses 模型。技术路线没有指定该模型，不能
-  静默假定。
-- [ ] 图片模型使用技术路线指定的 `image-2`；若账号不可用，记录实际模型和原因。
+- [ ] 设置文本侧 `RESPONSES_BASE_URL`、`RESPONSES_API_KEY`、`RESPONSES_MODEL`；
+  密钥不得写入日志或产物，模型 ID 不得静默假定。
+- [ ] 设置图片侧 `IMAGES_BASE_URL`、`IMAGES_API_KEY`、`IMAGES_MODEL`；文本与图片可用
+  不同兼容网关，当前图片模型为已验证的 `gpt-image-2`。
 - [ ] 使用 Unity 6 LTS、URP 2D Renderer 和空模板场景。
 - [ ] 确认 SQLite 和 `runs/pilot-20260812-001/` 可写。
 - [ ] 将 Python 包、模型和 Unity 的实际版本写入 `versions.txt`。

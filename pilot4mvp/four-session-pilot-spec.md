@@ -85,8 +85,9 @@ JSON、纹理或 Sprite 创建错误。
 只在本地链路通过后，接入真实外部模型，明确隔离认证、端点兼容性和模型可用性
 问题。OpenAI 兼容网关的可用性不能视为 OpenAI 官方端点已经通过验证。
 
-1. 检查用户是否已提供 `OPENAI_BASE_URL`、`OPENAI_API_KEY`、可用的 Responses
-   模型及端点，以及可用的 Images 模型。
+1. 检查用户是否已提供文本侧 `RESPONSES_BASE_URL`、`RESPONSES_API_KEY`、
+   `RESPONSES_MODEL`，以及图片侧 `IMAGES_BASE_URL`、`IMAGES_API_KEY`、`IMAGES_MODEL`。
+   文本与图片可以使用不同的兼容网关和凭证。
 2. 任一项缺失时，向用户申请该项，并停止；不得测试猜测的模型 ID，也不得改用假图。
 3. 用 Responses Structured Outputs 生成并由 Pydantic 直接校验 WorldSpec。
 4. 用 OpenAI 兼容的 Images API 生成概念图；若返回 `b64_json`，先 Base64 解码，
@@ -101,8 +102,9 @@ JSON、纹理或 Sprite 创建错误。
 
 会话 3 只接入一组已经明确确认的外部模型配置，并沿用海边灯塔固定场景。
 
-- 输入：`OPENAI_BASE_URL`、只存在于环境变量中的 `OPENAI_API_KEY`、明确可用的
-  Responses 模型 ID、`gpt-image-2` Images 模型 ID，以及固定场景文本。
+- 输入：文本侧 `RESPONSES_BASE_URL`、只存在于环境变量中的 `RESPONSES_API_KEY`、
+  `RESPONSES_MODEL`，图片侧 `IMAGES_BASE_URL`、只存在于环境变量中的
+  `IMAGES_API_KEY`、`IMAGES_MODEL`（本次为 `gpt-image-2`），以及固定场景文本。
 - 中间输出：Responses Structured Outputs 生成且未经人工修补的 `WorldSpec`、原始
   Images 响应、解码后的原始 PNG、`ImageArtifact` metadata，以及规范化后的
   `512 x 288` PNG。
