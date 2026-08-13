@@ -1,0 +1,11 @@
+{
+  "session": 3,
+  "passed": true,
+  "provider_protocol": "openai-compatible-images-generations-b64-json",
+  "configured_model": "gpt-image-2",
+  "target_canvas": [
+    64,
+    48
+  ],
+  "negative_case": "wrong_generation_endpoint"
+}

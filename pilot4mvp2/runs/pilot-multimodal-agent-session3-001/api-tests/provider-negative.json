@@ -1,0 +1,27 @@
+{
+  "health_status": "ok",
+  "create_status": 202,
+  "statuses_observed": [
+    "queued",
+    "running",
+    "failed"
+  ],
+  "terminal_status": "failed",
+  "error": {
+    "code": "IMAGE_PROVIDER_UNAVAILABLE",
+    "message": "图片生成服务暂时不可用。",
+    "retryable": true
+  },
+  "events": [
+    "run.queued",
+    "run.started",
+    "image_generation.started",
+    "run.failed"
+  ],
+  "sqlite_counts_after_failure": {
+    "generated_files": 0,
+    "output_relations": 0,
+    "assistant_messages": 0
+  },
+  "generated_files_after_failure": 0
+}
