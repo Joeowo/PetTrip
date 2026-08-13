@@ -71,6 +71,9 @@ def main() -> int:
             )
 
         negative = httpx.get(f"{BASE_URL}/assets/unknown.png", timeout=5.0)
+        assert negative.status_code == 404, (
+            "unknown asset must be rejected with 404, got " + str(negative.status_code)
+        )
 
         run_dir = RUNS_DIR / run_id
         report = {

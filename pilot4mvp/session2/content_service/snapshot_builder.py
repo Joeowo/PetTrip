@@ -2,6 +2,10 @@
 
 会话2 用固定模板生成（不调用任何模型）；生成的 SceneSnapshot 必须通过
 contracts/scene-snapshot/v0.1.schema.json 校验，且不含绝对路径或生成模型字段。
+
+AssetManifest 必须参与构建：ScenePlan 引用的每个 asset_id / build_slot prefab 都要
+在 manifest 中声明，否则拒绝发布 Snapshot——确保 manifest 与发布的 Snapshot 一致，
+不让 manifest 沦为摆设。
 """
 
 from __future__ import annotations
@@ -9,7 +13,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from jsonschema import validate
+import cv2
+from jsonschema import ValidationError, validate
 from PIL import Image
 
 from .models import (
@@ -64,7 +69,11 @@ def plan_scene(spec: WorldSpec) -> ScenePlan:
 
 
 def build_asset_manifest(plan: ScenePlan, asset_dir: Path) -> AssetManifest:
-    """读取 PNG 实际尺寸生成资产清单（按出现顺序去重）。"""
+    """读取 PNG 实际尺寸生成资产清单（按出现顺序去重）。
+
+    Pillow 读取尺寸；OpenCV 解码校验完整性——证明 OpenCV 参与会话2 资产链路
+    （会话3 将用 Pillow/OpenCV 做图片规范化，会话2 先打通解码通路）。
+    """
     needed: list[str] = []
     for layer in plan.layers:
         if layer.asset_id not in needed:
@@ -79,14 +88,38 @@ def build_asset_manifest(plan: ScenePlan, asset_dir: Path) -> AssetManifest:
         path = asset_dir / f"{asset_id}.png"
         with Image.open(path) as image:
             width, height = image.size
+        # OpenCV 解码完整性校验：imread 对损坏/非图片返回 None
+        matrix = cv2.imread(str(path), cv2.IMREAD_UNCHANGED)
+        if matrix is None:
+            raise ValueError("OpenCV could not decode asset png: " + asset_id)
         entries.append(
             AssetEntry(asset_id=asset_id, filename=f"{asset_id}.png", width=width, height=height)
         )
     return AssetManifest(assets=entries)
 
 
-def build_snapshot(plan: ScenePlan, spec: WorldSpec) -> SceneSnapshot:
-    """由 ScenePlan 与 WorldSpec 组装最终 SceneSnapshot。"""
+def build_snapshot(plan: ScenePlan, manifest: AssetManifest, spec: WorldSpec) -> SceneSnapshot:
+    """由 ScenePlan、AssetManifest 与 WorldSpec 组装最终 SceneSnapshot。
+
+    AssetManifest 参与构建：plan 引用的每个 layer.asset_id 与 build_slot prefab 必须在
+    manifest 中声明，否则抛 ValueError——确保 manifest 与发布 Snapshot 一致。
+    """
+    declared = {entry.asset_id for entry in manifest.assets}
+
+    for layer in plan.layers:
+        if layer.asset_id not in declared:
+            raise ValueError(
+                "Layer asset is not declared in the manifest: "
+                + layer.asset_id + " (layer " + layer.id + ")"
+            )
+    for slot in plan.build_slots:
+        for prefab in slot.allowed_prefabs:
+            if prefab not in declared:
+                raise ValueError(
+                    "Build slot prefab is not declared in the manifest: "
+                    + prefab + " (slot " + slot.id + ")"
+                )
+
     return SceneSnapshot(
         schema_version="0.1",
         scene_id=plan.scene_id,
@@ -129,7 +162,12 @@ def build_snapshot(plan: ScenePlan, spec: WorldSpec) -> SceneSnapshot:
     )
 
 
+def validate_snapshot_dict(data: dict) -> None:
+    """用 contracts JSON Schema 校验 Snapshot dict；不符合则抛 ValidationError。"""
+    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+    validate(instance=data, schema=schema)
+
+
 def validate_snapshot(snapshot: SceneSnapshot) -> None:
     """用 contracts JSON Schema 校验 Snapshot；不符合则抛 ValidationError。"""
-    schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-    validate(instance=snapshot.model_dump(), schema=schema)
+    validate_snapshot_dict(snapshot.model_dump())

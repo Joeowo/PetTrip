@@ -23,6 +23,7 @@ from .snapshot_builder import (
     default_world_spec,
     plan_scene,
     validate_snapshot,
+    validate_snapshot_dict,
 )
 
 __all__ = [
@@ -46,4 +47,5 @@ __all__ = [
     "default_world_spec",
     "plan_scene",
     "validate_snapshot",
+    "validate_snapshot_dict",
 ]

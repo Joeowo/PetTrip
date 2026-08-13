@@ -1,11 +1,11 @@
-INFO:     Started server process [32676]
+INFO:     Started server process [32080]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:54618 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54621 - "GET /run-id HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52915 - "GET /snapshot HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52915 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52915 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52915 - "GET /assets/pet.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:52915 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56758 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /run-id HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56118 - "GET /snapshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56118 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56118 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56118 - "GET /assets/pet.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56118 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK

@@ -57,7 +57,7 @@ def create_app(persist: bool = False) -> FastAPI:
     spec = default_world_spec()
     plan = plan_scene(spec)
     manifest = build_asset_manifest(plan, ASSET_DIR)
-    snapshot = build_snapshot(plan, spec)
+    snapshot = build_snapshot(plan, manifest, spec)
     validate_snapshot(snapshot)
     run_id = _new_run_id()
     if persist:
