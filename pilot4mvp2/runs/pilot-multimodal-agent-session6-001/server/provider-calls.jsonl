@@ -1,0 +1,6 @@
+{"kind": "chat.complete_structured", "case_id": "round1_structured"}
+{"kind": "chat.complete", "case_id": "round1_text"}
+{"kind": "image.generate", "case_id": "round1_image"}
+{"kind": "chat.complete", "case_id": "round2"}
+{"kind": "chat.complete", "case_id": "interrupted"}
+{"kind": "chat.complete", "case_id": "after_restart"}

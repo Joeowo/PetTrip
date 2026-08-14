@@ -1,0 +1,16 @@
+{
+  "run_id": "run_01KZZNTC4MQE9WE8HV7VQY42W7",
+  "status_after_restart": "failed",
+  "error": {
+    "code": "SERVICE_RESTARTED",
+    "message": "服务重启，遗留的 running Run 已终止，请重新创建。",
+    "retryable": true
+  },
+  "events_after_restart": [
+    "run.queued",
+    "run.started",
+    "run.failed"
+  ],
+  "new_run_id": "run_01KZZNTD3NB8PNSF8AQWWMH7VA",
+  "new_run_status": "succeeded"
+}

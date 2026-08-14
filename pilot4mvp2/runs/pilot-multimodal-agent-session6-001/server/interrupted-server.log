@@ -1,0 +1,6 @@
+INFO:     Started server process [15648]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     request_completed request_id=req_01KZZNTBYZ2Z874RCTR2VPZFAQ method=GET path=/health status=200
+INFO:     request_completed request_id=req_01KZZNTC4JNE7MF91RX0RS97DY method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZNTC4S6YAY1N8S3679AGD7 method=GET path=/api/v1/runs/run_01KZZNTC4MQE9WE8HV7VQY42W7 status=200

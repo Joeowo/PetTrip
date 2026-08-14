@@ -1,0 +1,9 @@
+INFO:     Started server process [30000]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     request_completed request_id=req_01KZZNTCXVH0A8ZF004HT4VGZ0 method=GET path=/health status=200
+INFO:     request_completed request_id=req_01KZZNTD3DJX7K0N2GPZH38SN3 method=GET path=/api/v1/runs/run_01KZZNTC4MQE9WE8HV7VQY42W7 status=200
+INFO:     request_completed request_id=req_01KZZNTD3FKJ5CACKG16C8KTC6 method=GET path=/api/v1/runs/run_01KZZNTC4MQE9WE8HV7VQY42W7/events status=200
+INFO:     request_completed request_id=req_01KZZNTD3MTJE5XG2RE7V5XQQB method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZNTD3VZ448TVVT8YVH5DEX method=GET path=/api/v1/runs/run_01KZZNTD3NB8PNSF8AQWWMH7VA status=200
+INFO:     request_completed request_id=req_01KZZNTD3WZ6Q5GX242M159WWD method=GET path=/api/v1/sessions/session_01KZZNTA3BSYG3WZT017GEF1HP/messages status=200

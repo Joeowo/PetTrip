@@ -1,0 +1,10 @@
+HOST=127.0.0.1
+PORT=<local>
+DATA_DIR=<redacted>
+DB_PATH=<redacted>
+CHAT_BASE_URL=<controlled>
+CHAT_API_KEY=<redacted>
+IMAGE_BASE_URL=<controlled>
+IMAGE_API_KEY=<redacted>
+IMAGE_MODEL=gpt-image-2
+PILOT_API_KEY=<redacted>
