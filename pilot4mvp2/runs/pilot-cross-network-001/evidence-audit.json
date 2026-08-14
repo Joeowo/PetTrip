@@ -1,0 +1,42 @@
+{
+  "audit_version": "1.0",
+  "audited_at": "2026-08-14",
+  "remote_operator_attestation": true,
+  "core_report": {
+    "source_sha256": "5eb53242fcb18da5b5db9f46ec4db7835f5ab17ddfde77a7ff40f7db3d8c6639",
+    "level": "machine_validated_and_api_revalidated",
+    "schema_valid": true,
+    "secret_scan_passed": true,
+    "actual_entry_hash_matches": true,
+    "remote_client_hash_matches": true,
+    "run_revalidated_through_api": true,
+    "file_metadata_revalidated_through_api": true,
+    "download_hash_revalidated_through_api": true,
+    "session_messages_contain_run": true,
+    "event_sequence": [
+      "run.queued",
+      "run.started",
+      "message.created",
+      "run.completed"
+    ],
+    "remote_api_scope_passed": true
+  },
+  "supplemental_report": {
+    "source_sha256": "cde576bc3c3457a17dd3250ebe4413448f62a36b702db058999206292e9e142d",
+    "level": "operator_attested",
+    "secret_scan_passed": true,
+    "core_fields_match_machine_report": true,
+    "additional_claims": [
+      "curl endpoint sweep",
+      "scene_draft 0.1 structured output",
+      "three-turn conversation history"
+    ],
+    "additional_claims_machine_revalidated": false
+  },
+  "scope": {
+    "remote_agent_api": "passed",
+    "public_image_api": "passed_separately",
+    "unity_cross_network": "not_required_and_not_executed"
+  },
+  "source_transport_path_recorded": false
+}

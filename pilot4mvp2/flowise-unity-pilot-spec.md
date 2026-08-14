@@ -110,7 +110,7 @@ class ImageGenerationProvider(Protocol):
 首版实现可以分别配置：
 
 - `CHAT_BASE_URL`、`CHAT_API_KEY`、`CHAT_MODEL`。
-- `IMAGE_BASE_URL`、`IMAGE_API_KEY`、`IMAGE_MODEL`。
+- `IMAGES_BASE_URL`、`IMAGES_API_KEY`、`IMAGES_MODEL`。
 
 如果同一中转站同时支持两种 API，可以复用 Base URL 和 Key；业务层仍保持两个接口。
 
@@ -119,9 +119,9 @@ class ImageGenerationProvider(Protocol):
 截至 2026-08-13，Pilot 已实测以下图片生成路径可用：
 
 ```text
-IMAGE_BASE_URL=https://5202828.xyz/v1
-IMAGE_API_KEY=<通过服务端环境变量注入>
-IMAGE_MODEL=gpt-image-2
+IMAGES_BASE_URL=https://5202828.xyz/v1
+IMAGES_API_KEY=<通过服务端环境变量注入>
+IMAGES_MODEL=gpt-image-2
 IMAGE_GENERATION_PATH=/images/generations
 ```
 
@@ -716,21 +716,33 @@ Session 中成功完成。验收客户端没有直接读取 SQLite 或服务端�
 
 ### 会话 7：部署与跨网络接入（条件性）
 
-MVP 明确要求跨设备或跨网络演示时执行本会话。本会话证明远程外部客户端可以通过公网
-HTTPS 入口访问 Agent Service，并由 Unity 主程序独立确认远程 Unity 设备可以消费同一
-API 契约。未提出远程演示要求时，本会话不阻塞 Agent Service Pilot 完成。
+MVP 明确要求跨设备或跨网络演示时执行本会话。本会话先证明远程外部客户端可以通过公网
+HTTPS 入口访问 Agent Service。Unity 主程序联调由游戏开发阶段单独执行；只有后续明确要求
+Unity 演示时，才增加远程 Unity 设备对同一 API 契约的验收。
 
 1. 通过内网穿透或反向代理提供 HTTPS Base URL，不直接暴露本地服务端口。
 2. 在非服务端设备上使用 Bearer Key 创建 Session。
 3. 上传一张真实图片，使用返回的 `file_id` 创建异步 Run。
 4. 轮询 Run 到终态，并读取文本或结构化结果。
-5. 通过鉴权下载输入图片或生成图片，并校验文件哈希。
-6. 由 Unity 主程序在远程设备上重复 Session、Run 轮询和文件下载主链路。
-7. 保存脱敏的远程请求、响应、网络入口配置和 Unity 联调结果。
+5. 验证缺失鉴权、错误鉴权、请求参数和资源不存在等稳定错误响应。
+6. 通过鉴权下载输入图片或生成图片，并校验文件哈希。
+7. 保存脱敏的远程请求、响应和网络入口配置。
+8. 可选：后续明确要求 Unity 演示时，由 Unity 主程序在远程设备上重复主链路并保存报告。
 
-通过条件：非服务端设备可以通过 HTTPS 完成鉴权、上传、Run 轮询和文件下载；如果 MVP
-要求 Unity 演示，远程 Unity 设备也必须完成同一主链路；模型 Key、本地端口、完整 Bearer
-Key 和服务器私有路径不得出现在客户端、日志或证据中。
+本轮通过条件：非服务端设备可以通过 HTTPS 完成鉴权、上传、Run 轮询、错误响应和文件下载。
+模型 Key、本地端口、服务器私有路径和完整 Bearer Key 不得固化到客户端构建或进入日志、
+证据；Bearer Key 只允许通过受保护的临时配置在运行时注入。如果后续要求 Unity 演示，远程
+Unity 设备必须另行完成同一主链路。
+
+截至 2026-08-14，本轮远程 Agent API 范围已经通过。操作员在另一台非服务端 Windows 设备上
+通过 Cloudflare Quick Tunnel 完成缺失/错误 Key、Session、真实 PNG 上传、异步 Vision Run、
+稳定错误响应、鉴权下载和 SHA-256 校验。机器报告的入口哈希和远程脚本哈希与服务端实际值一致，
+服务端通过 HTTP API 独立重读 Run、消息、事件、文件元数据和下载内容。核心脱敏证据保存在
+`runs/pilot-cross-network-001/`。当前公网实例还通过一次真实图片生成 Run，返回规范化 PNG，
+两次鉴权下载与 API 元数据哈希一致；部署证据保存在 `runs/pilot-public-image-api-001/`。
+
+本轮没有执行 Unity 主程序，不生成 `unity-connectivity-report.json`，也不宣称 Unity 跨网络
+主链路已经通过。
 
 ## 13. 证据目录
 
@@ -787,8 +799,15 @@ pilot4mvp2/runs/pilot-cross-network-001/
   https-endpoint.redacted.txt
   remote-client-run.json
   remote-file-hash.txt
-  unity-connectivity-report.json
   validation-report.json
+  evidence-audit.json
+  supplemental-remote-test-report.md
+  # 后续要求 Unity 演示时才增加 unity-connectivity-report.json
+
+pilot4mvp2/runs/pilot-public-image-api-001/
+  README.md
+  validation-report.json
+  generated-image.sha256.txt
 ```
 
 证据不得包含模型 API Key、Pilot API Key、Cookie、完整 Authorization Header、SQLite
@@ -803,19 +822,19 @@ pilot4mvp2/runs/pilot-cross-network-001/
 
 只有以下条件全部满足，Agent Service Pilot 才算完成：
 
-- [ ] 外部客户端可以通过 HTTP(S) 和 Bearer Key 调用 Agent Service。
-- [ ] 异步 Run 可以创建、轮询、成功和失败。
-- [ ] 外部客户端能发送文本并读取真实模型文本回复。
-- [ ] 外部客户端能上传真实图片并获得模型理解结果。
-- [ ] Chatbot 能生成真实图片，外部客户端能鉴权下载并校验。
-- [ ] 一次 Run 能同时返回文本、合法结构化数据和图片。
-- [ ] 非法结构化输出不会作为合法 DTO 返回客户端。
-- [ ] 会话、消息、Run、事件和文件元数据写入 SQLite。
-- [ ] 图片保存在文件目录而非 SQLite。
+- [x] 外部客户端可以通过 HTTP(S) 和 Bearer Key 调用 Agent Service。
+- [x] 异步 Run 可以创建、轮询、成功和失败。
+- [x] 外部客户端能发送文本并读取真实模型文本回复。
+- [x] 外部客户端能上传真实图片并获得模型理解结果。
+- [x] Chatbot 能生成真实图片，外部客户端能鉴权下载并校验。
+- [x] 一次 Run 能同时返回文本、合法结构化数据和图片。
+- [x] 非法结构化输出不会作为合法 DTO 返回客户端。
+- [x] 会话、消息、Run、事件和文件元数据写入 SQLite。
+- [x] 图片保存在文件目录而非 SQLite。
 - [x] 服务端重启后，外部客户端能恢复已完成结果。
 - [x] 遗留 `running` Run 按规则失败，不会永久卡住或重复计费。
-- [ ] API 和模型密钥没有出现在客户端、日志、数据库或证据中。
-- [ ] 所有正例和关键负例都有脱敏证据。
+- [x] Provider Key 没有进入客户端、日志、数据库或证据；Pilot Bearer Key 没有固化到客户端构建或进入日志、数据库和证据。
+- [x] 所有正例和关键负例都有脱敏证据。
 
 通过本 Pilot 可以得出：
 
@@ -827,21 +846,24 @@ pilot4mvp2/runs/pilot-cross-network-001/
 > 当前服务已经满足正式玩家鉴权、水平扩展、生产 SLA、内容安全审核或 PetTrip 正式
 > 场景生成要求，也不能宣称远程 Unity 设备到服务端的跨网络链路已经通过。
 
-### 14.2 跨网络端到端演示完成（条件性）
+### 14.2 远程 Agent API 验收完成（条件性）
 
-MVP 要求跨设备或跨网络演示时，只有以下条件全部满足，才能宣布跨网络端到端演示完成：
+MVP 要求跨设备或跨网络访问 Agent API 时，只有以下条件全部满足，才能宣布远程 Agent API
+范围完成：
 
-- [ ] Agent Service Pilot 已完成，不需要重跑会话 1 至会话 6。
-- [ ] Agent Service 通过受控的公网 HTTPS Base URL 提供服务。
-- [ ] 非服务端设备能完成鉴权、Session、图片上传、Run 轮询和文件下载。
-- [ ] Unity 主程序已在目标远程设备上完成同一主链路。
-- [ ] 远程链路的请求、响应、文件哈希和失败信息都有脱敏证据。
-- [ ] 模型 Key、本地端口、完整 Bearer Key 和服务器私有路径没有泄漏。
+- [x] Agent Service Pilot 已完成，不需要重跑会话 1 至会话 6。
+- [x] Agent Service 通过受控的公网 HTTPS Base URL 提供服务。
+- [x] 非服务端设备能完成鉴权、Session、图片上传、Run 轮询、错误响应和文件下载。
+- [x] 远程链路的请求、响应、文件哈希和失败信息都有脱敏证据。
+- [x] Provider Key、本地端口、完整 Bearer Key 和服务器私有路径没有泄漏到日志或证据。
 
-通过条件性会话 7 后可以额外得出：
+通过本轮会话 7 后可以额外得出：
 
-> 目标远程设备可以通过公网 HTTPS 入口消费 Agent Service，Unity 客户端与服务端的
-> 跨网络主链路已经完成一次可复查的 MVP 演示。
+> 非服务端设备可以通过公网 HTTPS 入口消费 Agent Service，完成一次可复查的远程 API
+> Pilot 验收。
+
+本轮不能据此宣称 Unity 主程序已经完成跨网络联调。如果游戏开发阶段明确要求 Unity 演示，
+必须由目标远程 Unity 设备另行完成同一主链路并保存 `unity-connectivity-report.json`。
 
 ## 15. 实施顺序
 
@@ -867,9 +889,9 @@ MVP 要求跨设备或跨网络演示时，只有以下条件全部满足，才�
 - 结构化输出使用已验证的
   `/v1/chat/completions + response_format(json_object)`，并由服务端执行版本注册和 Schema
   复验；当前不得配置为尚未验证可用的 `response_format(json_schema)`。
-- 使用已验证的 `IMAGE_BASE_URL=https://5202828.xyz/v1`、
-  `IMAGE_MODEL=gpt-image-2` 和 `/images/generations` 路径。
-- 将 `IMAGE_API_KEY` 通过服务端环境变量注入，不写入仓库、日志或证据。
+- 使用已验证的 `IMAGES_BASE_URL=https://5202828.xyz/v1`、
+  `IMAGES_MODEL=gpt-image-2` 和 `/images/generations` 路径。
+- 将 `IMAGES_API_KEY` 通过服务端环境变量注入，不写入仓库、日志或证据。
 - 配置图片 Provider 120 秒超时、目标画布尺寸和解码后最大字节数。
 - Pilot API Key 的生成与注入方式。
 - 输入文件大小、像素总量和允许 MIME 类型的具体配置值。

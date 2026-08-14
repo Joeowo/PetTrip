@@ -1,0 +1,22 @@
+{
+  "session": 7,
+  "scope": "remote_agent_api",
+  "remote_api_scope_passed": true,
+  "operator_attested_external_device": true,
+  "public_https_confirmed": true,
+  "authentication_negative_cases_passed": true,
+  "session_created": true,
+  "real_png_uploaded": true,
+  "vision_run_succeeded": true,
+  "run_status_sequence_legal": true,
+  "download_hash_matches": true,
+  "stable_error_contract_confirmed": true,
+  "unity_required_for_current_scope": false,
+  "unity_executed": false,
+  "full_unity_cross_network_demo_passed": false,
+  "origin_listener_loopback_only": true,
+  "edge_provider": "cloudflare",
+  "actual_entry_hash_matches_report": true,
+  "remote_client_hash_matches": true,
+  "evidence_redaction_passed": true
+}

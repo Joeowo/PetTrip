@@ -63,9 +63,9 @@ def _start_server(
             "CHAT_TIMEOUT": "60",
             "CHAT_TEMPERATURE": "0",
             "CHAT_MAX_TOKENS": "256",
-            "IMAGE_BASE_URL": "https://controlled.invalid/v1",
-            "IMAGE_API_KEY": "controlled-image-key",
-            "IMAGE_MODEL": "gpt-image-2",
+            "IMAGES_BASE_URL": "https://controlled.invalid/v1",
+            "IMAGES_API_KEY": "controlled-image-key",
+            "IMAGES_MODEL": "gpt-image-2",
             "IMAGE_CANVAS_WIDTH": str(TARGET_SIZE[0]),
             "IMAGE_CANVAS_HEIGHT": str(TARGET_SIZE[1]),
             "IMAGE_MAX_DECODED_BYTES": str(2_000_000),
@@ -618,8 +618,8 @@ def main() -> int:
         (staging / "deployment-config.redacted.txt").write_text(
             "HOST=127.0.0.1\nPORT=<local>\nDATA_DIR=<redacted>\nDB_PATH=<redacted>\n"
             "CHAT_BASE_URL=<controlled>\nCHAT_API_KEY=<redacted>\n"
-            "IMAGE_BASE_URL=<controlled>\nIMAGE_API_KEY=<redacted>\n"
-            "IMAGE_MODEL=gpt-image-2\nPILOT_API_KEY=<redacted>\n",
+            "IMAGES_BASE_URL=<controlled>\nIMAGES_API_KEY=<redacted>\n"
+            "IMAGES_MODEL=gpt-image-2\nPILOT_API_KEY=<redacted>\n",
             encoding="utf-8",
         )
         (staging / "README.md").write_text(

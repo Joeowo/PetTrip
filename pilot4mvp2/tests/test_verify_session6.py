@@ -57,7 +57,7 @@ def test_session6_source_hash_is_stable_across_line_endings(tmp_path: Path) -> N
 
 def test_session6_evidence_scan_accepts_redacted_markers(tmp_path: Path) -> None:
     (tmp_path / "deployment-config.redacted.txt").write_text(
-        "CHAT_API_KEY=<redacted>\nIMAGE_API_KEY=<redacted>\n"
+        "CHAT_API_KEY=<redacted>\nIMAGES_API_KEY=<redacted>\n"
         "PILOT_API_KEY=<redacted>\n",
         encoding="utf-8",
     )
