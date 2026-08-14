@@ -1,0 +1,13 @@
+INFO:     Started server process [2800]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     request_completed request_id=req_01KZZNT9XQVH1KQHYWRC5ACFJP method=GET path=/health status=200
+INFO:     request_completed request_id=req_01KZZNTA3A1RZ2QC0JMQV8P3P1 method=POST path=/api/v1/sessions status=201
+INFO:     request_completed request_id=req_01KZZNTA3SHN9JWYYMZH6F3KDJ method=POST path=/api/v1/files status=201
+INFO:     request_completed request_id=req_01KZZNTA4DQBM6T8GRX4E0NF96 method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZNTA4MBK79Z10PHAAM4RJ1 method=GET path=/api/v1/runs/run_01KZZNTA4GFKT33SJ28NA23D76 status=200
+INFO:     request_completed request_id=req_01KZZNTA6BWEG2897Z9FN07GQ3 method=GET path=/api/v1/runs/run_01KZZNTA4GFKT33SJ28NA23D76 status=200
+INFO:     request_completed request_id=req_01KZZNTA6DMS332R1JWSY4NF4F method=GET path=/api/v1/files/file_01KZZNTA4TH5HWHM87FYG8W5E7/content status=200
+INFO:     request_completed request_id=req_01KZZNTA6JE87NVM3ATNX9THC7 method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZNTA6S6CZR8EQ77R8SPDRY method=GET path=/api/v1/runs/run_01KZZNTA6K05JFFB1BYCDWXM5T status=200
+INFO:     request_completed request_id=req_01KZZNTA6WJE57Z3VST4DTY3JV method=GET path=/api/v1/sessions/session_01KZZNTA3BSYG3WZT017GEF1HP/messages status=200

@@ -703,6 +703,17 @@ Run 和助手消息在 SQLite 中保存与 API 一致的结构化对象。缺少
 
 通过条件：已完成结果保持一致；遗留 Run 不会永久卡住或自动重复计费；外部客户端不需要直接访问存储。
 
+截至 2026-08-14，本会话已经通过。受控 Provider 验收客户端通过 HTTP API 在同一
+Session 中完成两轮对话，并在服务重启前后重新读取历史、已完成 Run 和生成图片；图片字节数
+和 SHA-256 保持一致。执行中强制终止服务后，遗留 `running` Run 在新进程启动时进入
+`failed(SERVICE_RESTARTED)`；该 Run 的 Provider 调用没有被自动重复，且新 Run 可以在同一
+Session 中成功完成。验收客户端没有直接读取 SQLite 或服务端文件目录。脱敏证据保存在
+`runs/pilot-multimodal-agent-session6-001/`，机器可读结论位于
+`runs/pilot-multimodal-agent-session6-001/api-tests/recovery-report.json`。
+
+本会话使用受控 Provider 专门验证持久化和恢复边界，不替代会话 5 已完成的真实 Chat/Vision
+和图片 Provider 组合输出验收，也不宣称重启期间真实 Provider 调用可以恢复或重试。
+
 ### 会话 7：部署与跨网络接入（条件性）
 
 MVP 明确要求跨设备或跨网络演示时执行本会话。本会话证明远程外部客户端可以通过公网
@@ -746,6 +757,26 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
     redacted.log
     recovery.log
   validation-report.json
+
+pilot4mvp2/runs/pilot-multimodal-agent-session6-001/
+  README.md
+  validation-report.json
+  versions.txt
+  deployment-config.redacted.txt
+  api-tests/
+    completed-before-restart.json
+    completed-after-restart.json
+    interrupted-run.json
+    recovery-report.json
+  files/
+    generated-image.png
+    generated-image.sha256.txt
+  server/
+    first-server.log
+    second-server.log
+    interrupted-server.log
+    recovery-server.log
+    provider-calls.jsonl
 ```
 
 执行条件性会话 7 时，额外保存以下脱敏证据：
@@ -781,8 +812,8 @@ pilot4mvp2/runs/pilot-cross-network-001/
 - [ ] 非法结构化输出不会作为合法 DTO 返回客户端。
 - [ ] 会话、消息、Run、事件和文件元数据写入 SQLite。
 - [ ] 图片保存在文件目录而非 SQLite。
-- [ ] 服务端重启后，外部客户端能恢复已完成结果。
-- [ ] 遗留 `running` Run 按规则失败，不会永久卡住或重复计费。
+- [x] 服务端重启后，外部客户端能恢复已完成结果。
+- [x] 遗留 `running` Run 按规则失败，不会永久卡住或重复计费。
 - [ ] API 和模型密钥没有出现在客户端、日志、数据库或证据中。
 - [ ] 所有正例和关键负例都有脱敏证据。
 

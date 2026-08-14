@@ -1,0 +1,121 @@
+{
+  "first_run": {
+    "run_id": "run_01KZZNTA4GFKT33SJ28NA23D76",
+    "session_id": "session_01KZZNTA3BSYG3WZT017GEF1HP",
+    "status": "succeeded",
+    "request_id": "req_01KZZNTB5SVN2XHBS21HT4X8HV",
+    "output": {
+      "text": "受控回复：请只用简短自然语言，基于上面的已校验结构化结果回答最初请求；不要返回 JSON。",
+      "structured_data": {
+        "type": "scene_draft",
+        "schema_version": "0.1",
+        "title": "受控场景",
+        "theme": "seaside",
+        "summary": "会话 6 受控结构化结果。",
+        "landmark_kind": "lighthouse"
+      },
+      "attachments": [
+        {
+          "file_id": "file_01KZZNTA4TH5HWHM87FYG8W5E7",
+          "source": "agent_generated",
+          "purpose": "generated_image",
+          "mime_type": "image/png",
+          "size_bytes": 161,
+          "sha256": "7b849cb70adfc612fa0400f80213be4668a5d97e7eaae746a95ef653681e4df3",
+          "width": 64,
+          "height": 48,
+          "created_at": "2026-08-14T08:22:03Z",
+          "download_url": "/api/v1/files/file_01KZZNTA4TH5HWHM87FYG8W5E7/content"
+        }
+      ]
+    }
+  },
+  "second_run": {
+    "run_id": "run_01KZZNTA6K05JFFB1BYCDWXM5T",
+    "session_id": "session_01KZZNTA3BSYG3WZT017GEF1HP",
+    "status": "succeeded",
+    "request_id": "req_01KZZNTB5WBDH7FK6C02ZP8RQT",
+    "output": {
+      "text": "受控回复：第二轮：请基于上一轮场景补充宠物散步建议。"
+    }
+  },
+  "messages": {
+    "session_id": "session_01KZZNTA3BSYG3WZT017GEF1HP",
+    "messages": [
+      {
+        "message_id": "message_01KZZNTA4G6A4Q1HXE9S79XH7Q",
+        "run_id": "run_01KZZNTA4GFKT33SJ28NA23D76",
+        "role": "user",
+        "content_text": "第一轮：请根据参考图记录海边灯塔场景。",
+        "structured_data": null,
+        "attachments": [
+          {
+            "file_id": "file_01KZZNTA3SV645XJX2Q2MWWNSG",
+            "attachment_role": "input",
+            "source": "user_upload",
+            "purpose": "reference_image",
+            "mime_type": "image/png",
+            "size_bytes": 92,
+            "sha256": "98491b80555252ea7d9bbfbbe93217977d1fd4a1afedb1b0a8c76fd7448c19f9",
+            "width": 20,
+            "height": 16,
+            "created_at": "2026-08-14T08:22:03Z",
+            "download_url": "/api/v1/files/file_01KZZNTA3SV645XJX2Q2MWWNSG/content"
+          }
+        ],
+        "created_at": "2026-08-14T08:22:03Z"
+      },
+      {
+        "message_id": "message_01KZZNTA4YTYJVQRSA7S113GJ3",
+        "run_id": "run_01KZZNTA4GFKT33SJ28NA23D76",
+        "role": "assistant",
+        "content_text": "受控回复：请只用简短自然语言，基于上面的已校验结构化结果回答最初请求；不要返回 JSON。",
+        "structured_data": {
+          "type": "scene_draft",
+          "schema_version": "0.1",
+          "title": "受控场景",
+          "theme": "seaside",
+          "summary": "会话 6 受控结构化结果。",
+          "landmark_kind": "lighthouse"
+        },
+        "attachments": [
+          {
+            "file_id": "file_01KZZNTA4TH5HWHM87FYG8W5E7",
+            "attachment_role": "output",
+            "source": "agent_generated",
+            "purpose": "generated_image",
+            "mime_type": "image/png",
+            "size_bytes": 161,
+            "sha256": "7b849cb70adfc612fa0400f80213be4668a5d97e7eaae746a95ef653681e4df3",
+            "width": 64,
+            "height": 48,
+            "created_at": "2026-08-14T08:22:03Z",
+            "download_url": "/api/v1/files/file_01KZZNTA4TH5HWHM87FYG8W5E7/content"
+          }
+        ],
+        "created_at": "2026-08-14T08:22:03Z"
+      },
+      {
+        "message_id": "message_01KZZNTA6KTA3P5VM8ZMXG0S4S",
+        "run_id": "run_01KZZNTA6K05JFFB1BYCDWXM5T",
+        "role": "user",
+        "content_text": "第二轮：请基于上一轮场景补充宠物散步建议。",
+        "structured_data": null,
+        "attachments": [],
+        "created_at": "2026-08-14T08:22:03Z"
+      },
+      {
+        "message_id": "message_01KZZNTA6QK26MCMMB39SSMVTF",
+        "run_id": "run_01KZZNTA6K05JFFB1BYCDWXM5T",
+        "role": "assistant",
+        "content_text": "受控回复：第二轮：请基于上一轮场景补充宠物散步建议。",
+        "structured_data": null,
+        "attachments": [],
+        "created_at": "2026-08-14T08:22:03Z"
+      }
+    ],
+    "request_id": "req_01KZZNTB5X34MKD3F6HABNR8T7"
+  },
+  "image_hash": "7b849cb70adfc612fa0400f80213be4668a5d97e7eaae746a95ef653681e4df3",
+  "image_size_bytes": 161
+}
