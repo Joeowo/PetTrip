@@ -45,8 +45,9 @@ Pilot 包含以下能力：
 - 可选 SSE 事件流；轮询必须独立可用。
 - 服务重启后的已完成结果恢复和遗留 Run 处理。
 - 面向普通外部客户端的稳定 HTTP 契约和 OpenAPI 文档。
-- 提供给 Unity 主程序的 DTO、请求示例、状态机和错误码交接材料；Unity 客户端实现和
-  联调不属于本 Pilot。
+- 提供给 Unity 主程序的 DTO、请求示例、状态机和错误码交接材料；默认情况下，Unity
+  客户端实现和联调不属于 Agent Service Pilot。MVP 明确要求跨设备或跨网络演示时，
+  通过条件性会话 7 单独验收。
 
 ### 2.2 非目标
 
@@ -58,7 +59,7 @@ Pilot 包含以下能力：
 - 不使用 Redis、Kafka、Celery 或多实例 Worker 集群。
 - 不实现多 Agent 自由协作或复杂工具编排。
 - 不实现图片分层、抠图、场景组装或 Addressables 发布。
-- 不实现 Unity 客户端，也不验收 Unity 与 Agent API 的通信线路。
+- 不实现 Unity 客户端，也不在前六个会话中验收 Unity 与 Agent API 的通信线路。
 - 不将图片二进制、模型密钥或完整 API Key 写入 SQLite。
 - 不把固定 Pilot API Key 视为正式玩家身份凭据。
 
@@ -612,7 +613,9 @@ Unity 作为未来消费者必须通过上述 HTTP 契约访问服务，不得�
 
 ## 12. 验证会话
 
-验证按风险从低到高执行。前一会话未通过时，后续会话不能标记为通过。
+会话 1 至会话 6 按风险从低到高验证 Agent Service。前一会话未通过时，后续基础会话
+不能标记为通过。会话 7 是条件性的部署验收，独立于前六个会话；执行会话 7 时复用已经
+通过的服务端能力和证据，不要求重跑前六个会话。
 
 ### 会话 1：服务、鉴权和文本
 
@@ -651,9 +654,7 @@ Unity 作为未来消费者必须通过上述 HTTP 契约访问服务，不得�
 6. 重复下载同一 `file_id`，确认内容哈希一致。
 7. 使用错误端点或无效 Base64 响应执行 Provider 负例测试。
 
-通过条件：Run 返回生成图片引用；客户端能下载并校验真实图片；请求尺寸与 Provider 实际
-尺寸不一致时仍能得到配置的目标画布；响应和日志不含 Base64、API Key 或服务端路径；
-Provider 负例进入 `failed`，且不会留下可下载的部分文件。
+通过条件：Run 返回生成图片引用；客户端能下载并校验真实图片；请求尺寸与 Provider 实际尺寸不一致时仍能得到配置的目标画布；响应和日志不含 Base64、API Key 或服务端路径；Provider 负例进入 `failed`，且不会留下可下载的部分文件。
 
 ### 会话 4：结构化输出
 
@@ -700,8 +701,25 @@ Run 和助手消息在 SQLite 中保存与 API 一致的结构化对象。缺少
 4. 在执行中重启服务，验证遗留 `running` Run 进入 `failed`。
 5. 再创建新 Run，确认会话可以继续。
 
-通过条件：已完成结果保持一致；遗留 Run 不会永久卡住或自动重复计费；外部客户端不需要
-直接访问存储。
+通过条件：已完成结果保持一致；遗留 Run 不会永久卡住或自动重复计费；外部客户端不需要直接访问存储。
+
+### 会话 7：部署与跨网络接入（条件性）
+
+MVP 明确要求跨设备或跨网络演示时执行本会话。本会话证明远程外部客户端可以通过公网
+HTTPS 入口访问 Agent Service，并由 Unity 主程序独立确认远程 Unity 设备可以消费同一
+API 契约。未提出远程演示要求时，本会话不阻塞 Agent Service Pilot 完成。
+
+1. 通过内网穿透或反向代理提供 HTTPS Base URL，不直接暴露本地服务端口。
+2. 在非服务端设备上使用 Bearer Key 创建 Session。
+3. 上传一张真实图片，使用返回的 `file_id` 创建异步 Run。
+4. 轮询 Run 到终态，并读取文本或结构化结果。
+5. 通过鉴权下载输入图片或生成图片，并校验文件哈希。
+6. 由 Unity 主程序在远程设备上重复 Session、Run 轮询和文件下载主链路。
+7. 保存脱敏的远程请求、响应、网络入口配置和 Unity 联调结果。
+
+通过条件：非服务端设备可以通过 HTTPS 完成鉴权、上传、Run 轮询和文件下载；如果 MVP
+要求 Unity 演示，远程 Unity 设备也必须完成同一主链路；模型 Key、本地端口、完整 Bearer
+Key 和服务器私有路径不得出现在客户端、日志或证据中。
 
 ## 13. 证据目录
 
@@ -730,12 +748,29 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
   validation-report.json
 ```
 
+执行条件性会话 7 时，额外保存以下脱敏证据：
+
+```text
+pilot4mvp2/runs/pilot-cross-network-001/
+  README.md
+  https-endpoint.redacted.txt
+  remote-client-run.json
+  remote-file-hash.txt
+  unity-connectivity-report.json
+  validation-report.json
+```
+
 证据不得包含模型 API Key、Pilot API Key、Cookie、完整 Authorization Header、SQLite
 文件、用户原始隐私图片或服务器私有路径。测试图片必须使用允许进入仓库的非敏感素材。
 
 ## 14. 完成定义
 
-只有以下条件全部满足，Pilot 才算完成：
+完成定义分为 Agent Service 和跨网络端到端演示两层。前者由会话 1 至会话 6 验证；后者
+只有在 MVP 明确要求远程演示时才启用，并由条件性会话 7 验证。
+
+### 14.1 Agent Service Pilot 完成
+
+只有以下条件全部满足，Agent Service Pilot 才算完成：
 
 - [ ] 外部客户端可以通过 HTTP(S) 和 Bearer Key 调用 Agent Service。
 - [ ] 异步 Run 可以创建、轮询、成功和失败。
@@ -759,7 +794,23 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 不能据此宣称：
 
 > 当前服务已经满足正式玩家鉴权、水平扩展、生产 SLA、内容安全审核或 PetTrip 正式
-> 场景生成要求。
+> 场景生成要求，也不能宣称远程 Unity 设备到服务端的跨网络链路已经通过。
+
+### 14.2 跨网络端到端演示完成（条件性）
+
+MVP 要求跨设备或跨网络演示时，只有以下条件全部满足，才能宣布跨网络端到端演示完成：
+
+- [ ] Agent Service Pilot 已完成，不需要重跑会话 1 至会话 6。
+- [ ] Agent Service 通过受控的公网 HTTPS Base URL 提供服务。
+- [ ] 非服务端设备能完成鉴权、Session、图片上传、Run 轮询和文件下载。
+- [ ] Unity 主程序已在目标远程设备上完成同一主链路。
+- [ ] 远程链路的请求、响应、文件哈希和失败信息都有脱敏证据。
+- [ ] 模型 Key、本地端口、完整 Bearer Key 和服务器私有路径没有泄漏。
+
+通过条件性会话 7 后可以额外得出：
+
+> 目标远程设备可以通过公网 HTTPS 入口消费 Agent Service，Unity 客户端与服务端的
+> 跨网络主链路已经完成一次可复查的 MVP 演示。
 
 ## 15. 实施顺序
 
@@ -775,6 +826,7 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 8. 实现 `run_events`；按需要增加 SSE。
 9. 生成 OpenAPI、DTO 示例、curl/Postman collection 和 Unity 交接说明。
 10. 执行六个 API 验证会话和服务端重启恢复测试。
+11. 如果 MVP 要求远程演示，部署 HTTPS 入口并执行条件性会话 7。
 
 ## 16. 下一步
 
