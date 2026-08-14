@@ -301,19 +301,32 @@ queued -> running -> succeeded
 
 ### 6.2 持久化事件
 
-服务端为关键阶段写入 `run_events`：
+服务端为关键阶段写入 `run_events`。事件类型包括：
 
 ```text
 run.queued
 run.started
-message.created
 image_generation.started
 artifact.created
+message.created
 run.completed
 run.failed
 ```
 
-事件用于排错、轮询补充信息和后续 SSE，不替代 `runs.status` 作为事实来源。
+包含图片输出的成功 Run 必须按以下顺序持久化事件：
+
+```text
+run.queued
+run.started
+image_generation.started
+artifact.created
+message.created
+run.completed
+```
+
+`message.created` 只能在全部请求输出准备完成后写入，不能在图片生成前提交部分助手消息。
+失败 Run 只保留已经实际开始的阶段事件，并以 `run.failed` 结束。事件用于排错、轮询补充
+信息和后续 SSE，不替代 `runs.status` 作为事实来源。
 
 ### 6.3 SSE
 
@@ -670,6 +683,12 @@ Run 和助手消息在 SQLite 中保存与 API 一致的结构化对象。缺少
 4. API 测试客户端分别校验三种输出。
 
 通过条件：三种输出都与同一 Run 和助手消息关联，任何一个失败时不会提交部分成功消息。
+
+截至 2026-08-14，本会话已经通过。真实 Chat/Vision 和图片 Provider 正例上传非敏感参考图，
+同一 Run 返回文本、`scene_draft` `0.1` 和规范化 PNG。公共消息历史、事件载荷与 SQLite
+共同确认三种输出属于同一助手消息。结构化、文本和图片阶段的受控失败例均未提交助手消息、
+生成文件记录或输出附件关系。脱敏证据保存在
+`runs/pilot-multimodal-agent-session5-001/`。
 
 ### 会话 6：持久化与恢复
 

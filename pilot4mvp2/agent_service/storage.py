@@ -326,6 +326,20 @@ class Storage:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def list_files_for_message(
+        self, message_id: str, api_client_id: str
+    ) -> list[dict[str, Any]]:
+        """返回一条消息的安全文件元数据及输入/输出角色。"""
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT f.*, mf.role AS attachment_role FROM files f "
+                "JOIN message_files mf ON mf.file_id = f.id "
+                "WHERE mf.message_id = ? AND f.api_client_id = ? "
+                "ORDER BY mf.rowid ASC",
+                (message_id, api_client_id),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
     # -- Files --------------------------------------------------------------
     def create_file(
         self,
@@ -514,7 +528,7 @@ class Storage:
                 (run_id,),
             ).fetchone()
             if run is None:
-                return
+                raise RuntimeError("Run 必须处于 running 状态才能提交成功结果。")
             if output_file is not None:
                 conn.execute(
                     "INSERT INTO files(id, api_client_id, source, purpose, mime_type, "
@@ -550,10 +564,16 @@ class Storage:
                     conn,
                     run_id=run_id,
                     event_type="artifact.created",
-                    payload={"file_id": output_file["id"]},
+                    payload={
+                        "file_id": output_file["id"],
+                        "message_id": message_id,
+                    },
                 )
             self._insert_event(
-                conn, run_id=run_id, event_type="message.created", payload={"role": "assistant"}
+                conn,
+                run_id=run_id,
+                event_type="message.created",
+                payload={"role": "assistant", "message_id": message_id},
             )
             conn.execute(
                 "UPDATE runs SET status = 'succeeded', output_text = ?, "

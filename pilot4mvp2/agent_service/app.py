@@ -292,6 +292,53 @@ def create_app(
             "request_id": request.state.request_id,
         }
 
+    @app.get("/api/v1/sessions/{session_id}/messages")
+    async def get_session_messages(
+        session_id: str,
+        request: Request,
+        api_client_id: AuthenticatedClientId,
+    ) -> dict[str, Any]:
+        if storage.get_session(session_id, api_client_id) is None:
+            raise ApiError(RESOURCE_NOT_FOUND, "会话不存在。", status=404)
+        messages: list[dict[str, Any]] = []
+        for row in storage.list_messages(session_id, api_client_id):
+            attachments = storage.list_files_for_message(row["id"], api_client_id)
+            messages.append(
+                {
+                    "message_id": row["id"],
+                    "run_id": row["run_id"],
+                    "role": row["role"],
+                    "content_text": row["content_text"],
+                    "structured_data": json.loads(row["structured_data"])
+                    if row["structured_data"] is not None
+                    else None,
+                    "attachments": [
+                        {
+                            "file_id": file_row["id"],
+                            "attachment_role": file_row["attachment_role"],
+                            "source": file_row["source"],
+                            "purpose": file_row["purpose"],
+                            "mime_type": file_row["mime_type"],
+                            "size_bytes": file_row["size_bytes"],
+                            "sha256": file_row["sha256"],
+                            "width": file_row["width"],
+                            "height": file_row["height"],
+                            "created_at": file_row["created_at"],
+                            "download_url": (
+                                f"/api/v1/files/{file_row['id']}/content"
+                            ),
+                        }
+                        for file_row in attachments
+                    ],
+                    "created_at": row["created_at"],
+                }
+            )
+        return {
+            "session_id": session_id,
+            "messages": messages,
+            "request_id": request.state.request_id,
+        }
+
     @app.post("/api/v1/files", status_code=201)
     async def upload_file(
         request: Request,

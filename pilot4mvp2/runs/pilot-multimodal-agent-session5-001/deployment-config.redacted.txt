@@ -1,0 +1,12 @@
+HOST=<local>
+PORT=<local>
+CHAT_BASE_URL=<redacted>
+CHAT_API_KEY=<redacted>
+CHAT_MODEL=<redacted>
+IMAGE_BASE_URL=<redacted>
+IMAGE_API_KEY=<redacted>
+IMAGE_MODEL=gpt-image-2
+IMAGE_GENERATION_PATH=/images/generations
+IMAGE_CANVAS_WIDTH=64
+IMAGE_CANVAS_HEIGHT=48
+PILOT_API_KEY=<ephemeral>

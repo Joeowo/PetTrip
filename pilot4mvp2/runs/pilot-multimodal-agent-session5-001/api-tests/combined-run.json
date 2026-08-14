@@ -1,0 +1,53 @@
+{
+  "provider": "real_chat_vision_and_image_providers",
+  "provider_configuration_sha256": "db29f7f586a9d7280e3397b613de4cf8a97d6cc1cea2a72768bd2e30d5251b71",
+  "run_id": "run_01KZZAN9AGR7AJEAMA3KZ88246",
+  "session_id": "session_01KZZAN99W59FG7QWKA0FMYNVE",
+  "assistant_message_id": "message_01KZZAQPJET5JACHGA9QN7X9JQ",
+  "input_file_id": "file_01KZZAN9A04JZ2996DJRDED4F3",
+  "input_sha256": "90afaae9f3aae500509f016b06658d8c15f300d0949e033d6a83041f498fdee3",
+  "statuses_observed": [
+    "queued",
+    "running",
+    "succeeded"
+  ],
+  "terminal_status": "succeeded",
+  "events": [
+    "run.queued",
+    "run.started",
+    "image_generation.started",
+    "artifact.created",
+    "message.created",
+    "run.completed"
+  ],
+  "event_message_ids_match": true,
+  "text": "已生成 PetTrip 海边灯塔旅行场景：小狗与小猫携带行囊沿海岸步道前往白色红顶灯塔，暖金阳光洒在草坡、礁石和波光海面上，整体呈现温暖治愈的插画风格。",
+  "structured_data": {
+    "type": "scene_draft",
+    "schema_version": "0.1",
+    "title": "PetTrip 海风灯塔之旅",
+    "theme": "温暖治愈的海边宠物旅行，以参考图中的柔和浅沙金色为主色调",
+    "summary": "一只佩戴浅蓝色旅行围巾的小狗和一只背着迷你行囊的小猫沿海岸步道结伴前行，前方矗立着白色塔身、珊瑚红塔顶的灯塔。浅沙金色阳光洒在草坡与礁石上，远处海面泛起细碎波光，木质路牌、旅行背包和随风飘动的 PetTrip 小旗点明旅行主题；画面采用柔和插画质感、宽幅构图与明亮自然光，呈现轻松、安全、充满期待的海滨旅程。",
+    "landmark_kind": "海边灯塔"
+  },
+  "generated_image": {
+    "file_id": "file_01KZZAQPG4MS2T7ZK2AGNJC4P5",
+    "mime_type": "image/png",
+    "size_bytes": 8082,
+    "sha256": "b06e25d1c7dc2afb3a8734d05d1e9bde58e4f126a750e3c8d868ef0066c14a0f",
+    "width": 64,
+    "height": 48,
+    "download_hash_matches": true,
+    "repeat_download_matches": true,
+    "saved_copy": "files/generated-image.png",
+    "saved_copy_hash_matches": true,
+    "pillow_format": "PNG",
+    "pillow_size": [
+      64,
+      48
+    ]
+  },
+  "fixed_combined_dto_valid": true,
+  "same_run_and_assistant_message": true,
+  "sqlite_association_matches_api": true
+}

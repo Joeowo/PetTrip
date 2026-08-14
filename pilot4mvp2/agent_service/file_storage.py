@@ -237,7 +237,12 @@ class LocalImageStorage:
         removed = 0
         for directory in (self._input_dir, self._generated_dir):
             for path in directory.iterdir():
-                if not path.is_file() or path.name.startswith("."):
+                if not path.is_file():
+                    continue
+                if path.name.startswith("."):
+                    if path.name.startswith(".file_") and path.name.endswith(".tmp"):
+                        path.unlink()
+                        removed += 1
                     continue
                 rel_path = path.relative_to(self._data_dir).as_posix()
                 if rel_path not in tracked_rel_paths:

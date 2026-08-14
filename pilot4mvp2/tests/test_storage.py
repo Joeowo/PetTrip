@@ -83,6 +83,24 @@ def test_run_lifecycle_records_messages_and_events(tmp_path: Path) -> None:
         storage.close()
 
 
+def test_success_completion_rejects_run_that_is_not_running(tmp_path: Path) -> None:
+    storage = Storage(tmp_path / "agent.db", recover=False)
+    try:
+        client_id, run_id = _create_queued_run(storage)
+
+        with pytest.raises(RuntimeError, match="running"):
+            storage.complete_run_success(run_id, assistant_text="不应提交")
+
+        run = storage.get_run(run_id, client_id)
+        assert run is not None and run["status"] == "queued"
+        assert storage._conn.execute(
+            "SELECT COUNT(*) FROM messages WHERE run_id = ? AND role = 'assistant'",
+            (run_id,),
+        ).fetchone()[0] == 0
+    finally:
+        storage.close()
+
+
 def test_recovery_fails_running_run_and_keeps_queued(tmp_path: Path) -> None:
     db_path = tmp_path / "agent.db"
     storage = Storage(db_path, recover=False)
