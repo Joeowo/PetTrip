@@ -58,7 +58,7 @@ def test_passed_session5_validation_is_published(
 def test_session5_evidence_scan_accepts_redacted_markers(tmp_path: Path) -> None:
     evidence = tmp_path / "deployment-config.redacted.txt"
     evidence.write_text(
-        "CHAT_API_KEY=<redacted>\nIMAGE_API_KEY=<redacted>\n"
+        "CHAT_API_KEY=<redacted>\nIMAGES_API_KEY=<redacted>\n"
         "PILOT_API_KEY=<ephemeral>\n",
         encoding="utf-8",
     )

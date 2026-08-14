@@ -119,25 +119,17 @@ def _local_env() -> dict[str, str]:
             if line and not line.startswith("#") and "=" in line:
                 key, value = line.split("=", 1)
                 values[key.strip()] = value.strip().strip('"').strip("'")
-    aliases = {
-        "IMAGES_BASE_URL": "IMAGE_BASE_URL",
-        "IMAGES_API_KEY": "IMAGE_API_KEY",
-        "IMAGES_MODEL": "IMAGE_MODEL",
-    }
-    for old_key, new_key in aliases.items():
-        if values.get(old_key) and not values.get(new_key):
-            values[new_key] = values[old_key]
     return values
 
 
 def _resolved_settings(local_env: dict[str, str], pilot_key: str) -> Settings:
     overrides = {**local_env, "PILOT_API_KEY": pilot_key}
-    overrides.setdefault("IMAGE_MODEL", EXPECTED_IMAGE_MODEL)
+    overrides.setdefault("IMAGES_MODEL", EXPECTED_IMAGE_MODEL)
     settings = load_settings(overrides=overrides)
     if not settings.image_base_url or not settings.image_api_key:
         raise ConfigurationError("缺少可用的 Image Provider 配置。")
     if settings.image_model != EXPECTED_IMAGE_MODEL:
-        raise ConfigurationError("真实验收的 IMAGE_MODEL 必须为 gpt-image-2。")
+        raise ConfigurationError("真实验收的 IMAGES_MODEL 必须为 gpt-image-2。")
     return settings
 
 
@@ -183,9 +175,9 @@ def _start_live_server(
             "CHAT_MODEL": settings.chat_model,
             "CHAT_TEMPERATURE": "0",
             "CHAT_MAX_TOKENS": "512",
-            "IMAGE_BASE_URL": settings.image_base_url,
-            "IMAGE_API_KEY": settings.image_api_key,
-            "IMAGE_MODEL": EXPECTED_IMAGE_MODEL,
+            "IMAGES_BASE_URL": settings.image_base_url,
+            "IMAGES_API_KEY": settings.image_api_key,
+            "IMAGES_MODEL": EXPECTED_IMAGE_MODEL,
             "IMAGE_GENERATION_PATH": settings.image_generation_path,
             "IMAGE_CANVAS_WIDTH": str(TARGET_SIZE[0]),
             "IMAGE_CANVAS_HEIGHT": str(TARGET_SIZE[1]),
@@ -780,8 +772,8 @@ def main() -> int:
         (staging_root / "deployment-config.redacted.txt").write_text(
             "HOST=<local>\nPORT=<local>\nCHAT_BASE_URL=<redacted>\n"
             "CHAT_API_KEY=<redacted>\nCHAT_MODEL=<redacted>\n"
-            "IMAGE_BASE_URL=<redacted>\nIMAGE_API_KEY=<redacted>\n"
-            f"IMAGE_MODEL={EXPECTED_IMAGE_MODEL}\n"
+            "IMAGES_BASE_URL=<redacted>\nIMAGES_API_KEY=<redacted>\n"
+            f"IMAGES_MODEL={EXPECTED_IMAGE_MODEL}\n"
             "IMAGE_GENERATION_PATH=/images/generations\n"
             "IMAGE_CANVAS_WIDTH=64\nIMAGE_CANVAS_HEIGHT=48\n"
             "PILOT_API_KEY=<ephemeral>\n",

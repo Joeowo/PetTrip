@@ -1,0 +1,82 @@
+{
+  "schema_version": "1.1",
+  "session": 7,
+  "scope": "remote_agent_api",
+  "producer": "pettrip_session7_powershell_client",
+  "operator_attested_external_device": true,
+  "executed_at_utc": "2026-08-14T12:08:30.1212993Z",
+  "remote_client_sha256": "a9ffc1dec9521e227a5bca36bd7317e3d7fae2694a90c1b55b2e67e312070b2e",
+  "public_transport": {
+    "scheme": "https",
+    "base_url_sha256": "a673d785a1d23ac060b18dba23a8af1274d49544ecea094891a65ec19cf70ccc",
+    "tls_validation_enabled": true,
+    "redirects_followed": false
+  },
+  "authentication": {
+    "missing_key": {
+      "http_status": 401,
+      "error_code": "AUTHENTICATION_FAILED",
+      "request_id": "req_01M002R2VH7BJQ1PT29X4N8VFF"
+    },
+    "wrong_key": {
+      "http_status": 401,
+      "error_code": "AUTHENTICATION_FAILED",
+      "request_id": "req_01M002R2Z4ETTCXTMB42TCVCK4"
+    }
+  },
+  "session_request": {
+    "http_status": 201,
+    "session_id": "session_01M002R32RWTH1NH2KDQXBG0TB",
+    "request_id": "req_01M002R32RDW283SBDV3JAJBAM"
+  },
+  "upload": {
+    "http_status": 201,
+    "file_id": "file_01M002R39FKESN5HF7VSQHV4V8",
+    "request_id": "req_01M002R39EVJW3NGHNYFYFRDW2",
+    "mime_type": "image/png",
+    "width": 128,
+    "height": 64,
+    "size_bytes": 374,
+    "sha256": "e5945187a0386e9b64d9d7821fbc5cb70a658e97524c80d64f9941ad12357809"
+  },
+  "run": {
+    "create_http_status": 202,
+    "run_id": "run_01M002R48BKFTDQSGN7V842VZ3",
+    "create_request_id": "req_01M002R48AYA4TVGEKKRR7ZTZ4",
+    "statuses_observed": [
+      "queued",
+      "running",
+      "succeeded"
+    ],
+    "terminal_status": "succeeded",
+    "terminal_request_id": "req_01M002R7SJ98R05HKV3FEKCTCJ",
+    "vision_answer": {
+      "left": "red",
+      "right": "blue"
+    }
+  },
+  "download": {
+    "http_status": 200,
+    "sha256": "e5945187a0386e9b64d9d7821fbc5cb70a658e97524c80d64f9941ad12357809",
+    "matches_source": true,
+    "matches_metadata": true
+  },
+  "errors": {
+    "missing_idempotency_key": {
+      "http_status": 400,
+      "error_code": "VALIDATION_ERROR",
+      "request_id": "req_01M002R3F117R96KMHPGW5H5A4"
+    },
+    "missing_resource": {
+      "http_status": 404,
+      "error_code": "RESOURCE_NOT_FOUND",
+      "request_id": "req_01M002R3J888MMPVC1S8T3CFZC"
+    },
+    "unauthorized_download": {
+      "http_status": 401,
+      "error_code": "AUTHENTICATION_FAILED",
+      "request_id": "req_01M002R3WQH0GB4VWYAHKDR9S9"
+    }
+  },
+  "remote_api_scope_passed": true
+}

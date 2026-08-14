@@ -42,14 +42,6 @@ def _local_env() -> dict[str, str]:
             if line and not line.startswith("#") and "=" in line:
                 key, value = line.split("=", 1)
                 values[key.strip()] = value.strip().strip('"').strip("'")
-    aliases = {
-        "IMAGES_BASE_URL": "IMAGE_BASE_URL",
-        "IMAGES_API_KEY": "IMAGE_API_KEY",
-        "IMAGES_MODEL": "IMAGE_MODEL",
-    }
-    for old_key, new_key in aliases.items():
-        if values.get(old_key) and not values.get(new_key):
-            values[new_key] = values[old_key]
     return values
 
 
@@ -137,7 +129,7 @@ def _start_server(
             "PILOT_API_KEY": pilot_key,
             "DATA_DIR": str(runtime_root),
             "DB_PATH": str(runtime_root / "agent.db"),
-            "IMAGE_MODEL": EXPECTED_IMAGE_MODEL,
+            "IMAGES_MODEL": EXPECTED_IMAGE_MODEL,
             "IMAGE_GENERATION_PATH": image_generation_path,
             "IMAGE_CANVAS_WIDTH": str(TARGET_SIZE[0]),
             "IMAGE_CANVAS_HEIGHT": str(TARGET_SIZE[1]),
@@ -310,20 +302,20 @@ def _run_image_case(
 
 def main() -> int:
     local_env = _local_env()
-    if not local_env.get("IMAGE_API_KEY") or not local_env.get("IMAGE_BASE_URL"):
-        print("未执行真实验收：缺少 IMAGE_BASE_URL 或 IMAGE_API_KEY。", file=sys.stderr)
+    if not local_env.get("IMAGES_API_KEY") or not local_env.get("IMAGES_BASE_URL"):
+        print("未执行真实验收：缺少 IMAGES_BASE_URL 或 IMAGES_API_KEY。", file=sys.stderr)
         return 2
     try:
         settings = load_settings(
             overrides={
                 **local_env,
-                "IMAGE_MODEL": EXPECTED_IMAGE_MODEL,
+                "IMAGES_MODEL": EXPECTED_IMAGE_MODEL,
                 "PILOT_API_KEY": secrets.token_urlsafe(32),
             }
         )
         if settings.image_model != EXPECTED_IMAGE_MODEL:
             raise ConfigurationError(
-                "真实验收的 IMAGE_MODEL 未解析为 gpt-image-2。"
+                "真实验收的 IMAGES_MODEL 未解析为 gpt-image-2。"
             )
     except ConfigurationError as exc:
         print(f"未执行真实验收：{exc}", file=sys.stderr)
@@ -431,8 +423,8 @@ def main() -> int:
             },
         )
         (staging_root / "deployment-config.redacted.txt").write_text(
-            "HOST=<local>\nPORT=<local>\nIMAGE_BASE_URL=<redacted>\n"
-            f"IMAGE_API_KEY=<redacted>\nIMAGE_MODEL={settings.image_model}\n"
+            "HOST=<local>\nPORT=<local>\nIMAGES_BASE_URL=<redacted>\n"
+            f"IMAGES_API_KEY=<redacted>\nIMAGES_MODEL={settings.image_model}\n"
             "IMAGE_GENERATION_PATH=/images/generations\n"
             "IMAGE_CANVAS_WIDTH=64\nIMAGE_CANVAS_HEIGHT=48\n"
             "PILOT_API_KEY=<ephemeral>\n",
@@ -454,7 +446,7 @@ def main() -> int:
         _scan_evidence(
             staging_root,
             [
-                local_env.get("IMAGE_API_KEY", ""),
+                local_env.get("IMAGES_API_KEY", ""),
                 local_env.get("CHAT_API_KEY", ""),
                 settings.pilot_api_key,
             ],

@@ -81,6 +81,13 @@ def load_settings(
     if missing:
         raise ConfigurationError(f"缺少必要服务配置：{', '.join(missing)}")
 
+    explicit_images_base_url = env.get("IMAGES_BASE_URL", "").strip()
+    explicit_images_api_key = env.get("IMAGES_API_KEY", "").strip()
+    if explicit_images_base_url and not explicit_images_api_key:
+        raise ConfigurationError(
+            "配置 IMAGES_BASE_URL 时必须同时配置 IMAGES_API_KEY。"
+        )
+
     data_dir = PILOT_ROOT / env.get("DATA_DIR", "data")
     db_path = Path(env.get("DB_PATH", str(data_dir / "agent.db")))
     return Settings(
@@ -102,9 +109,9 @@ def load_settings(
         max_upload_bytes=int(env.get("MAX_UPLOAD_BYTES", str(10 * 1024 * 1024))),
         max_image_dimension=int(env.get("MAX_IMAGE_DIMENSION", "4096")),
         max_image_pixels=int(env.get("MAX_IMAGE_PIXELS", "20000000")),
-        image_base_url=env.get("IMAGE_BASE_URL", env.get("CHAT_BASE_URL", "")).rstrip("/"),
-        image_api_key=env.get("IMAGE_API_KEY", env.get("CHAT_API_KEY", "")),
-        image_model=env.get("IMAGE_MODEL", "gpt-image-2"),
+        image_base_url=env.get("IMAGES_BASE_URL", env.get("CHAT_BASE_URL", "")).rstrip("/"),
+        image_api_key=env.get("IMAGES_API_KEY", env.get("CHAT_API_KEY", "")),
+        image_model=env.get("IMAGES_MODEL", "gpt-image-2"),
         image_timeout=float(env.get("IMAGE_TIMEOUT", "120")),
         image_request_size=env.get("IMAGE_REQUEST_SIZE", "1024x1024"),
         image_generation_path=env.get("IMAGE_GENERATION_PATH", "/images/generations"),
