@@ -1,10 +1,12 @@
 {
-  "file_id": "file_01KZY52YYHMV4GW2GRSRXRYPQQ",
+  "file_id": "file_01KZZ0HKBPRVH07JHSNJ9010D1",
   "mime_type": "image/png",
-  "size_bytes": 4973,
-  "sha256": "c4fcc0ede930a15c836ca9a5b09620ae76a5f7d9dc9955a6ecf3123444a03bd3",
+  "size_bytes": 6870,
+  "sha256": "10745a39d901e5383cd9879799fea42aa91c268e6b737650fe2907e7cd76a634",
   "width": 64,
   "height": 48,
   "download_hash_matches": true,
-  "repeat_download_hash_matches": true
+  "repeat_download_hash_matches": true,
+  "saved_copy": "files/generated-image.png",
+  "saved_copy_hash_matches": true
 }

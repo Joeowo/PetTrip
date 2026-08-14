@@ -28,6 +28,7 @@ if str(REPO_ROOT) not in sys.path:
 from pilot4mvp2.agent_service.config import ConfigurationError, load_settings
 
 EVIDENCE_ROOT = PILOT_ROOT / "runs" / "pilot-multimodal-agent-session3-001"
+EXPECTED_IMAGE_MODEL = "gpt-image-2"
 TARGET_SIZE = (64, 48)
 
 
@@ -136,6 +137,7 @@ def _start_server(
             "PILOT_API_KEY": pilot_key,
             "DATA_DIR": str(runtime_root),
             "DB_PATH": str(runtime_root / "agent.db"),
+            "IMAGE_MODEL": EXPECTED_IMAGE_MODEL,
             "IMAGE_GENERATION_PATH": image_generation_path,
             "IMAGE_CANVAS_WIDTH": str(TARGET_SIZE[0]),
             "IMAGE_CANVAS_HEIGHT": str(TARGET_SIZE[1]),
@@ -257,6 +259,15 @@ def _run_image_case(
                 with Image.open(io.BytesIO(first.content)) as image:
                     image_format = image.format
                     image_size = image.size
+                if expected_status == "positive":
+                    copy_path = staging_root / "files" / "generated-image.png"
+                    copy_path.parent.mkdir(parents=True, exist_ok=True)
+                    copy_path.write_bytes(first.content)
+                saved_copy_hash = (
+                    hashlib.sha256(copy_path.read_bytes()).hexdigest()
+                    if expected_status == "positive"
+                    else None
+                )
                 result.update(
                     {
                         "file_id": attachment["file_id"],
@@ -272,6 +283,13 @@ def _run_image_case(
                         ).hexdigest()
                         == attachment["sha256"],
                         "repeat_download_hash_matches": first.content == second.content,
+                        "saved_copy": "files/generated-image.png"
+                        if expected_status == "positive"
+                        else None,
+                        "saved_copy_hash_matches": saved_copy_hash
+                        == attachment["sha256"]
+                        if saved_copy_hash is not None
+                        else None,
                         "pillow_format": image_format,
                         "pillow_size": list(image_size),
                     }
@@ -299,9 +317,14 @@ def main() -> int:
         settings = load_settings(
             overrides={
                 **local_env,
+                "IMAGE_MODEL": EXPECTED_IMAGE_MODEL,
                 "PILOT_API_KEY": secrets.token_urlsafe(32),
             }
         )
+        if settings.image_model != EXPECTED_IMAGE_MODEL:
+            raise ConfigurationError(
+                "真实验收的 IMAGE_MODEL 未解析为 gpt-image-2。"
+            )
     except ConfigurationError as exc:
         print(f"未执行真实验收：{exc}", file=sys.stderr)
         return 2
@@ -344,7 +367,8 @@ def main() -> int:
         validation = {
             "session": 3,
             "passed": (
-                positive["health_status"] == "ok"
+                settings.image_model == EXPECTED_IMAGE_MODEL
+                and positive["health_status"] == "ok"
                 and positive["create_status"] == 202
                 and positive["terminal_status"] == "succeeded"
                 and _has_legal_status_sequence(positive["statuses_observed"])
@@ -354,6 +378,7 @@ def main() -> int:
                 and positive["pillow_size"] == list(TARGET_SIZE)
                 and positive["download_hash_matches"]
                 and positive["repeat_download_hash_matches"]
+                and positive["saved_copy_hash_matches"]
                 and positive["events"] == [
                     "run.queued",
                     "run.started",
@@ -373,7 +398,9 @@ def main() -> int:
                 and negative["generated_files_after_failure"] == 0
             ),
             "provider_protocol": "openai-compatible-images-generations-b64-json",
-            "configured_model": "gpt-image-2",
+            "expected_model": EXPECTED_IMAGE_MODEL,
+            "configured_model": settings.image_model,
+            "model_assertion_passed": settings.image_model == EXPECTED_IMAGE_MODEL,
             "target_canvas": list(TARGET_SIZE),
             "negative_case": "wrong_generation_endpoint",
         }
@@ -398,12 +425,14 @@ def main() -> int:
                     "height",
                     "download_hash_matches",
                     "repeat_download_hash_matches",
+                    "saved_copy",
+                    "saved_copy_hash_matches",
                 )
             },
         )
         (staging_root / "deployment-config.redacted.txt").write_text(
             "HOST=<local>\nPORT=<local>\nIMAGE_BASE_URL=<redacted>\n"
-            "IMAGE_API_KEY=<redacted>\nIMAGE_MODEL=gpt-image-2\n"
+            f"IMAGE_API_KEY=<redacted>\nIMAGE_MODEL={settings.image_model}\n"
             "IMAGE_GENERATION_PATH=/images/generations\n"
             "IMAGE_CANVAS_WIDTH=64\nIMAGE_CANVAS_HEIGHT=48\n"
             "PILOT_API_KEY=<ephemeral>\n",
@@ -415,9 +444,11 @@ def main() -> int:
         )
         (staging_root / "README.md").write_text(
             "# Agent Service 会话 3 验收证据\n\n"
-            "本目录记录真实图片 Provider 返回图片解码、目标画布规范化、鉴权下载、"
-            "重复下载哈希一致和错误端点负例。图片二进制、Base64、API Key、完整鉴权头、"
-            "SQLite 文件、Provider 原始响应和服务端路径均未写入证据。\n",
+            "本目录记录强制使用 gpt-image-2 的真实图片 Provider 调用、目标画布规范化、"
+            "鉴权下载、重复下载哈希一致和错误端点负例。`files/generated-image.png` 是"
+            "客户端通过鉴权下载的规范化 PNG 副本，供人工检查。Provider 原始 Base64、"
+            "API Key、完整鉴权头、SQLite 文件、Provider 原始响应和服务端路径均未写入"
+            "证据。\n",
             encoding="utf-8",
         )
         _scan_evidence(

@@ -2,7 +2,9 @@
   "session": 3,
   "passed": true,
   "provider_protocol": "openai-compatible-images-generations-b64-json",
+  "expected_model": "gpt-image-2",
   "configured_model": "gpt-image-2",
+  "model_assertion_passed": true,
   "target_canvas": [
     64,
     48
