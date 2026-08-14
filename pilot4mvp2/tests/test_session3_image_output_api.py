@@ -98,6 +98,7 @@ def test_image_run_downloads_normalized_png_with_stable_hash(tmp_path: Path) -> 
         assert terminal["status"] == "succeeded"
         assert "output" in terminal
         assert "text" not in terminal["output"]
+        assert "structured_data" not in terminal["output"]
         attachment = terminal["output"]["attachments"][0]
         assert attachment["source"] == "agent_generated"
         assert attachment["purpose"] == "generated_image"

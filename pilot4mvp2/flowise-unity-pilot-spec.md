@@ -141,6 +141,18 @@ Chat Completions API。模型名称必须保持配置化；文档或代码中的
 默认图片 Provider。该结论只覆盖图片生成，不代表 `5202828.xyz` 的 Chat、Vision、
 Responses 或结构化输出能力已经通过验证。
 
+### 3.4 已验证的结构化输出基线
+
+截至 2026-08-14，当前 Chat Provider 已实测支持
+`POST /v1/chat/completions + response_format(json_object)`。Provider 返回 JSON
+字符串后，服务端仍独立执行版本注册表查找、JSON 解析、JSON Schema 校验和固定 DTO
+校验。
+
+当前网关的 `response_format(json_schema)` 探针在 60 秒内未返回，不能宣称原生严格 Schema
+模式可用。首版把注册的 Schema 作为系统指令发送给模型，并使用 `json_object` 约束响应
+格式。模型或网关约束不能替代服务端复验；只有服务端校验通过的数据才能持久化并进入 API
+响应。
+
 ## 4. Agent 内核
 
 Pilot 内核是一个受约束的多模态 Chatbot，不要求实现通用自主 Agent。它读取历史消息和
@@ -268,6 +280,8 @@ JSON 解析
 ```
 
 模型输出 Markdown 代码块或未经校验的 JSON 不得直接作为结构化输出发送给客户端。
+客户端必须从专用 `output.structured_data` 字段读取结果，并使用版本对应的固定 DTO 校验；
+即使 `output.text` 包含可解析 JSON，也不得将其转换为结构化结果。
 
 ## 6. 异步 Run 与事件
 
@@ -640,6 +654,12 @@ Provider 负例进入 `failed`，且不会留下可下载的部分文件。
 通过条件：合法结果完整返回；非法结果进入 `failed`，错误码为
 `STRUCTURED_OUTPUT_INVALID`；客户端不从文本中提取 JSON。
 
+截至 2026-08-14，本会话已经通过。真实 Chat Provider 正例返回 `scene_draft` `0.1`，
+Run 和助手消息在 SQLite 中保存与 API 一致的结构化对象。缺少 `title` 和错误 `type`
+通过本地 OpenAI-compatible 受控 Provider 注入，不支持版本在 Provider 调用前失败；三个
+负例均未提交助手消息。脱敏证据保存在
+`runs/pilot-multimodal-agent-session4-001/`。
+
 ### 会话 5：组合输出
 
 本会话证明一次 Run 可以同时返回文本、结构化数据和图片。
@@ -742,8 +762,9 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 开始实现前，需要锁定以下外部配置，但密钥不得写入仓库或聊天：
 
 - 单独探测 Chat/Vision 中转站的 Base URL、模型 ID 和 API 兼容形态。
-- 单独探测结构化输出模型支持 `/v1/responses`，还是支持
-  `/v1/chat/completions + response_format(json_schema)`。
+- 结构化输出使用已验证的
+  `/v1/chat/completions + response_format(json_object)`，并由服务端执行版本注册和 Schema
+  复验；当前不得配置为尚未验证可用的 `response_format(json_schema)`。
 - 使用已验证的 `IMAGE_BASE_URL=https://5202828.xyz/v1`、
   `IMAGE_MODEL=gpt-image-2` 和 `/images/generations` 路径。
 - 将 `IMAGE_API_KEY` 通过服务端环境变量注入，不写入仓库、日志或证据。

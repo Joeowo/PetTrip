@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class InputAttachment(BaseModel):
@@ -25,12 +25,24 @@ class TextInput(BaseModel):
     attachments: list[InputAttachment] = Field(default_factory=list, max_length=4)
 
 
-class TextResponseFormat(BaseModel):
-    """声明本次 Run 需要的文本和/或图片输出。"""
+class StructuredOutputFormat(BaseModel):
+    """用名称和版本定位一次结构化输出请求。"""
 
     model_config = ConfigDict(extra="forbid")
 
-    modalities: list[Literal["text", "image"]] = Field(min_length=1, max_length=2)
+    schema_name: str = Field(min_length=1)
+    schema_version: str = Field(min_length=1)
+
+
+class TextResponseFormat(BaseModel):
+    """声明本次 Run 需要的输出模态及可选结构化 Schema。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    modalities: list[Literal["text", "structured_data", "image"]] = Field(
+        min_length=1, max_length=3
+    )
+    structured_output: StructuredOutputFormat | None = None
 
     def is_text_only(self) -> bool:
         return self.modalities == ["text"]
@@ -40,6 +52,18 @@ class TextResponseFormat(BaseModel):
 
     def wants_text(self) -> bool:
         return "text" in self.modalities
+
+    def wants_structured_data(self) -> bool:
+        return "structured_data" in self.modalities
+
+    @model_validator(mode="after")
+    def require_matching_structured_output(self) -> "TextResponseFormat":
+        wants_structured = self.wants_structured_data()
+        if wants_structured != (self.structured_output is not None):
+            raise ValueError(
+                "structured_data 模态和 structured_output 必须同时提供。"
+            )
+        return self
 
 
 class CreateRunRequest(BaseModel):

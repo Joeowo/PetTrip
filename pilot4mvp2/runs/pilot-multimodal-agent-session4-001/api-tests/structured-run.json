@@ -1,0 +1,29 @@
+{
+  "provider": "real_chat_provider",
+  "provider_configuration_sha256": "0605d3088571813b9c0e5b5415259c9f941dda55a42e91fabc3c2a1a6f10585e",
+  "schema_name": "scene_draft",
+  "schema_version": "0.1",
+  "statuses_observed": [
+    "queued",
+    "running",
+    "succeeded"
+  ],
+  "terminal_status": "succeeded",
+  "events": [
+    "run.queued",
+    "run.started",
+    "message.created",
+    "run.completed"
+  ],
+  "fixed_dto_valid": true,
+  "structured_data": {
+    "type": "scene_draft",
+    "schema_version": "0.1",
+    "title": "PetTrip 海边旅行",
+    "theme": "宠物与主人共享阳光海岸假期",
+    "summary": "主人带着宠物沿海边步道旅行，在沙滩上追逐浪花、搭建遮阳帐篷，并于傍晚在灯塔旁欣赏日落，营造轻松温暖且充满陪伴感的度假场景。",
+    "landmark_kind": "海边灯塔"
+  },
+  "text_field_present": false,
+  "sqlite_and_message_match_api": true
+}

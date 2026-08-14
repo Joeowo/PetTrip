@@ -260,7 +260,9 @@ class Storage:
                 run_id,
                 role,
                 content_text,
-                json.dumps(structured_data, ensure_ascii=False) if structured_data else None,
+                json.dumps(structured_data, ensure_ascii=False)
+                if structured_data is not None
+                else None,
                 utcnow_iso(),
             ),
         )
@@ -553,18 +555,13 @@ class Storage:
             self._insert_event(
                 conn, run_id=run_id, event_type="message.created", payload={"role": "assistant"}
             )
-            output_attachment = (
-                {"file_id": output_file["id"]} if output_file is not None else None
-            )
             conn.execute(
                 "UPDATE runs SET status = 'succeeded', output_text = ?, "
                 "output_structured = ?, completed_at = ? WHERE id = ? AND status = 'running'",
                 (
                     assistant_text,
-                    json.dumps(output_attachment, ensure_ascii=False)
-                    if output_attachment
-                    else json.dumps(structured_data, ensure_ascii=False)
-                    if structured_data
+                    json.dumps(structured_data, ensure_ascii=False)
+                    if structured_data is not None
                     else None,
                     now,
                     run_id,

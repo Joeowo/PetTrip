@@ -83,6 +83,12 @@ def _run_response(
         output: dict[str, Any] = {}
         if run["output_text"] is not None:
             output["text"] = run["output_text"]
+        requested_modalities = json.loads(run["response_format"]).get("modalities", [])
+        if (
+            "structured_data" in requested_modalities
+            and run["output_structured"] is not None
+        ):
+            output["structured_data"] = json.loads(run["output_structured"])
         if output_files:
             output["attachments"] = [
                 {

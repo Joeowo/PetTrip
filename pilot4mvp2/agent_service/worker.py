@@ -8,7 +8,12 @@ import logging
 from contextlib import suppress
 
 from .chat_provider import ChatMessage, ChatModelProvider, ChatProviderError, VisionImage
-from .errors import CHAT_PROVIDER_UNAVAILABLE, IMAGE_PROVIDER_UNAVAILABLE, INTERNAL_ERROR
+from .errors import (
+    CHAT_PROVIDER_UNAVAILABLE,
+    IMAGE_PROVIDER_UNAVAILABLE,
+    INTERNAL_ERROR,
+    STRUCTURED_OUTPUT_INVALID,
+)
 from .file_storage import LocalFileIntegrityError, LocalImageStorage
 from .ids import new_id
 from .image_provider import (
@@ -17,6 +22,7 @@ from .image_provider import (
     ImageProviderError,
 )
 from .storage import Storage
+from .structured_output import StructuredOutputInvalid, StructuredOutputRegistry
 
 LOGGER = logging.getLogger("uvicorn.error")
 
@@ -43,6 +49,7 @@ class RunWorker:
         self._image_canvas_width = image_canvas_width
         self._image_canvas_height = image_canvas_height
         self._image_max_pixels = image_max_pixels
+        self._structured_outputs = StructuredOutputRegistry()
         self._poll_interval = poll_interval
         self._task: asyncio.Task[None] | None = None
         self._stopping = asyncio.Event()
@@ -67,18 +74,69 @@ class RunWorker:
             return False
 
         request_id = new_id("req")
-        modalities = json.loads(run["response_format"]).get("modalities", [])
+        response_format = json.loads(run["response_format"])
+        modalities = response_format.get("modalities", [])
         wants_text = "text" in modalities
+        wants_structured = "structured_data" in modalities
         wants_image = "image" in modalities
         assistant_text: str | None = None
+        structured_data: dict[str, object] | None = None
         output_file: dict[str, object] | None = None
         generated_rel_path: str | None = None
+        failure_stage = "internal"
         try:
-            if wants_text:
+            structured_request = None
+            if wants_structured:
+                structured_format = response_format.get("structured_output")
+                if not isinstance(structured_format, dict):
+                    raise StructuredOutputInvalid("缺少结构化输出 Schema。")
+                structured_request = self._structured_outputs.request_for(
+                    schema_name=structured_format.get("schema_name", ""),
+                    schema_version=structured_format.get("schema_version", ""),
+                )
+
+            messages: list[ChatMessage] | None = None
+            if wants_structured:
                 messages = await self._build_chat_messages(run)
+                failure_stage = "chat"
+                raw_structured = await self._provider.complete_structured(
+                    messages, structured_request
+                )
+                failure_stage = "internal"
+                structured_data = self._structured_outputs.parse_and_validate(
+                    raw_structured,
+                    schema_name=structured_request.schema_name,
+                    schema_version=structured_request.schema_version,
+                )
+                if wants_text:
+                    structured_context = json.dumps(
+                        structured_data,
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                        sort_keys=True,
+                    )
+                    text_messages = [
+                        *messages,
+                        ChatMessage(role="assistant", content=structured_context),
+                        ChatMessage(
+                            role="user",
+                            content=(
+                                "请只用简短自然语言，基于上面的已校验结构化结果"
+                                "回答最初请求；不要返回 JSON。"
+                            ),
+                        ),
+                    ]
+                    failure_stage = "chat"
+                    assistant_text = await self._provider.complete(text_messages)
+                    failure_stage = "internal"
+            elif wants_text:
+                messages = await self._build_chat_messages(run)
+                failure_stage = "chat"
                 assistant_text = await self._provider.complete(messages)
+                failure_stage = "internal"
 
             if wants_image:
+                failure_stage = "image"
                 if self._image_provider is None or self._file_storage is None:
                     raise ImageProviderError("图片生成服务暂时不可用。")
                 self._storage.add_event(
@@ -111,10 +169,24 @@ class RunWorker:
                     "rel_path": stored.rel_path,
                 }
 
+            failure_stage = "internal"
             self._storage.complete_run_success(
                 run["id"],
                 assistant_text=assistant_text,
+                structured_data=structured_data,
                 output_file=output_file,
+            )
+        except StructuredOutputInvalid:
+            LOGGER.warning(
+                "structured_output_invalid request_id=%s run_id=%s",
+                request_id,
+                run["id"],
+            )
+            self._delete_generated(generated_rel_path)
+            self._storage.mark_run_failed(
+                run["id"],
+                error_code=STRUCTURED_OUTPUT_INVALID,
+                error_message="结构化输出不符合请求的 Schema。",
             )
         except LocalFileIntegrityError:
             LOGGER.error(
@@ -160,12 +232,15 @@ class RunWorker:
                 type(exc).__name__,
             )
             self._delete_generated(generated_rel_path)
-            error_code = IMAGE_PROVIDER_UNAVAILABLE if wants_image else CHAT_PROVIDER_UNAVAILABLE
-            error_message = (
-                "图片生成服务暂时不可用。"
-                if wants_image
-                else "文本模型服务暂时不可用。"
-            )
+            if failure_stage == "chat":
+                error_code = CHAT_PROVIDER_UNAVAILABLE
+                error_message = "文本模型服务暂时不可用。"
+            elif failure_stage == "image":
+                error_code = IMAGE_PROVIDER_UNAVAILABLE
+                error_message = "图片生成服务暂时不可用。"
+            else:
+                error_code = INTERNAL_ERROR
+                error_message = "服务端内部错误。"
             self._storage.mark_run_failed(
                 run["id"], error_code=error_code, error_message=error_message
             )
@@ -197,10 +272,23 @@ class RunWorker:
                         VisionImage(mime_type=file_row["mime_type"], data=data)
                     )
                 images = tuple(loaded_images)
+            content_parts: list[str] = []
+            if row["content_text"]:
+                content_parts.append(row["content_text"])
+            if row["structured_data"]:
+                structured_data = json.loads(row["structured_data"])
+                content_parts.append(
+                    json.dumps(
+                        structured_data,
+                        ensure_ascii=False,
+                        separators=(",", ":"),
+                        sort_keys=True,
+                    )
+                )
             messages.append(
                 ChatMessage(
                     role=row["role"],
-                    content=row["content_text"] or "",
+                    content="\n".join(content_parts),
                     images=images,
                 )
             )

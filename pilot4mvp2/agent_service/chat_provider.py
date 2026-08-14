@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import json
 from dataclasses import dataclass
 from typing import Any, Protocol
 
 import httpx
+
+from .structured_output import StructuredOutputRequest
 
 
 class ChatProviderError(RuntimeError):
@@ -28,9 +31,13 @@ class ChatMessage:
 
 
 class ChatModelProvider(Protocol):
-    """隔离外部 Chat Provider 的最小接口。"""
+    """隔离外部 Chat Provider 的文本与结构化完成接口。"""
 
     async def complete(self, messages: list[ChatMessage]) -> str: ...
+
+    async def complete_structured(
+        self, messages: list[ChatMessage], request: StructuredOutputRequest
+    ) -> str: ...
 
 
 class OpenAICompatibleChatProvider:
@@ -71,6 +78,37 @@ class OpenAICompatibleChatProvider:
         return {"role": message.role, "content": content}
 
     async def complete(self, messages: list[ChatMessage]) -> str:
+        return await self._complete(messages)
+
+    async def complete_structured(
+        self, messages: list[ChatMessage], request: StructuredOutputRequest
+    ) -> str:
+        schema_json = await asyncio.to_thread(
+            json.dumps,
+            request.json_schema,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            sort_keys=True,
+        )
+        instruction = ChatMessage(
+            role="system",
+            content=(
+                "只返回一个 JSON 对象，不要返回 Markdown 或说明文字。"
+                f"schema_name={request.schema_name};"
+                f'\"schema_version\":\"{request.schema_version}\";'
+                f"对象必须严格符合此 JSON Schema：{schema_json}"
+            ),
+        )
+        return await self._complete(
+            [instruction, *messages], response_format={"type": "json_object"}
+        )
+
+    async def _complete(
+        self,
+        messages: list[ChatMessage],
+        *,
+        response_format: dict[str, Any] | None = None,
+    ) -> str:
         encoded_messages = await asyncio.to_thread(
             lambda: [self._message_payload(message) for message in messages]
         )
@@ -80,6 +118,8 @@ class OpenAICompatibleChatProvider:
             "temperature": self._temperature,
             "max_tokens": self._max_tokens,
         }
+        if response_format is not None:
+            payload["response_format"] = response_format
         try:
             async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
                 response = await client.post(
