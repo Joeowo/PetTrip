@@ -147,24 +147,31 @@ def query_sqlite(query: str, params: tuple) -> list[dict]:
         return [dict(row) for row in connection.execute(query, params).fetchall()]
 
 
-def verify_or_init_database() -> dict | None:
-    """既有库验证可查询；没有库时借 RunStore 建表初始化。返回 None 表示验证失败。"""
-    if DB_PATH.exists():
-        try:
-            with sqlite3.connect(DB_PATH) as connection:
-                for table in ("job_events", "validation_reports"):
-                    connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
-            return {
-                "status": "existing-verified",
-                "job_events_rows": query_sqlite("SELECT COUNT(*) AS n FROM job_events", ())[0]["n"],
-                "validation_reports_rows": query_sqlite("SELECT COUNT(*) AS n FROM validation_reports", ())[0]["n"],
-            }
-        except sqlite3.Error:
-            return None
-    from content_service.run_store import RunStore
+def verify_existing_database(db_path: Path) -> dict | None:
+    """验收既有 SQLite：必须存在且可查询；缺失不是可自动补的项。
 
-    RunStore(RUNS_DIR, DB_PATH)  # 首次初始化建表（幂等 CREATE IF NOT EXISTS）
-    return {"status": "initialized", "job_events_rows": 0, "validation_reports_rows": 0}
+    返回 None 表示不满足前置条件（缺失或不可查询）——按规格应申请用户
+    提供并停止，编排器据此退出，不做任何静默初始化。
+    """
+    if not db_path.is_file():
+        return None
+    try:
+        with sqlite3.connect(db_path) as connection:
+            for table in ("job_events", "validation_reports"):
+                connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
+        with sqlite3.connect(db_path) as connection:
+            connection.row_factory = sqlite3.Row
+            rows = connection.execute("SELECT COUNT(*) AS n FROM job_events").fetchone()
+            events = int(rows["n"])
+            rows = connection.execute("SELECT COUNT(*) AS n FROM validation_reports").fetchone()
+            reports = int(rows["n"])
+        return {
+            "status": "existing-verified",
+            "job_events_rows": events,
+            "validation_reports_rows": reports,
+        }
+    except sqlite3.Error:
+        return None
 
 
 def require(condition: bool, message: str) -> None:
@@ -194,11 +201,15 @@ def main() -> int:
         print(f"    失败: {HOST}:{PORT} 已被占用, 可能有残留服务, 请先释放端口", file=sys.stderr)
         return 5
 
-    # 前置验收 SQLite：存在则必须可查询（历史记录保留，本次只追加）；不存在则首次初始化。
-    # 不删除既有数据库，也不删除任何历史 run 目录。
-    db_state = verify_or_init_database()
+    # 前置验收 SQLite：必须已存在且可查询（缺项按规格申请用户提供并停止，
+    # 不静默初始化）。既有记录保留，本次只追加；不删除任何历史 run 目录。
+    db_state = verify_existing_database(DB_PATH)
     if db_state is None:
-        print("    失败: 既有 SQLite 数据库存在但不可查询", file=sys.stderr)
+        print(
+            "    缺项: SQLite 数据库不存在或不可查询: " + str(DB_PATH) + "\n"
+            "    请提供既有数据库（例如先运行一次基础建库步骤），得到用户明确答复前停止。",
+            file=sys.stderr,
+        )
         return 10
     print(f"    SQLite {db_state['status']}: job_events={db_state['job_events_rows']}"
           f" validation_reports={db_state['validation_reports_rows']} (既有记录保留, 仅追加)")

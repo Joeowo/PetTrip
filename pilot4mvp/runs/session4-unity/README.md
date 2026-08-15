@@ -8,7 +8,7 @@
 
 ```
 阶段一（服务 A，统一输入与交互）:
-前置: 既有 SQLite 验证可查询（existing-verified，历史记录保留）或首次初始化；
+前置: 既有 SQLite 必须已存在且可查询（缺失即打印缺项并停止，不静默初始化）；
       源 run 必须携带既有成功 Snapshot（缺失即停止）
 统一输入 POST /runs (run_id + 输入) -> input.json + job.accepted (SQLite + events.jsonl)
     -> 复制源 scene-snapshot.json 为 source-scene-snapshot.json（基线）
@@ -56,7 +56,7 @@ Unity: 重放快照原样恢复小窝 -> 重放截图
 | 报告回传 + SQLite | 报告显式 `run_id`，四方直接交叉核验 | run 目录 `unity-report.json`（含 `run_id`）、`screenshots/`、SQLite |
 | 重启重放 | `business_fields_match: true`，`model_calls: none` | `content-service-replay.log`、SQLite `job.replayed` |
 | 重放加载 | PlayMode 1/1 Passed，小窝恢复 | `playmode-replay-results.xml`、`unity-replay-screenshot.png` |
-| 回归 | EditMode 14/14；session2 18、session3 54、session4 35 pytest | 各自测试目录 |
+| 回归 | EditMode 14/14；session2 18、session3 54、session4 38 pytest | 各自测试目录 |
 
 ## 文件
 

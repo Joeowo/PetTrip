@@ -22,6 +22,7 @@ from .snapshot_builder import (
     plan_scene,
     sha256_bytes,
     validate_snapshot,
+    validate_snapshot_dict,
 )
 
 PLACEMENT_NAME = "placement.json"
@@ -91,6 +92,8 @@ def materialize_run(store: RunStore, run_id: str) -> dict:
     if baseline_path.is_file():
         try:
             baseline = SceneSnapshot.model_validate_json(baseline_path.read_text(encoding="utf-8"))
+            # 基线除可解析外，还必须通过其自身版本的 JSON Schema 契约校验
+            validate_snapshot_dict(baseline.model_dump(mode="json", exclude_none=True))
         except Exception as exc:  # noqa: BLE001
             raise ReplayError("source snapshot failed validation: " + str(exc)) from exc
         if not business_fields_equal(baseline, snapshot):

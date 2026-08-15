@@ -192,9 +192,10 @@ v2 放置、报告回传与重启离线重放（`ALL_CHECKS_PASSED`；review 修
   SQLite `job.accepted`；随后仅从源 run artifact（world-spec + scene-plan +
   assets）确定性物化 Snapshot，全程零模型调用。缺输入负例返回 `422` 且不创建
   运行目录（编排内实测）。
-- SQLite 前置验收与保留：编排启动即验证数据库——存在则必须可查询（历史记录
-  全部保留，本次只追加）；不存在则首次初始化。复跑实证追加语义：第二次编排
-  开场 `existing-verified`（`job_events=4`，含前次记录），结束 `6`。
+- SQLite 前置验收与保留：编排启动即验证数据库——必须已存在且可查询（缺失或
+  不可查询即打印缺项并以非零码停止，申请用户提供，不做任何静默初始化）；
+  通过后历史记录全部保留，本次只追加。复跑实证追加语义：第二次编排开场
+  `existing-verified`（`job_events=4`，含前次记录），结束 `6`。
 - Unity 运行时：宠物区内移动被接受、活动区外目标被拒绝且位置不变；`pet_wave`
   可触发；`PlacePrefab` 仅接受槽位 `allowed_prefabs` 内的 Prefab（`rocket` 被
   拒绝），行为全部由 Snapshot 字段驱动。
@@ -211,8 +212,9 @@ v2 放置、报告回传与重启离线重放（`ALL_CHECKS_PASSED`；review 修
   `IMAGES_*` 变量），`POST /runs/{id}/replay` 仅从既有 artifact 重建 v2 并写入
   `job.replayed`；SQLite 事件序列恰为 `job.accepted` + `job.replayed`，事件
   明细 `model_calls: none`，服务日志无模型端点痕迹；重放快照哈希与重启前一致。
-- 测试：session4 pytest 35 通过（正例/负例/重启重放/源快照基线 fail-closed/
-  报告 run_id 校验）；Unity EditMode 14/14（含 v0.1 回归）；PlayMode 交互流
+- 测试：session4 pytest 38 通过（正例/负例/重启重放/源快照基线 fail-closed/
+  报告 run_id 校验/SQLite 缺失与损坏前置 fail-fast）；Unity EditMode 14/14
+  （含 v0.1 回归）；PlayMode 交互流
   与重放加载各 1/1 通过；session2（18）与 session3（54）pytest 分目录回归全绿。
 - 证据：`runs/session4-20260815-123037-c247/`（最终 run 全套产物，含
   `source-scene-snapshot.json` 基线）、`runs/session4-20260815-115620-0a9e/` 与

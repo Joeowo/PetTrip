@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "assets": [
+    {
+      "asset_id": "beach_background",
+      "kind": "sprite",
+      "filename": "beach_background.png",
+      "uri": "/assets/beach_background.png",
+      "mime_type": "image/png",
+      "width": 512,
+      "height": 288,
+      "channels": 3,
+      "anchor": {
+        "x": 256.0,
+        "y": 144.0
+      },
+      "sha256": "f5ab89711abb9f0ea3ef6239f766177c88bf4280e7d72e875dc2c17f5cc51355"
+    },
+    {
+      "asset_id": "lighthouse",
+      "kind": "sprite",
+      "filename": "lighthouse.png",
+      "uri": "/assets/lighthouse.png",
+      "mime_type": "image/png",
+      "width": 80,
+      "height": 160,
+      "channels": 4,
+      "anchor": {
+        "x": 112.0,
+        "y": 168.0
+      },
+      "sha256": "7cad8fff2c78d03241ad1988aa41d5b17bae294b4568348f6b8f0ad4c4d90bef"
+    },
+    {
+      "asset_id": "pet",
+      "kind": "sprite",
+      "filename": "pet.png",
+      "uri": "/assets/pet.png",
+      "mime_type": "image/png",
+      "width": 64,
+      "height": 64,
+      "channels": 4,
+      "anchor": {
+        "x": 250.0,
+        "y": 112.0
+      },
+      "sha256": "37f20fed4c9759fa4a10c6079ed9cbcb4ea6b8a00b201f9b32dd64d34f504de8"
+    },
+    {
+      "asset_id": "small_shelter",
+      "kind": "sprite",
+      "filename": "small_shelter.png",
+      "uri": "/assets/small_shelter.png",
+      "mime_type": "image/png",
+      "width": 96,
+      "height": 72,
+      "channels": 4,
+      "anchor": {
+        "x": 430.0,
+        "y": 96.0
+      },
+      "sha256": "22db22cdbd27600fb9e9729f3408000322609bbc97d66fdb99cb8e8612af076b"
+    }
+  ]
+}
