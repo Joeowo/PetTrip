@@ -19,6 +19,7 @@ CHECKS = [
 def _post_valid_report(client: TestClient) -> dict:
     meta = client.get("/snapshot-meta").json()
     body = {
+        "run_id": "session4-test-run",
         "snapshot_sha256": meta["sha256"],
         "checks": CHECKS,
         "screenshot_png_base64": make_png_base64(),
@@ -61,6 +62,7 @@ def test_report_after_v2_uses_v2_hash(accepted_client: TestClient) -> None:
 def test_report_with_stale_hash_rejected(accepted_client: TestClient) -> None:
     meta = accepted_client.get("/snapshot-meta").json()
     body = {
+        "run_id": "session4-test-run",
         "snapshot_sha256": "0" * 64,
         "checks": CHECKS,
         "screenshot_png_base64": make_png_base64(),
@@ -74,6 +76,7 @@ def test_report_with_stale_hash_rejected(accepted_client: TestClient) -> None:
 def test_report_with_invalid_base64_rejected(accepted_client: TestClient) -> None:
     meta = accepted_client.get("/snapshot-meta").json()
     body = {
+        "run_id": "session4-test-run",
         "snapshot_sha256": meta["sha256"],
         "checks": CHECKS,
         "screenshot_png_base64": base64.b64encode(b"not a png").decode("ascii"),
@@ -85,6 +88,7 @@ def test_report_with_invalid_base64_rejected(accepted_client: TestClient) -> Non
 def test_report_for_unknown_run_rejected(accepted_client: TestClient) -> None:
     meta = accepted_client.get("/snapshot-meta").json()
     body = {
+        "run_id": "session4-test-run",
         "snapshot_sha256": meta["sha256"],
         "checks": CHECKS,
         "screenshot_png_base64": make_png_base64(),
@@ -96,6 +100,29 @@ def test_report_missing_checks_rejected(accepted_client: TestClient) -> None:
     meta = accepted_client.get("/snapshot-meta").json()
     body = {
         "snapshot_sha256": meta["sha256"],
+        "screenshot_png_base64": make_png_base64(),
+    }
+    assert accepted_client.post("/runs/session4-test-run/reports", json=body).status_code == 422
+
+
+def test_report_with_mismatched_run_id_rejected(accepted_client: TestClient) -> None:
+    meta = accepted_client.get("/snapshot-meta").json()
+    body = {
+        "run_id": "session4-other-run",
+        "snapshot_sha256": meta["sha256"],
+        "checks": CHECKS,
+        "screenshot_png_base64": make_png_base64(),
+    }
+    response = accepted_client.post("/runs/session4-test-run/reports", json=body)
+    assert response.status_code == 409
+    assert "run_id" in response.json()["detail"]
+
+
+def test_report_run_id_missing_rejected(accepted_client: TestClient) -> None:
+    meta = accepted_client.get("/snapshot-meta").json()
+    body = {
+        "snapshot_sha256": meta["sha256"],
+        "checks": CHECKS,
         "screenshot_png_base64": make_png_base64(),
     }
     assert accepted_client.post("/runs/session4-test-run/reports", json=body).status_code == 422

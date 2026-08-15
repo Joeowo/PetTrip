@@ -147,6 +147,26 @@ def query_sqlite(query: str, params: tuple) -> list[dict]:
         return [dict(row) for row in connection.execute(query, params).fetchall()]
 
 
+def verify_or_init_database() -> dict | None:
+    """既有库验证可查询；没有库时借 RunStore 建表初始化。返回 None 表示验证失败。"""
+    if DB_PATH.exists():
+        try:
+            with sqlite3.connect(DB_PATH) as connection:
+                for table in ("job_events", "validation_reports"):
+                    connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
+            return {
+                "status": "existing-verified",
+                "job_events_rows": query_sqlite("SELECT COUNT(*) AS n FROM job_events", ())[0]["n"],
+                "validation_reports_rows": query_sqlite("SELECT COUNT(*) AS n FROM validation_reports", ())[0]["n"],
+            }
+        except sqlite3.Error:
+            return None
+    from content_service.run_store import RunStore
+
+    RunStore(RUNS_DIR, DB_PATH)  # 首次初始化建表（幂等 CREATE IF NOT EXISTS）
+    return {"status": "initialized", "job_events_rows": 0, "validation_reports_rows": 0}
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         print("    失败: " + message, file=sys.stderr)
@@ -162,6 +182,8 @@ def main() -> int:
     if not source_run_dir.is_absolute():
         source_run_dir = (ROOT / source_run_dir).resolve()
     require((source_run_dir / "content-ready.json").is_file(), "源 run 目录不是 content-ready: " + str(source_run_dir))
+    require((source_run_dir / "scene-snapshot.json").is_file(),
+            "源 run 缺少既有成功 Snapshot (scene-snapshot.json): " + str(source_run_dir))
     require(Path(UNITY_EXE).is_file(), "Unity Editor 不存在: " + UNITY_EXE)
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
@@ -172,18 +194,29 @@ def main() -> int:
         print(f"    失败: {HOST}:{PORT} 已被占用, 可能有残留服务, 请先释放端口", file=sys.stderr)
         return 5
 
+    # 前置验收 SQLite：存在则必须可查询（历史记录保留，本次只追加）；不存在则首次初始化。
+    # 不删除既有数据库，也不删除任何历史 run 目录。
+    db_state = verify_or_init_database()
+    if db_state is None:
+        print("    失败: 既有 SQLite 数据库存在但不可查询", file=sys.stderr)
+        return 10
+    print(f"    SQLite {db_state['status']}: job_events={db_state['job_events_rows']}"
+          f" validation_reports={db_state['validation_reports_rows']} (既有记录保留, 仅追加)")
+
     EVIDENCE.mkdir(parents=True, exist_ok=True)
-    preserved = {"editmode-results.xml", "editmode.log"}  # EditMode 与服务无关，独立手动跑
-    for stale in list(EVIDENCE.glob("*")):
-        if stale.name in preserved:
-            continue
-        stale.unlink() if stale.is_file() else shutil.rmtree(stale)
+    # 白名单式清理：只删本编排会重新生成的输出；README 与 EditMode 证据保留。
+    for name in (
+        "playmode-interaction-results.xml", "playmode-interaction.log",
+        "playmode-replay-results.xml", "playmode-replay.log",
+        "unity-screenshot.png", "unity-replay-screenshot.png",
+        "content-service.log", "content-service-replay.log",
+        "evidence-summary.json", "sqlite-query-snapshot.json",
+    ):
+        stale = EVIDENCE / name
+        if stale.exists():
+            stale.unlink()
     if SCREENSHOT_DIR.exists():
         shutil.rmtree(SCREENSHOT_DIR)
-    for stale_run in RUNS_DIR.glob("session4-2*"):
-        shutil.rmtree(stale_run)
-    if DB_PATH.exists():
-        DB_PATH.unlink()  # 跨次清场；同次运行内服务 A/B 共享同一 DB，证明重启后 SQLite 持久
 
     # ---------- 阶段一: 统一输入 + 交互 + v2 + 报告 ----------
 
@@ -285,14 +318,19 @@ def main() -> int:
         # SQLite 库文件按仓库约定不入 git（transient），查询结果快照作为 git 内证据
         sqlite_snapshot = {
             "db_path": str(DB_PATH.relative_to(RUNS_DIR)),
-            "job_events": query_sqlite(
+            "db_state_at_start": db_state,
+            "run_events": query_sqlite(
                 "SELECT run_id, event, detail, created_at FROM job_events WHERE run_id = ? ORDER BY id",
                 (run_id,),
             ),
-            "validation_reports": query_sqlite(
+            "run_reports": query_sqlite(
                 "SELECT run_id, snapshot_sha256, screenshot_filename, screenshot_sha256, created_at"
                 " FROM validation_reports WHERE run_id = ? ORDER BY id",
                 (run_id,),
+            ),
+            "all_runs_in_db": query_sqlite(
+                "SELECT run_id, COUNT(*) AS events FROM job_events GROUP BY run_id ORDER BY run_id",
+                (),
             ),
         }
         (EVIDENCE / "sqlite-query-snapshot.json").write_text(
@@ -310,6 +348,7 @@ def main() -> int:
             "source_run_id": source_run_dir.name,
             "snapshot_sha256": body["sha256"],
             "events": [row["event"] for row in events],
+            "db_state_at_start": db_state,
             "evidence_dir": EVIDENCE.name,
             "finished_at": datetime.now(timezone.utc).isoformat(),
         }

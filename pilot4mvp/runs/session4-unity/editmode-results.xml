@@ -1,104 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<test-run id="2" testcasecount="14" result="Passed" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.0507334">
-  <test-suite type="TestSuite" id="1000" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.050733" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+<test-run id="2" testcasecount="14" result="Passed" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.0480326">
+  <test-suite type="TestSuite" id="1000" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.048033" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
     <properties>
       <property name="platform" value="EditMode" />
     </properties>
-    <test-suite type="Assembly" id="1017" name="PetTrip.Tests.EditMode.dll" fullname="C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/.claude/worktrees/pilot4mvp-phase4/unity/PetTrip/Library/ScriptAssemblies/PetTrip.Tests.EditMode.dll" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.044584" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1017" name="PetTrip.Tests.EditMode.dll" fullname="C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/.claude/worktrees/pilot4mvp-phase4/unity/PetTrip/Library/ScriptAssemblies/PetTrip.Tests.EditMode.dll" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.041552" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
       <properties>
-        <property name="_PID" value="33540" />
+        <property name="_PID" value="16436" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
         <property name="platform" value="EditMode" />
         <property name="EditorOnly" value="True" />
       </properties>
-      <test-suite type="TestSuite" id="1018" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.044300" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <test-suite type="TestSuite" id="1018" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.041226" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
         <properties />
-        <test-suite type="TestSuite" id="1019" name="Tests" fullname="PetTrip.Tests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.044179" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <test-suite type="TestSuite" id="1019" name="Tests" fullname="PetTrip.Tests" runstate="Runnable" testcasecount="14" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.041074" total="14" passed="14" failed="0" inconclusive="0" skipped="0" asserts="0">
           <properties />
-          <test-suite type="TestFixture" id="1001" name="SceneSnapshotValidationTests" fullname="PetTrip.Tests.SceneSnapshotValidationTests" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.034980" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <test-suite type="TestFixture" id="1001" name="SceneSnapshotValidationTests" fullname="PetTrip.Tests.SceneSnapshotValidationTests" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.032465" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
             <properties />
-            <test-case id="1005" name="OutOfBoundsPointFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.OutOfBoundsPointFails" methodname="OutOfBoundsPointFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="953261094" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.013491" asserts="0">
+            <test-case id="1005" name="OutOfBoundsPointFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.OutOfBoundsPointFails" methodname="OutOfBoundsPointFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="2122540656" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.012487" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1002" name="ValidFixturePasses" fullname="PetTrip.Tests.SceneSnapshotValidationTests.ValidFixturePasses" methodname="ValidFixturePasses" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="528306481" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.003612" asserts="0">
+            <test-case id="1002" name="ValidFixturePasses" fullname="PetTrip.Tests.SceneSnapshotValidationTests.ValidFixturePasses" methodname="ValidFixturePasses" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="740330806" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.003332" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1004" name="VehicleAssetFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.VehicleAssetFails" methodname="VehicleAssetFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="1288370637" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000570" asserts="0">
+            <test-case id="1004" name="VehicleAssetFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.VehicleAssetFails" methodname="VehicleAssetFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="310207120" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000469" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1003" name="WrongVersionFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.WrongVersionFails" methodname="WrongVersionFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="1839088023" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000710" asserts="0">
+            <test-case id="1003" name="WrongVersionFails" fullname="PetTrip.Tests.SceneSnapshotValidationTests.WrongVersionFails" methodname="WrongVersionFails" classname="PetTrip.Tests.SceneSnapshotValidationTests" runstate="Runnable" seed="1832419738" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000385" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
           </test-suite>
-          <test-suite type="TestFixture" id="1006" name="Session4ContractTests" fullname="PetTrip.Tests.Session4ContractTests" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.008208" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <test-suite type="TestFixture" id="1006" name="Session4ContractTests" fullname="PetTrip.Tests.Session4ContractTests" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" testcasecount="10" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.007635" total="10" passed="10" failed="0" inconclusive="0" skipped="0" asserts="0">
             <properties />
-            <test-case id="1007" name="LegacyFixtureStaysValidUnderCurrentValidator" fullname="PetTrip.Tests.Session4ContractTests.LegacyFixtureStaysValidUnderCurrentValidator" methodname="LegacyFixtureStaysValidUnderCurrentValidator" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1600843725" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000488" asserts="0">
+            <test-case id="1007" name="LegacyFixtureStaysValidUnderCurrentValidator" fullname="PetTrip.Tests.Session4ContractTests.LegacyFixtureStaysValidUnderCurrentValidator" methodname="LegacyFixtureStaysValidUnderCurrentValidator" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1445808926" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000386" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1013" name="PlacePrefabRejectsUnallowedPrefab" fullname="PetTrip.Tests.Session4ContractTests.PlacePrefabRejectsUnallowedPrefab" methodname="PlacePrefabRejectsUnallowedPrefab" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1576433576" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000733" asserts="0">
+            <test-case id="1013" name="PlacePrefabRejectsUnallowedPrefab" fullname="PetTrip.Tests.Session4ContractTests.PlacePrefabRejectsUnallowedPrefab" methodname="PlacePrefabRejectsUnallowedPrefab" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="483809886" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000632" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1014" name="PlacePrefabRejectsUnknownSlot" fullname="PetTrip.Tests.Session4ContractTests.PlacePrefabRejectsUnknownSlot" methodname="PlacePrefabRejectsUnknownSlot" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1350112146" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000385" asserts="0">
+            <test-case id="1014" name="PlacePrefabRejectsUnknownSlot" fullname="PetTrip.Tests.Session4ContractTests.PlacePrefabRejectsUnknownSlot" methodname="PlacePrefabRejectsUnknownSlot" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="688699616" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000402" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1012" name="PlacePrefabUpgradesToV02AndKeepsBusinessFields" fullname="PetTrip.Tests.Session4ContractTests.PlacePrefabUpgradesToV02AndKeepsBusinessFields" methodname="PlacePrefabUpgradesToV02AndKeepsBusinessFields" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="2102001407" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.002555" asserts="0">
+            <test-case id="1012" name="PlacePrefabUpgradesToV02AndKeepsBusinessFields" fullname="PetTrip.Tests.Session4ContractTests.PlacePrefabUpgradesToV02AndKeepsBusinessFields" methodname="PlacePrefabUpgradesToV02AndKeepsBusinessFields" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1929724173" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.002367" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1016" name="PointInPolygonMatchesActivityZone" fullname="PetTrip.Tests.Session4ContractTests.PointInPolygonMatchesActivityZone" methodname="PointInPolygonMatchesActivityZone" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1993256341" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000493" asserts="0">
+            <test-case id="1016" name="PointInPolygonMatchesActivityZone" fullname="PetTrip.Tests.Session4ContractTests.PointInPolygonMatchesActivityZone" methodname="PointInPolygonMatchesActivityZone" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1538939125" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000415" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1015" name="SerializedV02IsAcceptedByValidator" fullname="PetTrip.Tests.Session4ContractTests.SerializedV02IsAcceptedByValidator" methodname="SerializedV02IsAcceptedByValidator" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="724791382" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000700" asserts="0">
+            <test-case id="1015" name="SerializedV02IsAcceptedByValidator" fullname="PetTrip.Tests.Session4ContractTests.SerializedV02IsAcceptedByValidator" methodname="SerializedV02IsAcceptedByValidator" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1882587115" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000573" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1011" name="V01WithPlacementFails" fullname="PetTrip.Tests.Session4ContractTests.V01WithPlacementFails" methodname="V01WithPlacementFails" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="573612800" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000418" asserts="0">
+            <test-case id="1011" name="V01WithPlacementFails" fullname="PetTrip.Tests.Session4ContractTests.V01WithPlacementFails" methodname="V01WithPlacementFails" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="615994252" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000404" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1008" name="V02WithoutPlacementIsValid" fullname="PetTrip.Tests.Session4ContractTests.V02WithoutPlacementIsValid" methodname="V02WithoutPlacementIsValid" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1295429838" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000368" asserts="0">
+            <test-case id="1008" name="V02WithoutPlacementIsValid" fullname="PetTrip.Tests.Session4ContractTests.V02WithoutPlacementIsValid" methodname="V02WithoutPlacementIsValid" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1366141285" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000367" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1009" name="V02WithShelterPlacementIsValid" fullname="PetTrip.Tests.Session4ContractTests.V02WithShelterPlacementIsValid" methodname="V02WithShelterPlacementIsValid" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="26461080" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000336" asserts="0">
+            <test-case id="1009" name="V02WithShelterPlacementIsValid" fullname="PetTrip.Tests.Session4ContractTests.V02WithShelterPlacementIsValid" methodname="V02WithShelterPlacementIsValid" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="1818170895" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000338" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />
               </properties>
             </test-case>
-            <test-case id="1010" name="V02WithUnknownPlacementFails" fullname="PetTrip.Tests.Session4ContractTests.V02WithUnknownPlacementFails" methodname="V02WithUnknownPlacementFails" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="742820286" result="Passed" start-time="2026-08-15 12:01:47Z" end-time="2026-08-15 12:01:47Z" duration="0.000378" asserts="0">
+            <test-case id="1010" name="V02WithUnknownPlacementFails" fullname="PetTrip.Tests.Session4ContractTests.V02WithUnknownPlacementFails" methodname="V02WithUnknownPlacementFails" classname="PetTrip.Tests.Session4ContractTests" runstate="Runnable" seed="699178132" result="Passed" start-time="2026-08-15 12:32:02Z" end-time="2026-08-15 12:32:02Z" duration="0.000401" asserts="0">
               <properties>
                 <property name="retryIteration" value="0" />
                 <property name="repeatIteration" value="0" />

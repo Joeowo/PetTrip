@@ -17,6 +17,7 @@ def _drive_full_flow(client: TestClient) -> None:
     report = client.post(
         "/runs/session4-test-run/reports",
         json={
+            "run_id": "session4-test-run",
             "snapshot_sha256": meta["sha256"],
             "checks": [{"name": "shelter_placed", "passed": True, "detail": "ok"}],
             "screenshot_png_base64": make_png_base64(),

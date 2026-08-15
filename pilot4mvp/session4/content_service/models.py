@@ -152,6 +152,7 @@ class UnityReport(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    run_id: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9][a-z0-9-]*$")
     snapshot_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     checks: list[ReportCheck] = Field(min_length=1)
     screenshot_png_base64: str = Field(min_length=1)

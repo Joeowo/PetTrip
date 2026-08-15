@@ -195,6 +195,11 @@ def create_app(
             raise HTTPException(status_code=404, detail="unknown run_id")
         if run_id != app.state.run_id:
             raise HTTPException(status_code=409, detail="run is not the active run")
+        if report.run_id != run_id:
+            raise HTTPException(
+                status_code=409,
+                detail="report run_id does not match the target run: " + report.run_id,
+            )
         expected = store.snapshot_sha256(run_id)
         if report.snapshot_sha256 != expected:
             raise HTTPException(

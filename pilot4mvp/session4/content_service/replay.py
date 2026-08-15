@@ -75,12 +75,31 @@ def _write_json(path: Path, data: dict) -> str:
 
 
 def materialize_run(store: RunStore, run_id: str) -> dict:
-    """统一输入后首次物化：重建 v1 快照与 manifest，标记 content-ready。"""
+    """统一输入后首次物化：重建 v1 快照与 manifest，标记 content-ready。
+
+    重建结果必须与源 run 的既有成功 Snapshot（source-scene-snapshot.json）业务
+    字段一致（放置状态与 schema 版本除外）——实际消费上游成功产物作为基线，
+    而不是仅靠 world-spec 自证。
+    """
     try:
         run_dir = store.run_dir(run_id)
     except RunStoreError as exc:
         raise ReplayError(str(exc)) from exc
     snapshot, manifest = rebuild_snapshot(run_dir, placed_prefab=None)
+
+    baseline_path = run_dir / "source-scene-snapshot.json"
+    if baseline_path.is_file():
+        try:
+            baseline = SceneSnapshot.model_validate_json(baseline_path.read_text(encoding="utf-8"))
+        except Exception as exc:  # noqa: BLE001
+            raise ReplayError("source snapshot failed validation: " + str(exc)) from exc
+        if not business_fields_equal(baseline, snapshot):
+            raise ReplayError(
+                "rebuilt snapshot business fields differ from the source run's successful snapshot"
+            )
+    else:
+        raise ReplayError("source-scene-snapshot.json is missing; cannot verify against upstream success")
+
     _write_json(run_dir / MANIFEST_NAME, manifest.model_dump(mode="json"))
     _write_json(run_dir / SNAPSHOT_V1_NAME, snapshot.model_dump(mode="json", exclude_none=True))
     store.mark_content_ready(run_id, SNAPSHOT_V1_NAME)

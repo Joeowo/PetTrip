@@ -24,6 +24,8 @@ from .snapshot_builder import sha256_bytes, sha256_file
 
 RUN_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 ARTIFACT_NAMES = ("world-spec.json", "scene-plan.json")
+SOURCE_SNAPSHOT_NAME = "scene-snapshot.json"
+SOURCE_SNAPSHOT_COPY_NAME = "source-scene-snapshot.json"
 CONTENT_READY_NAME = "content-ready.json"
 ACTIVE_SNAPSHOT_NAME = "active-snapshot.txt"
 
@@ -168,7 +170,12 @@ class RunStore:
             return False
 
     def create_run(self, run_id: str, input_text: str, source_run_dir: Path) -> Path:
-        """从源 run 复制上游 artifact 创建新 run，写 input.json 与 job.accepted。"""
+        """从源 run 复制上游 artifact 创建新 run，写 input.json 与 job.accepted。
+
+        源 run 必须携带既有成功 Snapshot（scene-snapshot.json）：缺失即拒绝，
+        满足规格"既有成功 Snapshot 缺失则停止"；复制为 source-scene-snapshot.json，
+        供物化阶段作为业务字段基线实际消费。
+        """
         if not RUN_ID_PATTERN.match(run_id):
             raise RunStoreError("invalid run_id: " + run_id)
         target = self.state_dir / run_id
@@ -176,7 +183,7 @@ class RunStore:
             raise RunStoreError("run_id already exists: " + run_id)
         if not source_run_dir.is_dir():
             raise RunStoreError("source run directory does not exist: " + source_run_dir.name)
-        for name in ARTIFACT_NAMES:
+        for name in (*ARTIFACT_NAMES, SOURCE_SNAPSHOT_NAME):
             if not (source_run_dir / name).is_file():
                 raise RunStoreError("source run is missing artifact: " + name)
         if not (source_run_dir / "assets").is_dir():
@@ -185,6 +192,7 @@ class RunStore:
         target.mkdir(parents=True)
         for name in ARTIFACT_NAMES:
             shutil.copy2(source_run_dir / name, target / name)
+        shutil.copy2(source_run_dir / SOURCE_SNAPSHOT_NAME, target / "source-scene-snapshot.json")
         shutil.copytree(source_run_dir / "assets", target / "assets")
         (target / "input.json").write_text(
             json.dumps(

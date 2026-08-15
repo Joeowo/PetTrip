@@ -207,8 +207,13 @@ def validate_snapshot(snapshot: SceneSnapshot) -> None:
 
 
 def snapshot_business_dict(snapshot: SceneSnapshot) -> dict:
-    """放置状态无关的业务字段视图，用于重放一致性比较。"""
+    """放置状态与版本无关的业务字段视图，用于基线/重放一致性比较。
+
+    schema_version 与 placed_prefab 属于表达状态，不属于场景业务内容；
+    v0.1 基线与 v0.2 重建因此可以直接比较。
+    """
     data = snapshot.model_dump()
+    data.pop("schema_version", None)
     for slot in data["build_slots"]:
         slot.pop("placed_prefab", None)
     return data

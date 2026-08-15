@@ -1,13 +1,13 @@
-INFO:     Started server process [31068]
+INFO:     Started server process [30376]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-SESSION4_SERVER_READY run_id=session4-20260815-115620-0a9e
-INFO:     127.0.0.1:62145 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62148 - "GET /run-id HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62149 - "POST /runs/session4-20260815-115620-0a9e/replay HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55128 - "GET /snapshot HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55128 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55128 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55128 - "GET /assets/pet.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55128 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
+SESSION4_SERVER_READY run_id=session4-20260815-123037-c247
+INFO:     127.0.0.1:50309 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50312 - "GET /run-id HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50313 - "POST /runs/session4-20260815-123037-c247/replay HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54013 - "GET /snapshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54013 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54013 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54013 - "GET /assets/pet.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54013 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK

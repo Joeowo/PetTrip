@@ -87,12 +87,37 @@ namespace PetTrip
             foreach (var check in checks)
             {
                 parts.Add(
-                    "{\"name\":\"" + check.name + "\",\"passed\":" + (check.passed ? "true" : "false")
-                    + ",\"detail\":\"" + check.detail + "\"}");
+                    "{\"name\":\"" + EscapeJsonString(check.name)
+                    + "\",\"passed\":" + (check.passed ? "true" : "false")
+                    + ",\"detail\":\"" + EscapeJsonString(check.detail) + "\"}");
             }
-            return "{\"snapshot_sha256\":\"" + meta.sha256
+            return "{\"run_id\":\"" + EscapeJsonString(meta.run_id)
+                   + "\",\"snapshot_sha256\":\"" + meta.sha256
                    + "\",\"checks\":[" + string.Join(",", parts)
                    + "],\"screenshot_png_base64\":\"" + screenshotBase64 + "\"}";
+        }
+
+        /// <summary>手工拼接 JSON 的字符串转义（引号、反斜杠、控制字符）。</summary>
+        private static string EscapeJsonString(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return string.Empty;
+            var builder = new System.Text.StringBuilder(value.Length + 8);
+            foreach (var character in value)
+            {
+                switch (character)
+                {
+                    case '"': builder.Append("\\\""); break;
+                    case '\\': builder.Append("\\\\"); break;
+                    case '\n': builder.Append("\\n"); break;
+                    case '\r': builder.Append("\\r"); break;
+                    case '\t': builder.Append("\\t"); break;
+                    default:
+                        if (character < ' ') builder.Append("\\u").Append(((int)character).ToString("x4"));
+                        else builder.Append(character);
+                        break;
+                }
+            }
+            return builder.ToString();
         }
 
         private IEnumerator PostJson(string url, string json, int expectStatus, Action<bool> onComplete)

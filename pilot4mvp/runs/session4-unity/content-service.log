@@ -1,25 +1,25 @@
-INFO:     Started server process [15348]
+INFO:     Started server process [13584]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 SESSION4_SERVER_READY run_id=None
-INFO:     127.0.0.1:54875 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54879 - "POST /runs HTTP/1.1" 201 Created
-INFO:     127.0.0.1:54880 - "POST /runs HTTP/1.1" 422 Unprocessable Entity
-INFO:     127.0.0.1:54881 - "GET /run-id HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /snapshot HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/pet.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /run-id HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "POST /runs/session4-20260815-115620-0a9e/snapshot-v2 HTTP/1.1" 201 Created
-INFO:     127.0.0.1:62120 - "GET /snapshot HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/pet.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "GET /snapshot-meta HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62120 - "POST /runs/session4-20260815-115620-0a9e/reports HTTP/1.1" 201 Created
-INFO:     127.0.0.1:62143 - "GET /snapshot-meta HTTP/1.1" 200 OK
-INFO:     127.0.0.1:62144 - "GET /runs/session4-20260815-115620-0a9e HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59083 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59086 - "POST /runs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:59087 - "POST /runs HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:59088 - "GET /run-id HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /snapshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/pet.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /run-id HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "POST /runs/session4-20260815-123037-c247/snapshot-v2 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:50298 - "GET /snapshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/pet.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "GET /snapshot-meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50298 - "POST /runs/session4-20260815-123037-c247/reports HTTP/1.1" 201 Created
+INFO:     127.0.0.1:50307 - "GET /snapshot-meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50308 - "GET /runs/session4-20260815-123037-c247 HTTP/1.1" 200 OK

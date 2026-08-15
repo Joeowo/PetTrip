@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-15 11:56:35Z" end-time="2026-08-15 11:56:35Z" duration="0.8095305">
-  <test-suite type="TestSuite" id="1016" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 11:56:35Z" end-time="2026-08-15 11:56:35Z" duration="0.809531" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+<test-run id="2" testcasecount="1" result="Passed" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-08-15 12:30:51Z" end-time="2026-08-15 12:30:52Z" duration="0.7957377">
+  <test-suite type="TestSuite" id="1016" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 12:30:51Z" end-time="2026-08-15 12:30:52Z" duration="0.795738" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
     <properties>
       <property name="platform" value="PlayMode" />
     </properties>
-    <test-suite type="Assembly" id="1011" name="PetTrip.Tests.PlayMode.dll" fullname="C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/.claude/worktrees/pilot4mvp-phase4/unity/PetTrip/Library/ScriptAssemblies/PetTrip.Tests.PlayMode.dll" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 11:56:35Z" end-time="2026-08-15 11:56:35Z" duration="0.802786" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <test-suite type="Assembly" id="1011" name="PetTrip.Tests.PlayMode.dll" fullname="C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/.claude/worktrees/pilot4mvp-phase4/unity/PetTrip/Library/ScriptAssemblies/PetTrip.Tests.PlayMode.dll" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 12:30:51Z" end-time="2026-08-15 12:30:52Z" duration="0.788750" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
       <properties>
-        <property name="_PID" value="15132" />
+        <property name="_PID" value="34052" />
         <property name="_APPDOMAIN" value="Unity Child Domain" />
         <property name="platform" value="PlayMode" />
         <property name="EditorOnly" value="False" />
       </properties>
-      <test-suite type="TestSuite" id="1012" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 11:56:35Z" end-time="2026-08-15 11:56:35Z" duration="0.802292" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <test-suite type="TestSuite" id="1012" name="PetTrip" fullname="PetTrip" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 12:30:51Z" end-time="2026-08-15 12:30:52Z" duration="0.787979" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
         <properties />
-        <test-suite type="TestSuite" id="1013" name="Tests" fullname="PetTrip.Tests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 11:56:35Z" end-time="2026-08-15 11:56:35Z" duration="0.801992" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <test-suite type="TestSuite" id="1013" name="Tests" fullname="PetTrip.Tests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-08-15 12:30:51Z" end-time="2026-08-15 12:30:52Z" duration="0.787629" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
           <properties />
-          <test-suite type="TestFixture" id="1007" name="Session4InteractionTests" fullname="PetTrip.Tests.Session4InteractionTests" classname="PetTrip.Tests.Session4InteractionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-15 11:56:35Z" end-time="2026-08-15 11:56:35Z" duration="0.800958" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <test-suite type="TestFixture" id="1007" name="Session4InteractionTests" fullname="PetTrip.Tests.Session4InteractionTests" classname="PetTrip.Tests.Session4InteractionTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-08-15 12:30:51Z" end-time="2026-08-15 12:30:52Z" duration="0.786542" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
             <properties />
-            <test-case id="1008" name="InteractionFlowUploadsV2AndReport" fullname="PetTrip.Tests.Session4InteractionTests.InteractionFlowUploadsV2AndReport" methodname="InteractionFlowUploadsV2AndReport" classname="PetTrip.Tests.Session4InteractionTests" runstate="Runnable" seed="912149600" result="Passed" start-time="2026-08-15 11:56:35Z" end-time="2026-08-15 11:56:35Z" duration="0.792563" asserts="0">
+            <test-case id="1008" name="InteractionFlowUploadsV2AndReport" fullname="PetTrip.Tests.Session4InteractionTests.InteractionFlowUploadsV2AndReport" methodname="InteractionFlowUploadsV2AndReport" classname="PetTrip.Tests.Session4InteractionTests" runstate="Runnable" seed="79786438" result="Passed" start-time="2026-08-15 12:30:51Z" end-time="2026-08-15 12:30:52Z" duration="0.776874" asserts="0">
               <properties>
                 <property name="_JOINTYPE" value="UnityCombinatorial" />
                 <property name="retryIteration" value="0" />
@@ -27,10 +27,10 @@
 PETTRIP_PET_MOVE_OK target=100,100
 PETTRIP_PET_MOVE_REJECTED target=480,200
 PETTRIP_INTERACTION_OK id=pet_wave
-PETTRIP_SESSION4_POST_OK url=http://127.0.0.1:8000/runs/session4-20260815-115620-0a9e/snapshot-v2
+PETTRIP_SESSION4_POST_OK url=http://127.0.0.1:8000/runs/session4-20260815-123037-c247/snapshot-v2
 PETTRIP_HTTP_SNAPSHOT_LOAD_OK schema=0.2 scene=session1_beach layers=3 assets=4
-PETTRIP_SESSION4_POST_OK url=http://127.0.0.1:8000/runs/session4-20260815-115620-0a9e/reports
-PETTRIP_SESSION4_INTERACTION_OK run_id=session4-20260815-115620-0a9e
+PETTRIP_SESSION4_POST_OK url=http://127.0.0.1:8000/runs/session4-20260815-123037-c247/reports
+PETTRIP_SESSION4_INTERACTION_OK run_id=session4-20260815-123037-c247
 Saving results to: C:/Users/Mechrevo/AppData/LocalLow/DefaultCompany/PetTrip\TestResults.xml
 ]]></output>
             </test-case>
