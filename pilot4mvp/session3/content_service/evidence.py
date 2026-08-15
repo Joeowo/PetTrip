@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
@@ -19,6 +20,7 @@ SENSITIVE_KEYS = {
     "cookie",
     "set-cookie",
 }
+URL_PATTERN = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
 PROVIDER_RESPONSE_FIELDS = (
     "id",
     "object",
@@ -36,18 +38,30 @@ PROVIDER_RESPONSE_FIELDS = (
 
 
 def _safe_url(value: str) -> str:
-    parts = urlsplit(value)
+    try:
+        parts = urlsplit(value)
+        port = parts.port
+    except ValueError:
+        return "<redacted-url>"
     if parts.scheme and parts.hostname:
         host = parts.hostname
         if ":" in host:
             host = f"[{host}]"
-        netloc = host + (f":{parts.port}" if parts.port else "")
-        return urlunsplit((parts.scheme, netloc, parts.path, "", ""))
+        netloc = host + (f":{port}" if port else "")
+        return urlunsplit((parts.scheme.lower(), netloc, parts.path, "", ""))
     return value
 
 
-def redact(value: Any, api_key: str = "") -> Any:
-    """递归移除敏感字段、URL 查询串及当前 Key 的完整值。"""
+def _redact_urls(value: str) -> str:
+    return URL_PATTERN.sub(lambda match: _safe_url(match.group(0)), value)
+
+
+def _secrets(value: str | tuple[str, ...]) -> tuple[str, ...]:
+    return (value,) if isinstance(value, str) else value
+
+
+def redact(value: Any, api_key: str | tuple[str, ...] = "") -> Any:
+    """递归移除敏感字段、URL 查询串及所有已知凭证的完整值。"""
     if isinstance(value, BaseModel):
         value = value.model_dump(mode="json")
     if isinstance(value, dict):
@@ -63,7 +77,10 @@ def redact(value: Any, api_key: str = "") -> Any:
     if isinstance(value, tuple):
         return [redact(item, api_key) for item in value]
     if isinstance(value, str):
-        safe = value.replace(api_key, "<redacted>") if api_key else value
+        safe = value
+        for secret in _secrets(api_key):
+            if secret:
+                safe = safe.replace(secret, "<redacted>")
         return _safe_url(safe) if safe.startswith(("http://", "https://")) else safe
     return value
 
@@ -91,10 +108,10 @@ def credential_hits(root: Path, secrets: tuple[str, ...]) -> list[str]:
     return hits
 
 
-def write_json(path: Path, value: Any, api_key: str = "") -> None:
-    """先脱敏再写 JSON，并断言完整 Key 未进入文本证据。"""
+def write_json(path: Path, value: Any, api_key: str | tuple[str, ...] = "") -> None:
+    """先脱敏再写 JSON，并断言所有完整 Key 均未进入文本证据。"""
     payload = json.dumps(redact(value, api_key), ensure_ascii=False, indent=2)
-    if api_key and api_key in payload:
-        raise ValueError("refusing to persist evidence containing the API key")
+    if any(secret and secret in payload for secret in _secrets(api_key)):
+        raise ValueError("refusing to persist evidence containing an API key")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(payload + "\n", encoding="utf-8")

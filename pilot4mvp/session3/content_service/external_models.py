@@ -110,6 +110,8 @@ def _category(status: int, data: Any) -> str:
         return "policy"
     if status in {401, 403}:
         return "authentication"
+    if status in {408, 504}:
+        return "timeout"
     if any(marker in text for marker in MODEL_MARKERS):
         return "model"
     if status in {404, 405} or status >= 500:

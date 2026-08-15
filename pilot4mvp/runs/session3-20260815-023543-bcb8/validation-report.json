@@ -1,0 +1,20 @@
+{
+  "run_id": "session3-20260815-023543-bcb8",
+  "content_status": "ready",
+  "structured_output_api": "responses",
+  "responses_passed": true,
+  "images_http_status": 200,
+  "original_size": [
+    1774,
+    887
+  ],
+  "normalized_size": [
+    512,
+    288
+  ],
+  "background_sha256": "f5ab89711abb9f0ea3ef6239f766177c88bf4280e7d72e875dc2c17f5cc51355",
+  "manifest_hash_matches": true,
+  "snapshot_schema_valid": true,
+  "unity": "passed",
+  "unity_evidence": "session3-unity/"
+}
