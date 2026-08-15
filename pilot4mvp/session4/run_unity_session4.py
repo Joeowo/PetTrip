@@ -147,24 +147,37 @@ def query_sqlite(query: str, params: tuple) -> list[dict]:
         return [dict(row) for row in connection.execute(query, params).fetchall()]
 
 
-def verify_existing_database(db_path: Path) -> dict | None:
-    """验收既有 SQLite：必须存在且可查询；缺失不是可自动补的项。
+REQUIRED_COLUMNS = {
+    "job_events": {"id", "run_id", "event", "detail", "created_at"},
+    "validation_reports": {
+        "id", "run_id", "snapshot_sha256", "screenshot_filename",
+        "screenshot_sha256", "payload_json", "created_at",
+    },
+}
 
-    返回 None 表示不满足前置条件（缺失或不可查询）——按规格应申请用户
-    提供并停止，编排器据此退出，不做任何静默初始化。
+
+def verify_existing_database(db_path: Path) -> dict | None:
+    """验收既有 SQLite：必须存在、可查询且表结构含全部必需列。
+
+    缺失不是可自动补的项。返回 None 表示不满足前置条件（缺失、不可查询或
+    表结构不符）——按规格应申请用户提供并停止，编排器据此退出，不做任何
+    静默初始化；仅靠 COUNT(*) 无法发现"同名表、错误列"的假阳性。
     """
     if not db_path.is_file():
         return None
     try:
         with sqlite3.connect(db_path) as connection:
-            for table in ("job_events", "validation_reports"):
-                connection.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
-        with sqlite3.connect(db_path) as connection:
             connection.row_factory = sqlite3.Row
-            rows = connection.execute("SELECT COUNT(*) AS n FROM job_events").fetchone()
-            events = int(rows["n"])
-            rows = connection.execute("SELECT COUNT(*) AS n FROM validation_reports").fetchone()
-            reports = int(rows["n"])
+            for table, required in REQUIRED_COLUMNS.items():
+                columns = {
+                    row["name"] for row in connection.execute(f"PRAGMA table_info({table})").fetchall()
+                }
+                if not required.issubset(columns):
+                    return None
+            events = int(connection.execute("SELECT COUNT(*) AS n FROM job_events").fetchone()["n"])
+            reports = int(
+                connection.execute("SELECT COUNT(*) AS n FROM validation_reports").fetchone()["n"]
+            )
         return {
             "status": "existing-verified",
             "job_events_rows": events,

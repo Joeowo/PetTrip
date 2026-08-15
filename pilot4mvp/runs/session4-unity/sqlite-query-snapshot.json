@@ -2,30 +2,30 @@
   "db_path": "content-service.sqlite3",
   "db_state_at_start": {
     "status": "existing-verified",
-    "job_events_rows": 6,
-    "validation_reports_rows": 3
+    "job_events_rows": 8,
+    "validation_reports_rows": 4
   },
   "run_events": [
     {
-      "run_id": "session4-20260815-133327-5790",
+      "run_id": "session4-20260815-143009-f3e9",
       "event": "job.accepted",
       "detail": "{\"source_run_id\": \"session3-20260815-023543-bcb8\", \"input_length\": 51}",
-      "created_at": "2026-08-15T13:33:29.052029+00:00"
+      "created_at": "2026-08-15T14:30:11.428401+00:00"
     },
     {
-      "run_id": "session4-20260815-133327-5790",
+      "run_id": "session4-20260815-143009-f3e9",
       "event": "job.replayed",
       "detail": "{\"snapshot\": \"scene-snapshot-v2.json\", \"sha256\": \"67d856ef6c9b4dcfbe45ce6c8ecde70aa6cf14986c24f72df34264aaf05f9b75\", \"model_calls\": \"none\"}",
-      "created_at": "2026-08-15T13:33:44.832799+00:00"
+      "created_at": "2026-08-15T14:30:29.604673+00:00"
     }
   ],
   "run_reports": [
     {
-      "run_id": "session4-20260815-133327-5790",
+      "run_id": "session4-20260815-143009-f3e9",
       "snapshot_sha256": "67d856ef6c9b4dcfbe45ce6c8ecde70aa6cf14986c24f72df34264aaf05f9b75",
       "screenshot_filename": "screenshots/unity-validation-f119a432bc1b.png",
       "screenshot_sha256": "f119a432bc1b836aa8b5d521a0dc0c24f3f8cd2f0794759cdd4ebf0b37286e6a",
-      "created_at": "2026-08-15T13:33:42.711342+00:00"
+      "created_at": "2026-08-15T14:30:27.476424+00:00"
     }
   ],
   "all_runs_in_db": [
@@ -43,6 +43,10 @@
     },
     {
       "run_id": "session4-20260815-133327-5790",
+      "events": 2
+    },
+    {
+      "run_id": "session4-20260815-143009-f3e9",
       "events": 2
     }
   ]

@@ -91,9 +91,14 @@ def materialize_run(store: RunStore, run_id: str) -> dict:
     baseline_path = run_dir / "source-scene-snapshot.json"
     if baseline_path.is_file():
         try:
-            baseline = SceneSnapshot.model_validate_json(baseline_path.read_text(encoding="utf-8"))
-            # 基线除可解析外，还必须通过其自身版本的 JSON Schema 契约校验
-            validate_snapshot_dict(baseline.model_dump(mode="json", exclude_none=True))
+            # 先对原始字典做 JSON Schema 校验（additionalProperties: false 可捕获
+            # prompt 等模型私有字段），再做 Pydantic 构造——顺序颠倒会因未知字段
+            # 被 Pydantic 静默丢弃而产生假阳性。
+            baseline_raw = json.loads(baseline_path.read_text(encoding="utf-8"))
+            validate_snapshot_dict(baseline_raw)
+            baseline = SceneSnapshot.model_validate(baseline_raw)
+        except ReplayError:
+            raise
         except Exception as exc:  # noqa: BLE001
             raise ReplayError("source snapshot failed validation: " + str(exc)) from exc
         if not business_fields_equal(baseline, snapshot):

@@ -1,0 +1,2 @@
+{"run_id": "session4-20260815-143009-f3e9", "event": "job.accepted", "detail": {"source_run_id": "session3-20260815-023543-bcb8", "input_length": 51}, "created_at": "2026-08-15T14:30:11.428401+00:00"}
+{"run_id": "session4-20260815-143009-f3e9", "event": "job.replayed", "detail": {"snapshot": "scene-snapshot-v2.json", "sha256": "67d856ef6c9b4dcfbe45ce6c8ecde70aa6cf14986c24f72df34264aaf05f9b75", "model_calls": "none"}, "created_at": "2026-08-15T14:30:29.604673+00:00"}

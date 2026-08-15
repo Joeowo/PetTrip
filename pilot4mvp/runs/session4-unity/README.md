@@ -28,15 +28,16 @@ Unity: 重放快照原样恢复小窝 -> 重放截图
 
 ## 验证的运行
 
-- 最终 run 目录：`runs/session4-20260815-123037-c247/`（源 run
-  `session3-20260815-023543-bcb8`）
-- 历史 run 保留：`session4-20260815-115620-0a9e/`（首跑）与
-  `session4-20260815-123004-a82d/`（复跑第一遍）均未删除
+- 最终 run 目录：`runs/session4-20260815-143009-f3e9/`（源 run
+  `session3-20260815-023543-bcb8`；复跑后以 `evidence-summary.json` 为权威索引）
+- 历史 run 保留：`session4-20260815-115620-0a9e/`、`session4-20260815-123004-a82d/`、
+  `session4-20260815-123037-c247/`、`session4-20260815-133327-5790/` 均未删除
 - Snapshot 哈希：`67d856ef6c9b4dcfbe45c6c8ecde70aa6cf14986c24f72df34264aaf05f9b75`
   （Unity 报告、SQLite `validation_reports`、`evidence-summary.json` 一致）
 - SQLite：`runs/content-service.sqlite3`。复跑开场 `existing-verified`
-  （`job_events=4` 含前次记录），结束三个 run 各 2 事件 + 1 报告——追加语义
-  实证。库文件按仓库 `.gitignore` 约定（transient `*.sqlite3`）不入 git，
+  （`job_events=8` 含全部前次记录），结束五个 run 各 2 事件 + 1 报告——追加
+  语义实证。前置验证含表结构必需列检查（`PRAGMA table_info`）。库文件按仓库
+  `.gitignore` 约定（transient `*.sqlite3`）不入 git，
   查询结果以 `sqlite-query-snapshot.json` 快照入 git（含开场库状态与全库
   run 清单）；重跑编排保留库并重新生成快照。
 - 编排入口：`pilot4mvp/session4/run_unity_session4.py`（防假通过：端口归属、
@@ -56,7 +57,7 @@ Unity: 重放快照原样恢复小窝 -> 重放截图
 | 报告回传 + SQLite | 报告显式 `run_id`，四方直接交叉核验 | run 目录 `unity-report.json`（含 `run_id`）、`screenshots/`、SQLite |
 | 重启重放 | `business_fields_match: true`，`model_calls: none` | `content-service-replay.log`、SQLite `job.replayed` |
 | 重放加载 | PlayMode 1/1 Passed，小窝恢复 | `playmode-replay-results.xml`、`unity-replay-screenshot.png` |
-| 回归 | EditMode 14/14；session2 18、session3 54、session4 38 pytest | 各自测试目录 |
+| 回归 | EditMode 14/14；session2 18、session3 54、session4 40 pytest | 各自测试目录 |
 
 ## 文件
 

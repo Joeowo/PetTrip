@@ -46,3 +46,17 @@ def test_existing_schema_verified(tmp_path: Path) -> None:
     assert state["status"] == "existing-verified"
     assert state["job_events_rows"] == 1
     assert state["validation_reports_rows"] == 0
+
+
+def test_wrong_columns_rejected_even_if_tables_exist(tmp_path: Path) -> None:
+    """同名表但缺少必需列（COUNT(*) 假阳性场景）必须判定不可用。"""
+    db = tmp_path / "content-service.sqlite3"
+    with sqlite3.connect(db) as connection:
+        connection.executescript(
+            """
+            CREATE TABLE job_events (id INTEGER PRIMARY KEY, x TEXT);
+            CREATE TABLE validation_reports (id INTEGER PRIMARY KEY, x TEXT);
+            INSERT INTO job_events (x) VALUES ('dummy');
+            """
+        )
+    assert verify_existing_database(db) is None

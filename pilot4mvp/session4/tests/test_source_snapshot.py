@@ -68,3 +68,24 @@ def test_materialize_fails_when_source_snapshot_tampered(store: RunStore, source
         materialize_run(store, "session4-tamper")
     # 未物化：无 content-ready 标记
     assert not (run_dir / "content-ready.json").exists()
+
+
+def test_materialize_fails_when_source_snapshot_carries_model_fields(
+    store: RunStore, source_run_dir, tmp_path
+) -> None:  # noqa: F811, ANN001
+    """fail-closed：源快照携带 prompt 等模型私有字段（v0.1 契约的
+    additionalProperties: false 禁止项）必须拒绝——Schema 校验必须先于
+    Pydantic 构造，否则未知字段被静默丢弃造成假阳性。"""
+    polluted_source = tmp_path / "polluted-source"
+    polluted_source.mkdir()
+    for name in ("world-spec.json", "scene-plan.json"):
+        shutil.copy2(source_run_dir / name, polluted_source / name)
+    shutil.copytree(source_run_dir / "assets", polluted_source / "assets")
+    snapshot = json.loads((source_run_dir / "scene-snapshot.json").read_text(encoding="utf-8"))
+    snapshot["prompt"] = "生成一个海边场景"  # 模型私有字段，跨界契约禁止
+    (polluted_source / "scene-snapshot.json").write_text(json.dumps(snapshot), encoding="utf-8")
+
+    run_dir = store.create_run("session4-polluted", DEFAULT_INPUT, polluted_source)
+    with pytest.raises(ReplayError, match="source snapshot failed validation"):
+        materialize_run(store, "session4-polluted")
+    assert not (run_dir / "content-ready.json").exists()

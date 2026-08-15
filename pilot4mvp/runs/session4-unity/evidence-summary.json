@@ -1,5 +1,5 @@
 {
-  "run_id": "session4-20260815-133327-5790",
+  "run_id": "session4-20260815-143009-f3e9",
   "source_run_id": "session3-20260815-023543-bcb8",
   "snapshot_sha256": "67d856ef6c9b4dcfbe45ce6c8ecde70aa6cf14986c24f72df34264aaf05f9b75",
   "events": [
@@ -8,9 +8,9 @@
   ],
   "db_state_at_start": {
     "status": "existing-verified",
-    "job_events_rows": 6,
-    "validation_reports_rows": 3
+    "job_events_rows": 8,
+    "validation_reports_rows": 4
   },
   "evidence_dir": "session4-unity",
-  "finished_at": "2026-08-15T13:33:59.117499+00:00"
+  "finished_at": "2026-08-15T14:30:44.342575+00:00"
 }
