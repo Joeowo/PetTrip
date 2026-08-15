@@ -62,5 +62,8 @@ namespace PetTrip
         public string id;
         public PixelPoint position;
         public string[] allowed_prefabs;
+
+        /// <summary>v0.2 起的放置状态；null/空表示槽位未放置。</summary>
+        public string placed_prefab;
     }
 }

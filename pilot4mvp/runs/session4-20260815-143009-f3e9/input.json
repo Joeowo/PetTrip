@@ -1,0 +1,7 @@
+{
+  "run_id": "session4-20260815-143009-f3e9",
+  "input": "生成一个横向 2D 海边场景，包含一座灯塔；宠物可以在灯塔前挥手；右侧可以放置一个小窝；不要出现车辆。",
+  "source_run_id": "session3-20260815-023543-bcb8",
+  "model_calls": "none (session4 replay-based run)",
+  "created_at": "2026-08-15T14:30:11.426895+00:00"
+}
