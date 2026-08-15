@@ -1,0 +1,7 @@
+Python 3.12.13
+httpx==0.28.1
+pydantic==2.13.4
+Pillow==12.3.0
+opencv-python==5.0.0.93
+jsonschema==4.26.0
+python-dotenv==1.2.2

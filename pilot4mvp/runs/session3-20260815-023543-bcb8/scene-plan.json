@@ -1,0 +1,67 @@
+{
+  "scene_id": "session1_beach",
+  "layers": [
+    {
+      "id": "background",
+      "asset_id": "beach_background",
+      "sorting_order": 0,
+      "x": 256.0,
+      "y": 144.0
+    },
+    {
+      "id": "lighthouse",
+      "asset_id": "lighthouse",
+      "sorting_order": 10,
+      "x": 112.0,
+      "y": 168.0
+    },
+    {
+      "id": "pet",
+      "asset_id": "pet",
+      "sorting_order": 20,
+      "x": 250.0,
+      "y": 112.0
+    }
+  ],
+  "activity_zone": {
+    "id": "beach_foreground",
+    "type": "polygon",
+    "points": [
+      [
+        48.0,
+        48.0
+      ],
+      [
+        464.0,
+        48.0
+      ],
+      [
+        464.0,
+        160.0
+      ],
+      [
+        48.0,
+        160.0
+      ]
+    ]
+  },
+  "interactions": [
+    {
+      "id": "pet_wave",
+      "kind": "pet_action",
+      "x": 250.0,
+      "y": 136.0,
+      "radius": 24.0
+    }
+  ],
+  "build_slots": [
+    {
+      "id": "small_shelter",
+      "x": 430.0,
+      "y": 96.0,
+      "allowed_prefabs": [
+        "small_shelter"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "run_id": "session3-20260815-023543-bcb8",
+  "input": "生成一个横向 2D 海边场景，包含一座灯塔；宠物可以在灯塔前挥手；右侧可以放置一个小窝；不要出现车辆。请严格按提供的 JSON Schema 返回。",
+  "responses_model": "gpt-5.6-sol",
+  "images_model": "gpt-image-2",
+  "allow_chat_compat": false,
+  "fixture_mode": false
+}

@@ -85,8 +85,9 @@ JSON、纹理或 Sprite 创建错误。
 只在本地链路通过后，接入真实外部模型，明确隔离认证、端点兼容性和模型可用性
 问题。OpenAI 兼容网关的可用性不能视为 OpenAI 官方端点已经通过验证。
 
-1. 检查用户是否已提供 `OPENAI_BASE_URL`、`OPENAI_API_KEY`、可用的 Responses
-   模型及端点，以及可用的 Images 模型。
+1. 检查用户是否已提供文本侧 `RESPONSES_BASE_URL`、`RESPONSES_API_KEY`、
+   `RESPONSES_MODEL`，以及图片侧 `IMAGES_BASE_URL`、`IMAGES_API_KEY`、`IMAGES_MODEL`。
+   文本与图片可以使用不同的兼容网关和凭证。
 2. 任一项缺失时，向用户申请该项，并停止；不得测试猜测的模型 ID，也不得改用假图。
 3. 用 Responses Structured Outputs 生成并由 Pydantic 直接校验 WorldSpec。
 4. 用 OpenAI 兼容的 Images API 生成概念图；若返回 `b64_json`，先 Base64 解码，
@@ -101,8 +102,9 @@ JSON、纹理或 Sprite 创建错误。
 
 会话 3 只接入一组已经明确确认的外部模型配置，并沿用海边灯塔固定场景。
 
-- 输入：`OPENAI_BASE_URL`、只存在于环境变量中的 `OPENAI_API_KEY`、明确可用的
-  Responses 模型 ID、`gpt-image-2` Images 模型 ID，以及固定场景文本。
+- 输入：文本侧 `RESPONSES_BASE_URL`、只存在于环境变量中的 `RESPONSES_API_KEY`、
+  `RESPONSES_MODEL`，图片侧 `IMAGES_BASE_URL`、只存在于环境变量中的
+  `IMAGES_API_KEY`、`IMAGES_MODEL`（本次为 `gpt-image-2`），以及固定场景文本。
 - 中间输出：Responses Structured Outputs 生成且未经人工修补的 `WorldSpec`、原始
   Images 响应、解码后的原始 PNG、`ImageArtifact` metadata，以及规范化后的
   `512 x 288` PNG。
@@ -132,11 +134,34 @@ Images 环节已有一个真实可用探针，但 Responses Structured Outputs �
 
 <!-- prettier-ignore -->
 > [!IMPORTANT]
-> 当前只确认了 Images 环节。开始会话 3 实现前，必须先用用户明确指定的 Responses
-> 模型验证该 Base URL 支持 `POST /v1/responses` 的 Structured Outputs；如果只能使用
-> `POST /v1/chat/completions` 和 `response_format: json_schema`，必须先确认这是否作为本次
-> 先行测试的可接受适配。端点、模型或结构化输出能力任一项未确认时，向用户报告缺项并
-> 停止，不得自行猜测模型或跳过 WorldSpec 环节。
+> Responses 前置条件已于 2026-08-13 晚间确认：用户指定的 Responses 模型在
+> `api.denxio.com` 上支持原生 `POST /v1/responses` Structured Outputs，一次真实
+> preflight 返回了未经人工修补且通过 Pydantic 校验的 WorldSpec（证据：
+> `runs/session3-preflight-20260813-141620-72ba/`）。Chat Completions
+> `response_format(json_schema)` 适配保留为显式 opt-in（`allow_chat_compat`），
+> 本轮验收未启用。
+
+#### 会话 3 通过记录（2026-08-15）
+
+会话 3 已通过。真实付费流水线 `run_paid_pipeline.py --confirm-paid` 一次运行完成
+Responses + Images 真实调用并全部落盘，随后 Unity 经 HTTP 消费同一 Snapshot。
+
+- 运行：`runs/session3-20260815-023543-bcb8/`（`content-ready.json` 标记）
+- Responses：原生 Structured Outputs，`structured_output_api: "responses"`，
+  WorldSpec 无人工修补，含 `lighthouse`、`pet_wave`、`small_shelter` 和禁止项
+  `vehicle`。
+- Images：`gpt-image-2` HTTP 200，返回 `b64_json`；原始 PNG `1774 x 887`，
+  Pillow 重开成功，中心裁剪 16:9 后规范化为 `512 x 288`。
+- 哈希一致：ImageArtifact、asset manifest 与规范化文件三者 SHA-256 相等
+  （`manifest_hash_matches: true`）；原始 PNG 哈希另存于 `raw_sha256`。
+- Unity：交付服务 `run_server.py` 从 run 目录提供 Snapshot 与 PNG（不重新调用模型），
+  PlayMode 3/3 通过（含会话1/2 回归与 `Session3HttpLoadingTests`），背景纹理断言
+  512 x 288，截图见 `runs/session3-unity/unity-screenshot.png`。
+- 失败区分：鉴权、模型不可用、内容策略、超时与解码错误在 Provider 层分类为独立
+  category，负例由 `tests/test_pipeline_fail_closed.py` 与 `tests/test_external_models.py`
+  覆盖；流水线在任何环节失败时拒绝写入 `content-ready.json`。
+- 证据扫描：全部落盘证据经凭证扫描（两个 Provider Key 均未出现）；Images 响应中的
+  Base64 以不可逆摘要替换（`external/images-call.redacted.json`）。
 
 ### 会话 4：Unity -> 报告/SQLite -> 重放
 
@@ -173,7 +198,7 @@ Worker、MCP、Codex 改进 Workflow、多人、经济系统、开放世界、Ad
 事项或添加 `ready-for-agent` 标签。本文件是对应的本地规格；如后续提供任务系统，
 可原样发布并添加该标签。
 
-下一次会话从“会话 3：验证 Responses Structured Outputs 前置条件”开始。Images
-环节已经具备真实可用路径，但 Responses 端点、模型和结构化输出能力尚未确认；任一项
-缺失时，将直接说明需要用户提供或确认的具体内容，不会继续执行图片生成或 Unity
-加载。
+下一次会话从“会话 4：Unity -> 报告/SQLite -> 重放”开始。会话 1、2、3 已确认通过；
+会话 4 前置条件为会话 2 或 3 的 artifact 目录与 SQLite。开始前先检查
+`runs/session3-20260815-023543-bcb8/`（含 `content-ready.json`）与 SQLite 可用性，
+缺项时向用户说明并停止。

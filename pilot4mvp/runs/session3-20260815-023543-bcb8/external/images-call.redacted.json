@@ -1,0 +1,38 @@
+{
+  "endpoint": "https://5202828.xyz/v1/images/generations",
+  "method": "POST",
+  "http_status": 200,
+  "request_id": "e05c9711-4505-4ef3-ae0f-afeab5c9e71f",
+  "request": {
+    "model": "gpt-image-2",
+    "prompt": "横向 2D 像素风海边场景背景，左侧有灯塔区域，中间留出宠物挥手活动区，右侧留出小窝位置，不要出现车辆，不要文字，适合作为游戏背景。",
+    "n": 1
+  },
+  "response": {
+    "created": 1786761356,
+    "model": "gpt-image-2-codex",
+    "usage": {
+      "input_tokens": 214,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 214
+      },
+      "output_tokens": 258,
+      "output_tokens_details": {
+        "image_tokens": 258,
+        "text_tokens": 0
+      },
+      "total_tokens": 472
+    },
+    "data": [
+      {
+        "b64_json": {
+          "redacted": true,
+          "decoded_bytes": 1576420,
+          "raw_sha256": "37a3f7557f0694e10927cbd6a434791da4bc24640df19c7560f77b1dd1f14717",
+          "saved_as": "assets/raw/beach_background.png"
+        }
+      }
+    ]
+  }
+}
