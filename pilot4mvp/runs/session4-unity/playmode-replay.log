@@ -1,0 +1,733 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.21f1 (c02631ffc030) revision 12592689'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) Core' Language: 'zh' Physical Memory: 32499 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+[Licensing::IpcConnector] Channel LicenseClient-Mechrevo doesn't exist
+System  architecture: x64
+Process architecture: x64
+Date: 2026-08-15T11:56:37Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 15272)
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.21f1\Editor\Unity.exe
+-batchmode
+-projectPath
+C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip
+-runTests
+-testPlatform
+PlayMode
+-testFilter
+PetTrip.Tests.Session4ReplayTests
+-testResults
+C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\pilot4mvp\runs\session4-unity\playmode-replay-results.xml
+-logFile
+C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\pilot4mvp\runs\session4-unity\playmode-replay.log
+Successfully changed project path to: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip
+C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/.claude/worktrees/pilot4mvp-phase4/unity/PetTrip
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [12968]  Target information:
+
+Player connection [12968]  * "[IP] 192.168.179.1 [Port] 55504 [Flags] 2 [Guid] 593740209 [EditorId] 593740209 [Version] 1048832 [Id] WindowsEditor(7,WIN-C3D985L1HJN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12968]  * "[IP] 192.168.253.1 [Port] 55504 [Flags] 2 [Guid] 593740209 [EditorId] 593740209 [Version] 1048832 [Id] WindowsEditor(7,WIN-C3D985L1HJN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12968]  * "[IP] 198.18.0.1 [Port] 55504 [Flags] 2 [Guid] 593740209 [EditorId] 593740209 [Version] 1048832 [Id] WindowsEditor(7,WIN-C3D985L1HJN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12968]  * "[IP] 10.135.163.55 [Port] 55504 [Flags] 2 [Guid] 593740209 [EditorId] 593740209 [Version] 1048832 [Id] WindowsEditor(7,WIN-C3D985L1HJN) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [12968] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [12968] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Mechrevo" at "2026-08-15T11:56:38.3258645Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 15272, path: "C:/Program Files/Unity/Hub/Editor/6000.3.21f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Package Manager] Connected to IPC stream "Upm-10640" after 0.2 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              5db078f0ff594d55beda61eecd38f05b
+  Correlation Id:          d04f177f4691797ebf791f4c06468d3e
+  External correlation Id: 2127071596256544089
+  Machine Id:              80p4EI7VXntxSmrys3x8GbGs0jI=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-Mechrevo" (connect: 0.37s, validation: 0.07s, handshake: 0.03s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-Mechrevo-notifications" at "2026-08-15T11:56:38.4243268Z"
+[Licensing::Module] Connected to LicensingClient (PId: 15272, launch time: 0.00, total connection time: 0.47s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-QH2J-3RMZ-YSC4-8SBR-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-08-25T12:56:23Z
+[Licensing::Module] License group:
+  Id: ewogICJzdWJzR3JvdXAiIDogInVuaXR5IGVkaXRvciIsCiAgIm5hbWVzcGFjZSIgOiAidW5pdHlfZWRpdG9yIiwKICAidHlwZSIgOiAiRURJVE9SIiwKICAidGFnIiA6ICJVbml0eVBlcnNvbmFsXXXX
+  Product: Unity Personal Version
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Module] Licensing Background thread has ended after 0.50s
+[Licensing::Module] Licensing is initialized (took 0.09s).
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-QH2J-3RMZ-YSC4-8SBR-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-08-25T12:56:23Z
+[Licensing::Module] License group:
+  Id: ewogICJzdWJzR3JvdXAiIDogInVuaXR5IGVkaXRvciIsCiAgIm5hbWVzcGFjZSIgOiAidW5pdHlfZWRpdG9yIiwKICAidHlwZSIgOiAiRURJVE9SIiwKICAidGFnIiA6ICJVbml0eVBlcnNvbmFsXXXX
+  Product: Unity Personal Version
+  Type: Assigned
+  Expiration: Unlimited
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.21f1 (c02631ffc030)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.21f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/.claude/worktrees/pilot4mvp-phase4/unity/PetTrip/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4070 Laptop GPU (ID=0x2820)
+    Vendor:          NVIDIA
+    VRAM:            7948 MB
+    App VRAM Budget: 7180 MB
+    Driver:          32.0.15.9186
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.21f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.21f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.21f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56640
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.21f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Registered in 0.001051 seconds.
+- Loaded All Assemblies, in  0.395 seconds
+Native extension for WindowsStandalone target not found
+Package Manager log level set to [2]
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.439 seconds
+Domain Reload Profiling: 834ms
+	BeginReloadAssembly (114ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (6ms)
+	RebuildCommonClasses (34ms)
+	RebuildNativeTypeToScriptingClass (14ms)
+	initialDomainReloadingComplete (46ms)
+	LoadAllAssembliesAndSetupDomain (186ms)
+		LoadAssemblies (107ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (183ms)
+			TypeCache.Refresh (181ms)
+				TypeCache.ScanAssembly (167ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (440ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (398ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (52ms)
+			SetLoadedEditorAssemblies (4ms)
+			BeforeProcessingInitializeOnLoad (104ms)
+			ProcessInitializeOnLoadAttributes (150ms)
+			ProcessInitializeOnLoadMethodAttributes (89ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: F4-QH2J-3RMZ-YSC4-8SBR-XXXX
+  Product: Unity Personal
+  Type: ULF
+  Expiration: 2026-08-25T12:56:39Z
+[Licensing::Module] License group:
+  Id: ewogICJzdWJzR3JvdXAiIDogInVuaXR5IGVkaXRvciIsCiAgIm5hbWVzcGFjZSIgOiAidW5pdHlfZWRpdG9yIiwKICAidHlwZSIgOiAiRURJVE9SIiwKICAidGFnIiA6ICJVbml0eVBlcnNvbmFsXXXX
+  Product: Unity Personal Version
+  Type: Assigned
+  Expiration: Unlimited
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 50 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.searcher@4.9.4 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.searcher@d45a78918735)
+    com.unity.burst@1.8.30 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.burst@2f3d916873ea)
+    com.unity.mathematics@1.3.3 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.mathematics@19a9377c4ffa)
+    com.unity.collections@2.6.8 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.collections@84e8eb3fc12e)
+    com.unity.nuget.mono-cecil@1.11.6 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.nuget.mono-cecil@ecb9724e46ff)
+    com.unity.test-framework.performance@3.5.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.test-framework.performance@8b56083ec0f0)
+  Built-in packages:
+    com.unity.render-pipelines.universal@17.3.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.render-pipelines.universal@8aa8d736cba6)
+    com.unity.test-framework@1.6.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.test-framework@bd7f943e9647)
+    com.unity.multiplayer.center@1.0.1 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.modules.accessibility@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.cloth@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.audio@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.ext.nunit@2.0.5 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+    com.unity.render-pipelines.core@17.3.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.render-pipelines.core@c67c01575725)
+    com.unity.shadergraph@17.3.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.shadergraph@aa8306cf39d6)
+    com.unity.render-pipelines.universal-config@17.0.3 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.render-pipelines.universal-config@8dc1aab4af1d)
+    com.unity.ugui@2.0.0 (location: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\Library\PackageCache\com.unity.ugui@e20f1880fa04)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.01 seconds
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.21f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/Users/Mechrevo/Documents/ChatGPT/PetTrip/.claude/worktrees/pilot4mvp-phase4/unity/PetTrip
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 0s162ms
+[495/616    0s] ILPP-Configuration Library/ilpp-configuration.nevergeneratedoutput
+*** Tundra build success (0.14 seconds), 1 items updated, 616 evaluated
+Total cache size 19145356
+AssetDatabase: script compilation time: 0.517417s
+Begin MonoManager ReloadAssembly
+Total cache size after purge 19145356, took 00:00:00.0140900
+- Loaded All Assemblies, in  0.470 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.900 seconds
+Domain Reload Profiling: 2369ms
+	BeginReloadAssembly (165ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (17ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (33ms)
+	RebuildCommonClasses (32ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (22ms)
+	LoadAllAssembliesAndSetupDomain (238ms)
+		LoadAssemblies (219ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (105ms)
+			TypeCache.Refresh (63ms)
+				TypeCache.ScanAssembly (57ms)
+			BuildScriptInfoCaches (33ms)
+			ResolveRequiredComponents (7ms)
+	FinalizeReload (1900ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1674ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (21ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (130ms)
+			ProcessInitializeOnLoadAttributes (1376ms)
+			ProcessInitializeOnLoadMethodAttributes (141ms)
+			AfterProcessingInitializeOnLoad (2ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (30ms)
+Asset Pipeline Refresh (id=54225fb790532f849aa2a6f983e5c199): Total: 3.203 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=2138 ms
+		Asset DB Callback time: managed=38 ms, native=13 ms
+		Scripting: domain reloads=1, domain reload time=470 ms, compile time=519 ms, other=23 ms
+		Project Asset Count: scripts=780, non-scripts=1528
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 14.506ms
+	ApplyChangesToAssetFolders: 0.626ms
+	Scan: 74.270ms
+	OnSourceAssetsModified: 0.002ms
+	CategorizeAssetsWithTransientArtifact: 13.461ms
+	ProcessAssetsWithTransientArtifactChanges: 27.682ms
+	CategorizeAssets: 33.614ms
+	ImportOutOfDateAssets: 1903.751ms (1383.436ms without children)
+		CompileScripts: 518.778ms
+		ReloadNativeAssets: 0.023ms
+		UnloadImportedAssets: 0.816ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.400ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.297ms
+	PostProcessAllAssets: 38.119ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.002ms
+	UnloadStreamsBegin: 2.439ms
+	PersistCurrentRevisions: 0.070ms
+	UnloadStreamsEnd: 0.001ms
+	GenerateScriptTypeHashes: 1.803ms
+	Untracked: 1094.517ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Scanning for USB devices : 5.726ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-PetTrip
+Unloading 19 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 3231 unused Assets / (4.3 MB). Loaded Objects now: 4066.
+Memory consumption went from 164.7 MB to 160.5 MB.
+Total: 6.410200 ms (FindLiveObjects: 0.259500 ms CreateObjectMapping: 0.192400 ms MarkObjects: 4.737400 ms  DeleteObjects: 1.219900 ms)
+
+Unity is running with Administrator privileges, which is not supported. Unity executes scripts and binary libraries in your project that may originate from third party sources and potentially be harmful to your computer. Unity may also execute scripts and binary libraries that are still under development and not yet fully tested. Running Unity with Administrator privileges may lead to catastrophic consequences, including but not limited to accidental data loss, change of global system settings or even bricking your device.
+[Project] Loading completed in 5.501 seconds
+	Project init time: 				5.103 seconds
+		Template init time: 		0.000 seconds
+		Package Manager init time: 		0.311 seconds
+		Asset Database init time: 		0.146 seconds
+		Global illumination init time: 	0.002 seconds
+		Assemblies load time: 			0.849 seconds
+		Unity extensions init time: 	0.013 seconds
+		Asset Database refresh time: 	3.203 seconds
+	Scene opening time: 			0.206 seconds
+##utp:{"type":"ProjectInfo","version":2,"phase":"Immediate","time":1786795003441,"processId":10640,"projectLoad":5.5006857,"projectInit":5.1029815,"templateInit":0.0,"packageManagerInit":0.3108343,"assetDatabaseInit":0.1464153,"globalIlluminationInit":0.0021114,"assembliesLoad":0.8493042,"unityExtensionsInit":0.0131475,"assetDatabaseRefresh":3.2032333,"sceneOpening":0.206139}
+##utp:{"type":"EditorInfo","version":2,"phase":"Immediate","time":1786795003441,"processId":10640,"editorVersion":"6000.3.21f1 (c02631ffc030)","branch":"6000.3/staging","buildType":"Release","platform":"Windows"}
+[Licensing::Client] Successfully resolved entitlement details
+Running tests for ExecutionSettings with details:
+targetPlatform = 
+playerHeartbeatTimeout = 600
+filters[0] = 
+   Filter with settings:
+   testMode = PlayMode
+   targetPlatform = 
+   testNames = null
+   groupNames = PetTrip.Tests.Session4ReplayTests
+   categoryNames = null
+   assemblyNames = null
+ignoreTests = {}
+featureFlags = null
+
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.CommandLineTest.Executer:InitializeAndExecuteRun (string[]) (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/CommandLineTest/Executer.cs:53)
+UnityEditor.TestTools.TestRunner.CommandLineTest.TestStarter:InitializeAndExecuteRun () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/CommandLineTest/TestStarter.cs:64)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/CommandLineTest/Executer.cs Line: 53)
+
+DisplayProgressbar: Material Upgrader re-import
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/Decal.mat using Guid(31d0dcc6f2dd4e4408d18036a2c93862) (NativeFormatImporter) -> (artifact id: '8f3d32c29394a79b41f28a25b53defe8') in 0.0154084 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/Lit.mat using Guid(31321ba15b8f8eb4c954353edc038b1d) (NativeFormatImporter) -> (artifact id: '960643f9fe6857c5d72b0d2fd2085c0e') in 0.0027579 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/Mesh2D-Unlit-Default.mat using Guid(71942363c5608a64bb62421349d39c9c) (NativeFormatImporter) -> (artifact id: 'ef7311a66811940111367c78fa0cdd5d') in 0.0018318 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/SceneTemplates/Materials/Emissive.mat using Guid(92f845725428c954b878da352f657fe5) (NativeFormatImporter) -> (artifact id: 'b1f26f5eeb8ffbff6a8f6611506c4115') in 0.004836 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/SceneTemplates/Materials/Gold.mat using Guid(c2e40fa84d53ccd428f640eac126b1fb) (NativeFormatImporter) -> (artifact id: '9f9661d44e363023702c87ca4956e3f6') in 0.0034441 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/SceneTemplates/Materials/Metal_Black.mat using Guid(b34b07a45ba63ce47896c9e674f3a7a7) (NativeFormatImporter) -> (artifact id: '2e543c70b0a48798291a154a0176c0e2') in 0.0033625 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/Mesh2D-Lit-Default.mat using Guid(9452ae1262a74094f8a68013fbcd1834) (NativeFormatImporter) -> (artifact id: 'a9f6a1c64081483a70fbc1be53f18baa') in 0.0018271 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/SpriteMask-Default.mat using Guid(15d0c3709176029428a0da2f8cecf0b5) (NativeFormatImporter) -> (artifact id: '9b9123c1145efbdb38e316f85cad951e') in 0.0026804 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/SpatialMappingOcclusion.mat using Guid(b51db210fe78df745a372851b3db949e) (NativeFormatImporter) -> (artifact id: 'e725b235a682e6bf286c10ab07552b74') in 0.0019846 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/SceneTemplates/Materials/Ground.mat using Guid(761d8e1f988ed2345a28312145c79c6e) (NativeFormatImporter) -> (artifact id: '27ce923cbd5bcc4047b0e855e6fb0af9') in 0.0030805 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/RenderAs2D-Flattening.mat using Guid(b697f6a938056384e968ccf6527dac83) (NativeFormatImporter) -> (artifact id: '5ecfe90ca8080262222ed764ee85060b') in 0.0036 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/FullscreenInvertColors.mat using Guid(78a08787ca30045abb69f6f7dd878e09) (NativeFormatImporter) -> (artifact id: 'ee24d1240c4d3093a35a8ce9cd6a6123') in 0.0034079 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/SpatialMappingWireframe.mat using Guid(9875a245ac49007498213638a307faa1) (NativeFormatImporter) -> (artifact id: '40a3a03ad30c23572795ee7951b74454') in 0.0030642 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/ParticlesUnlit.mat using Guid(e823cd5b5d27c0f4b8256e7c12ee3e6d) (NativeFormatImporter) -> (artifact id: 'aa862bff269d59d834f13819255630e6') in 0.0023526 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/TerrainLit.mat using Guid(594ea882c5a793440b60ff72d896021e) (NativeFormatImporter) -> (artifact id: '32c0756065a4c99773d8b19abfdb7370') in 0.0021106 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Lit-Default.mat using Guid(a97c105638bdf8b4a8650670310a4cd3) (NativeFormatImporter) -> (artifact id: '6b65b378b739cf40c13c1e455b16dff7') in 0.0024679 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/SceneTemplates/Materials/White.mat using Guid(f96821bbefeea864b9b418af4b8615ac) (NativeFormatImporter) -> (artifact id: 'b0a10ce88eba78cadb227317064359ad') in 0.0077184 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/SimpleLit.mat using Guid(6a1143ee683302f4aa628c052723efc1) (NativeFormatImporter) -> (artifact id: '4e947c4ad6c49ec8c3dbccd89f2ba9c5') in 0.0024813 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/RendererFeatures/SurfaceCacheGI/FallbackMaterial.mat using Guid(8a239b3da89050c4e89ac06b168fc684) (NativeFormatImporter) -> (artifact id: '365f287f19db505f8da5f5a7aa1bdbca') in 0.0015508 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat using Guid(9dfc825aed78fcd4ba02077103263b40) (NativeFormatImporter) -> (artifact id: '3535407266e63a704ebed07394e8e29d') in 0.0012434 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/SceneTemplates/Materials/Black.mat using Guid(4f1ef37ae953c484bbc5d5e4049147e5) (NativeFormatImporter) -> (artifact id: 'c073248664ba5268b69bc9cf80293393') in 0.0015498 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Black.ttf using Guid(1062c701058745940ae5dca6219c64c8) (TrueTypeFontImporter) -> (artifact id: 'fcfd246391a0ea71ca2a779a06bcb3ac') in 0.0051134 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Regular.ttf using Guid(30dc370b164eefc43b95744fc796dad0) (TrueTypeFontImporter) -> (artifact id: 'e88265dec696838b96bfa89259eca3ee') in 0.0032956 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-ThinItalic.ttf using Guid(b2ea3b3f1765e544b9eb5bd1a93a91ce) (TrueTypeFontImporter) -> (artifact id: 'ebed3587f31469b7ed1f215111200e64') in 0.0029198 seconds
+Start importing Packages/com.unity.render-pipelines.core/Runtime/Debugging/Prefabs/Fonts/PerfectDOSVGA437.ttf using Guid(74a5091d8707f334b9a5c31ef71a64ba) (TrueTypeFontImporter) -> (artifact id: '17baae82c87969a57920915e78c06aca') in 0.0028862 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Medium.ttf using Guid(a51a3aebb43ac044989270407476b208) (TrueTypeFontImporter) -> (artifact id: 'c7ced244834c79c4d9a56b36e5ad331e') in 0.0024316 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Bold.ttf using Guid(3750c318f40cab44a97d3a81beaefeb3) (TrueTypeFontImporter) -> (artifact id: '77cfd2f7ac0b12233821a3de72324c7e') in 0.0025512 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Italic.ttf using Guid(c839255fc8f6b4b4d90bf8c1af9f9bd1) (TrueTypeFontImporter) -> (artifact id: '34aea38e6f5ad75c669903fb2eec0ef8') in 0.0025438 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Thin.ttf using Guid(19a9abb883540be48b75b951a927ae03) (TrueTypeFontImporter) -> (artifact id: 'e8d19da7ff636d3206784d80f5127fa1') in 0.0025253 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-MediumItalic.ttf using Guid(d93c1bc57fdf1ac4dad1bf04fac05464) (TrueTypeFontImporter) -> (artifact id: 'ab2288725cdc36cc9451e88898f02f8a') in 0.0024738 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-BlackItalic.ttf using Guid(f95147a9bab9fe649b8070170fa7ebd2) (TrueTypeFontImporter) -> (artifact id: '9c0c207a65eaebb5461a5bd9b6761002') in 0.0027204 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-Light.ttf using Guid(2a29e27936eb547458f646f71125b264) (TrueTypeFontImporter) -> (artifact id: '8f695168e63791c8e295a36a555f03a5') in 0.0024917 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-LightItalic.ttf using Guid(5e63515167650a541b309ba3bfd4db3d) (TrueTypeFontImporter) -> (artifact id: '06e9040f082a33cb064bc66f23766c41') in 0.0025035 seconds
+Start importing Packages/com.unity.searcher/Editor/Resources/FlatSkin/Font/Roboto-BoldItalic.ttf using Guid(dfb97a9307a577a41bcacba34b9a7e32) (TrueTypeFontImporter) -> (artifact id: 'd506485d512ee8ab5f45626384ac7773') in 0.0025094 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/BuiltIn/BuiltIn Lit Basic.shadergraph using Guid(2019d78ad3d1c5c4a8d309a857ca449f) (ScriptedImporter) -> (artifact id: 'f9c1be7082f2beb3559fa852b5bf16dc') in 0.3122968 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/ArnoldStandardSurface/ArnoldStandardSurfaceTransparent.shadergraph using Guid(30fa68ce467463643a86b839ca0eb195) (ScriptedImporter) -> (artifact id: 'b4103a586a19897dbc93017517d837b3') in 0.1365303 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/AutodeskInteractive/AutodeskInteractiveMasked.shadergraph using Guid(80aa867ac363ac043847b06ad71604cd) (ScriptedImporter) -> (artifact id: '8e9560b36dd7b3ddf2c280f3137fe60c') in 0.1075947 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/0_Lit Basic.shadergraph using Guid(a2407126e3372f64cacb75ed466a5621) (ScriptedImporter) -> (artifact id: '6f8a8f78de5e12a68c01967fe2e5e672') in 0.0948284 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/Unlit Simple.shadergraph using Guid(2476a2d151e824143af40dce1fc93a12) (ScriptedImporter) -> (artifact id: '3cf26812789f3a636735c727ec1d4392') in 0.0785507 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/2D/VFXSpriteLit.shadergraph using Guid(24a73dccd7b6fad4798be282f96a21f4) (ScriptedImporter) -> (artifact id: '8a2bb1e07208bac04e155befe99ff722') in 0.0703216 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/PhysicalMaterial3DsMax/PhysicalMaterial3DsMax.shadergraph using Guid(44245ab89240f51459a5077d7145c452) (ScriptedImporter) -> (artifact id: 'afa362d825ea462d51e627a255f58ce6') in 0.1612672 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/2D/1_2D Sprite Unlit.shadergraph using Guid(25a0ebb4827f3cc47a1af2c79005f65b) (ScriptedImporter) -> (artifact id: '2367b3ebed6db92ebd9141c9a834c53d') in 0.1028011 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/BuiltIn/BuiltIn Unlit Basic.shadergraph using Guid(9618d41bb71f74048bb6cace8785b93d) (ScriptedImporter) -> (artifact id: 'b31bfd44ff15e990a7083285858ac5e2') in 0.0853409 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/2_Particle Lit.shadergraph using Guid(a680d9a9f8b66514abbfd3ae1c8f77f7) (ScriptedImporter) -> (artifact id: 'e1a234c41a76f0a8b72c9189a0289cfb') in 0.123425 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/UITKBasicTemplate.shadergraph using Guid(0738648e2f2f84b489a2f0076b69e30a) (ScriptedImporter) -> (artifact id: '1e1bcc1b4e917a92cac3e778164845e2') in 0.0498783 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/1_Decal Material Volume.shadergraph using Guid(1716ff8c1e51af14280cc97fbcba3b11) (ScriptedImporter) -> (artifact id: 'a6a9c754a133f641b809dcad17520162') in 0.1052388 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/ArnoldStandardSurface/ArnoldStandardSurface.shadergraph using Guid(3739e562a03fc0b4982d8aa66cc50865) (ScriptedImporter) -> (artifact id: '732d7dfd941d9727c022147b0a595bdf') in 0.1033444 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/2D/VFXSpriteUnlit.shadergraph using Guid(d7288f66e4fb0634c9afef98c31b722a) (ScriptedImporter) -> (artifact id: '7cad7483ec60a25c6444a2237077d9dd') in 0.0602118 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/0_Decal Simple.shadergraph using Guid(39144937a5efe954dac51acbbe54157e) (ScriptedImporter) -> (artifact id: 'cfd1c20a9264a33977f631000a46d604') in 0.0766566 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/Nature/SpeedTree8_PBRLit.shadergraph using Guid(9920c1f1781549a46ba081a2a15a16ec) (ScriptedImporter) -> (artifact id: 'dfb74f1a06163b40a908933ab68f47db') in 0.2223416 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Runtime/Materials/PhysicalMaterial3DsMax/PhysicalMaterial3DsMaxTransparent.shadergraph using Guid(1a207e3bee00db44b940e6f362a8e148) (ScriptedImporter) -> (artifact id: 'f33a4fb1d399782df7daa5e537828ed1') in 0.1139998 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/UGUI Canvas Basic.shadergraph using Guid(5a4a765e921b8554eb959f7cf697b3be) (ScriptedImporter) -> (artifact id: '121dbd91af37347cab32ffde890b9591') in 0.0633029 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/Decal.shadergraph using Guid(9b4e681081e2b4c469111bb649e2f7ee) (ScriptedImporter) -> (artifact id: 'a7606a859af868e1472f722a313d3939') in 0.0801029 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/Nature/SpeedTree9_URP.shadergraph using Guid(cbd3e1cc4ae141c42a30e33b4d666a61) (ScriptedImporter) -> (artifact id: '2711708c30ffa585ce2ae6de0f331cab') in 0.1845409 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/FullscreenInvertColors.shadergraph using Guid(fb6390f650ca44a5ba3246d8dda47927) (ScriptedImporter) -> (artifact id: 'c7b1ddeb1bfc9eb6c6000c4efa09a150') in 0.058708 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/AutodeskInteractive/AutodeskInteractiveTransparent.shadergraph using Guid(5c81372d981403744adbdda4433c9c11) (ScriptedImporter) -> (artifact id: '7614ee40ab1b43bb5f7058694cb1e8ac') in 0.1341338 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/Terrain Standard 4 Layers URP.shadergraph using Guid(bc3def193b270c649b041063a70a1a1f) (ScriptedImporter)Shader 'Hidden/Terrain/Terrain Standard 4 Layers URP': dependency 'AddPassShader' shader 'Hidden/Hidden/Terrain/Terrain Standard 4 Layers URP_AddPass' not found
+Shader 'Hidden/Terrain/Terrain Standard 4 Layers URP': dependency 'BaseMapGenShader' shader 'Hidden/Hidden/Terrain/Terrain Standard 4 Layers URP_BaseMapGen' not found
+Shader 'Hidden/Terrain/Terrain Standard 4 Layers URP': dependency 'AddPassShader' shader 'Hidden/Hidden/Terrain/Terrain Standard 4 Layers URP_AddPass' not found
+Shader 'Hidden/Terrain/Terrain Standard 4 Layers URP': dependency 'BaseMapGenShader' shader 'Hidden/Hidden/Terrain/Terrain Standard 4 Layers URP_BaseMapGen' not found
+ -> (artifact id: '734f343ab2e7f69f892bd17ff15ec6d7') in 0.3474981 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/UGUI Canvas Meter.shadergraph using Guid(9d4e8ca8c5046914c87ca6ccef140dac) (ScriptedImporter) -> (artifact id: 'c1af70415521a5d6d71088e1f213f4a2') in 0.0801715 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/2D/0_2D Sprite Lit.shadergraph using Guid(bde135b320597544b9ac325092409f8b) (ScriptedImporter) -> (artifact id: 'a6807364465b8915d570dad98e454703') in 0.0711694 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Shaders/AutodeskInteractive/AutodeskInteractive.shadergraph using Guid(0e9d5a909a1f7e84882a534d0d11e49f) (ScriptedImporter) -> (artifact id: '9d418e49fd2174f57b1baf7c12242bb2') in 0.1495373 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/UITKFullTemplate.shadergraph using Guid(3e01bbae25716b24ea9da11102b44902) (ScriptedImporter) -> (artifact id: 'b19d9205b6a4d7124465a60ce13ecf68') in 0.0445699 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Custom Render Texture.shadergraph using Guid(7ef2cf71ad164fe479662ae612dff99e) (ScriptedImporter) -> (artifact id: '1bec025da4b8c728cce6f11cb32c0017') in 0.0156053 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/1_Lit Full.shadergraph using Guid(aee84ce0dab81b049bb88017d78a63cd) (ScriptedImporter) -> (artifact id: '3f72c7507fb25c3a9d27ce361e7588cc') in 0.1623691 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/Terrain Simple.shadergraph using Guid(def488a52add6574d9f295a507032cb8) (ScriptedImporter)Shader 'Hidden/Terrain/Terrain Simple': dependency 'AddPassShader' shader 'Hidden/Hidden/Terrain/Terrain Simple_AddPass' not found
+Shader 'Hidden/Terrain/Terrain Simple': dependency 'BaseMapGenShader' shader 'Hidden/Hidden/Terrain/Terrain Simple_BaseMapGen' not found
+Shader 'Hidden/Terrain/Terrain Simple': dependency 'AddPassShader' shader 'Hidden/Hidden/Terrain/Terrain Simple_AddPass' not found
+Shader 'Hidden/Terrain/Terrain Simple': dependency 'BaseMapGenShader' shader 'Hidden/Hidden/Terrain/Terrain Simple_BaseMapGen' not found
+ -> (artifact id: '8eee88e23c0f2a92a61a7c3ca7b8e13d') in 0.310723 seconds
+Start importing Packages/com.unity.shadergraph/GraphTemplates/Cross Pipeline/0_Particle Unlit.shadergraph using Guid(af66091e0eca0c04a9c3584ae867418a) (ScriptedImporter) -> (artifact id: '82f79024b396af2c9c9252521351f8dc') in 0.1076189 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/2D/2_2D Sprite Custom Lit.shadergraph using Guid(bfad0aba0faa90547b68abd10bb6be86) (ScriptedImporter) -> (artifact id: '7020184c1c4e72f5ec09dba96f983765') in 0.0988882 seconds
+Start importing Packages/com.unity.render-pipelines.universal/Editor/ShaderGraph/GraphTemplates/Fullscreen Basic URP.shadergraph using Guid(df41eefe8c13d444ca890dddbbc61f8d) (ScriptedImporter) -> (artifact id: 'd53dfa04293dbdecc4537cb6338a4478') in 0.0571016 seconds
+Start importing Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesFixture.fbx using Guid(b28fa67a0ff82c5478f27368dc627683) (FBXImporter) -> (artifact id: 'a0f2bfb54cf8f81ebb1826b1b3f553b5') in 0.0374818 seconds
+Start importing Packages/com.unity.render-pipelines.core/Runtime/RenderPipelineResources/Mesh/SamplesFloorSpotlight.fbx using Guid(1dbf28c1bb322474d981b2dc555e28b0) (FBXImporter) -> (artifact id: '45478e9e8914bf97dcf51a84c34e895f') in 0.014477 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=aa8ac355252d3a24f942e5c91eb091a6): Total: 4.521 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+	Summary:
+		Imports: total=69 (actual=69, local cache=0, cache server=0)
+		Asset DB Process Time: managed=36 ms, native=4240 ms
+		Asset DB Callback time: managed=70 ms, native=172 ms
+		Scripting: domain reloads=0, domain reload time=0 ms, compile time=0 ms, other=0 ms
+		Project Asset Count: scripts=780, non-scripts=1528
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 102
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 0.001ms
+	ApplyChangesToAssetFolders: 0.112ms
+	Scan: 25.571ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.081ms
+	ProcessAssetsWithTransientArtifactChanges: 0.052ms
+	CategorizeAssets: 14.001ms
+	ImportOutOfDateAssets: 4232.393ms (-4.975ms without children)
+		ImportManagerImport: 4230.906ms (76.731ms without children)
+			ImportInProcess: 4149.418ms
+			UpdateCategorizedAssets: 4.756ms
+		ReloadNativeAssets: 0.017ms
+		UnloadImportedAssets: 0.813ms
+		ReloadImportedAssets: 5.161ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.200ms
+		InitializingProgressBar: 0.004ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.267ms
+	PostProcessAllAssets: 242.419ms
+	Hotreload: 0.672ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.076ms
+	UnloadStreamsBegin: 0.060ms
+	PersistCurrentRevisions: 0.069ms
+	UnloadStreamsEnd: 0.063ms
+	Untracked: 5.138ms
+
+[UnityConnectServicesConfig] config is NOT valid, switching to default
+Created GICache directory at C:/Users/Mechrevo/AppData/LocalLow/Unity/Caches/GiCache. Took: 0.003s, timestamps: [5.504 - 5.506]
+Unloading 91 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 159 unused Assets / (11.5 MB). Loaded Objects now: 4085.
+Memory consumption went from 228.0 MB to 216.5 MB.
+Total: 11.651100 ms (FindLiveObjects: 0.138900 ms CreateObjectMapping: 0.070100 ms MarkObjects: 8.809400 ms  DeleteObjects: 2.631500 ms)
+
+Start importing Assets/InitTestScenee071dc82-1f37-4487-ac47-a622ac50929e.unity using Guid(35ff2e51a29f6604db2850c0780039b7) (DefaultImporter) -> (artifact id: 'b8643a6519043485071cfceceb21dead') in 0.0012777 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=e1a223d512014b942857e493e2516b7f): Total: 0.030 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+Executing IPrebuildSetup for: Unity.PerformanceTesting.Editor.TestRunBuilder.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<ExecuteMethods>d__8<UnityEngine.TestTools.IPrebuildSetup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:48)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<Execute>d__7<UnityEngine.TestTools.IPrebuildSetup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:34)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteStep () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:173)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteCallback () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:108)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs Line: 48)
+
+Reloading assemblies for play mode.
+Reloading assemblies after forced synchronous recompile.
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.474 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.621 seconds
+Domain Reload Profiling: 1096ms
+	BeginReloadAssembly (296ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (24ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (162ms)
+	RebuildCommonClasses (30ms)
+	RebuildNativeTypeToScriptingClass (11ms)
+	initialDomainReloadingComplete (20ms)
+	LoadAllAssembliesAndSetupDomain (117ms)
+		LoadAssemblies (103ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (96ms)
+			TypeCache.Refresh (4ms)
+				TypeCache.ScanAssembly (0ms)
+			BuildScriptInfoCaches (68ms)
+			ResolveRequiredComponents (21ms)
+	FinalizeReload (621ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (409ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (15ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (110ms)
+			ProcessInitializeOnLoadAttributes (145ms)
+			ProcessInitializeOnLoadMethodAttributes (134ms)
+			AfterProcessingInitializeOnLoad (2ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (26ms)
+Asset Pipeline Refresh (id=19a2437c19d12264d9927c52afa9dbce): Total: 1.183 seconds - Initiated by StopAssetImportingV2(ForceSynchronousImport | ForceDomainReload)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=677 ms
+		Asset DB Callback time: managed=22 ms, native=0 ms
+		Scripting: domain reloads=1, domain reload time=481 ms, compile time=1 ms, other=0 ms
+		Project Asset Count: scripts=780, non-scripts=1529
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 1.042ms
+	ApplyChangesToAssetFolders: 0.280ms
+	Scan: 0.000ms
+	OnSourceAssetsModified: 0.001ms
+	CategorizeAssetsWithTransientArtifact: 0.003ms
+	ProcessAssetsWithTransientArtifactChanges: 1.566ms
+	CategorizeAssets: 30.151ms
+	ImportOutOfDateAssets: 624.190ms (620.453ms without children)
+		CompileScripts: 1.001ms
+		CollectScriptTypesHashes: 1.295ms
+		ReloadNativeAssets: 0.829ms
+		UnloadImportedAssets: 0.078ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.302ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.000ms
+		OnDemandSchedulerStart: 0.231ms
+	PostProcessAllAssets: 22.905ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.081ms
+	UnloadStreamsBegin: 0.130ms
+	PersistCurrentRevisions: 0.069ms
+	UnloadStreamsEnd: 0.001ms
+	GenerateScriptTypeHashes: 3.623ms
+	Untracked: 502.556ms
+
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.709 ms
+	Integration:            129.906 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.008 ms
+	Total Operation Time:   130.625 ms
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[Licensing::Client] Successfully resolved entitlement details
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.137100 ms
+Loaded scene 'Assets/PetTrip/Scenes/Session2Beach.unity'
+	Deserialize:            1.000 ms
+	Integration:            110.183 ms
+	Integration of assets:  0.002 ms
+	Thread Wait Time:       0.009 ms
+	Total Operation Time:   111.193 ms
+Unloading 150 unused Assets / (202.7 KB). Loaded Objects now: 4116.
+Memory consumption went from 160.0 MB to 159.8 MB.
+Total: 5.665200 ms (FindLiveObjects: 0.184900 ms CreateObjectMapping: 0.101400 ms MarkObjects: 5.234100 ms  DeleteObjects: 0.143900 ms)
+
+PETTRIP_HTTP_SNAPSHOT_LOAD_OK schema=0.2 scene=session1_beach layers=3 assets=4
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PetTrip.HttpSceneSnapshotLoader/<Load>d__20:MoveNext () (at Assets/PetTrip/Scripts/Loading/HttpSceneSnapshotLoader.cs:85)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/PetTrip/Scripts/Loading/HttpSceneSnapshotLoader.cs Line: 85)
+
+PETTRIP_SESSION4_REPLAY_OK path=C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\unity\PetTrip\TestArtifacts\Session4\unity-replay-screenshot.png
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+PetTrip.Tests.Session4ReplayTests/<ReplayedSnapshotRestoresShelterWithoutModelCalls>d__0:MoveNext () (at Assets/PetTrip/Tests/PlayMode/Session4ReplayTests.cs:52)
+UnityEngine.TestTools.TestEnumerator/<Execute>d__7:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Attributes/TestEnumerator.cs:44)
+UnityEngine.TestTools.EnumerableTestMethodCommand/<ExecuteEnumerableAndRecordExceptions>d__4:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/EnumerableTestMethodCommand.cs:79)
+UnityEngine.TestTools.EnumerableTestMethodCommand:AdvanceEnumerator (System.Collections.IEnumerator) (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/EnumerableTestMethodCommand.cs:64)
+UnityEngine.TestTools.EnumerableTestMethodCommand/<ExecuteEnumerable>d__2:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/EnumerableTestMethodCommand.cs:47)
+UnityEngine.TestRunner.NUnitExtensions.Runner.UnityLogCheckDelegatingCommand/<ExecuteEnumerable>d__3:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Runner/UnityLogCheckDelegatingCommand.cs:48)
+UnityEngine.TestTools.BeforeAfterTestCommandBase`1/<ExecuteEnumerable>d__16<NUnit.Framework.ITestAction>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/BeforeAfterTestCommandBase.cs:212)
+UnityEngine.TestTools.BeforeAfterTestCommandBase`1/<ExecuteEnumerable>d__16<System.Reflection.MethodInfo>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/BeforeAfterTestCommandBase.cs:212)
+UnityEngine.TestTools.BeforeAfterTestCommandBase`1/<ExecuteEnumerable>d__16<System.Reflection.MethodInfo>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/BeforeAfterTestCommandBase.cs:212)
+UnityEngine.TestTools.BeforeAfterTestCommandBase`1/<ExecuteEnumerable>d__16<UnityEngine.TestTools.IOuterUnityTestAction>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/BeforeAfterTestCommandBase.cs:212)
+UnityEngine.TestTools.RetryCommand/<ExecuteEnumerable>d__2:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/RetryCommand.cs:37)
+UnityEngine.TestTools.RepeatCommand/<ExecuteEnumerable>d__2:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/RepeatCommand.cs:36)
+UnityEngine.TestTools.IgnoreTestCommand/<ExecuteEnumerable>d__3:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/IgnoreTestCommand.cs:42)
+UnityEngine.TestTools.StrictCheckCommand/<ExecuteEnumerable>d__2:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/NUnitExtensions/Commands/StrictCheckCommand.cs:29)
+UnityEngine.TestTools.Utils.CoroutineRunner/<WrapEnumeratorForChecks>d__8:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEngine.TestRunner/Utils/CoroutineRunner.cs:58)
+UnityEngine.SetupCoroutine:InvokeMoveNext (System.Collections.IEnumerator,intptr)
+
+(Filename: Assets/PetTrip/Tests/PlayMode/Session4ReplayTests.cs Line: 52)
+
+Saving results to: C:/Users/Mechrevo/AppData/LocalLow/DefaultCompany/PetTrip\TestResults.xml
+Saving results to: C:\Users\Mechrevo\Documents\ChatGPT\PetTrip\.claude\worktrees\pilot4mvp-phase4\pilot4mvp\runs\session4-unity\playmode-replay-results.xml
+Unloading 2 Unused Serialized files (Serialized files now loaded: 0)
+Loaded scene 'Temp/__Backupscenes/0.backup'
+	Deserialize:            0.458 ms
+	Integration:            112.248 ms
+	Integration of assets:  0.001 ms
+	Thread Wait Time:       0.015 ms
+	Total Operation Time:   112.722 ms
+Unloading 9 unused Assets / (18.1 KB). Loaded Objects now: 4093.
+Memory consumption went from 155.6 MB to 155.6 MB.
+Total: 5.435300 ms (FindLiveObjects: 0.147400 ms CreateObjectMapping: 0.075500 ms MarkObjects: 5.016800 ms  DeleteObjects: 0.194500 ms)
+
+Executing IPostBuildCleanup for: Unity.PerformanceTesting.Editor.TestRunBuilder.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<ExecuteMethods>d__8<UnityEngine.TestTools.IPostBuildCleanup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:48)
+UnityEditor.TestTools.TestRunner.TestRun.Tasks.BuildActionTaskBase`1/<Execute>d__7<UnityEngine.TestTools.IPostBuildCleanup>:MoveNext () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs:34)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteStep () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:173)
+UnityEditor.TestTools.TestRunner.TestRun.TestJobRunner:ExecuteCallback () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/TestJobRunner.cs:108)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/TestRun/Tasks/BuildActionTaskBase.cs Line: 48)
+
+Unloading 0 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 0 unused Assets / (0 B). Loaded Objects now: 4098.
+Memory consumption went from 155.4 MB to 155.4 MB.
+Total: 5.658700 ms (FindLiveObjects: 0.139800 ms CreateObjectMapping: 0.067200 ms MarkObjects: 5.443200 ms  DeleteObjects: 0.007500 ms)
+
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=e6897e5e022dea84483dfaf8b1287d0d): Total: 0.067 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+DisplayProgressbar: Undo
+Test run completed. Exiting with code 0 (Ok). Run completed.
+UnityEngine.Debug:ExtractStackTraceNoAlloc (byte*,int,string)
+UnityEngine.StackTraceUtility:ExtractStackTrace ()
+UnityEngine.DebugLogHandler:Internal_Log (UnityEngine.LogType,UnityEngine.LogOption,string,UnityEngine.Object)
+UnityEngine.DebugLogHandler:LogFormat (UnityEngine.LogType,UnityEngine.Object,string,object[])
+UnityEngine.Logger:Log (UnityEngine.LogType,object)
+UnityEngine.Debug:Log (object)
+UnityEditor.TestTools.TestRunner.CommandLineTest.Executer:ExitApplication (UnityEditor.TestTools.TestRunner.CommandLineTest.Executer/ReturnCodes,string) (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/CommandLineTest/Executer.cs:81)
+UnityEditor.TestTools.TestRunner.CommandLineTest.Executer:ExitIfRunIsCompleted () (at ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/CommandLineTest/Executer.cs:74)
+UnityEditor.EditorApplication:Internal_CallUpdateFunctions ()
+
+(Filename: ./Library/PackageCache/com.unity.test-framework@bd7f943e9647/UnityEditor.TestRunner/CommandLineTest/Executer.cs Line: 81)
+
+Start importing ProjectSettings/ProjectSettings.asset using Guid(00000000000000004000000000000000) (LibraryAssetImporter) -> (artifact id: '959c5d48d949e324b43c76f69d8f198c') in 0.0061605 seconds
+Refreshing native plugins compatible for Editor in 0.00 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Asset Pipeline Refresh (id=6d841b9324e4cb443befbf233cb39de9): Total: 0.015 seconds - Initiated by StopAssetImportingV2(NoUpdateAssetOptions)
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-Mechrevo-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-Mechrevo channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+Checking for leaked weakptr:
+  Found no leaked weakptrs.
+[Package Manager] Server process was shutdown
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1786795011424,"processId":10640,"allocatedMemory":15053740,"memoryLabels":[{"Default":14409},{"Permanent":15236},{"NewDelete":70611},{"Thread":4237960},{"Manager":822749},{"VertexData":8},{"Geometry":816},{"Texture":296},{"Shader":80533},{"Material":24},{"GfxDevice":58032},{"Animation":392},{"Audio":2664},{"Font":1782565},{"FreeType":50552},{"FontEngine":736},{"Physics":2146},{"Physics2D":16},{"Serialization":656},{"Input":14984},{"JobScheduler":33024},{"TextLib":280},{"Mono":32},{"MonoCode":64},{"ScriptingNativeRuntime":155060},{"BaseObject":1623920},{"Resource":1336},{"Renderer":3000},{"Transform":4685},{"File":12708},{"WebCam":616},{"Culling":32},{"Terrain":11394},{"Wind":24},{"STL":40},{"String":14315},{"DynamicArray":95772},{"HashMap":87473},{"Utility":2661366},{"Curl":3098},{"PoolAlloc":2248},{"AI":80},{"TypeTree":5341},{"ScriptManager":512},{"RuntimeInitializeOnLoadManager":64},{"SpriteAtlas":112},{"GI":7792},{"Director":8240},{"CloudService":432},{"WebRequest":552},{"VR":47994},{"SceneManager":504},{"Video":208},{"LazyScriptCache":32},{"Camera":17},{"Secure":2377},{"SerializationCache":1576},{"APIUpdating":10320},{"Subsystems":336},{"VirtualTexturing":57888},{"StaticSafetyDebugInfo":278528},{"Analytics":336},{"Hierarchy":608},{"CoreStats":13112},{"Identifiers":6480},{"Gui":96},{"EditorUtility":108517},{"VersionControl":4},{"Undo":947},{"AssetDatabase":2588891},{"EditorGi":328},{"UnityConnect":29232},{"Upm":1896},{"AssetCompliance":64},{"DrivenProperties":72},{"LocalIPC":214},{"ProfilerEditor":9746},{"CoreBusinessMetrics":3228},{"Licensing":1232},{"AssetReference":32},{"IPCStream":32}]}

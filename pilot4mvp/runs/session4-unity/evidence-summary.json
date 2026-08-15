@@ -1,0 +1,11 @@
+{
+  "run_id": "session4-20260815-115620-0a9e",
+  "source_run_id": "session3-20260815-023543-bcb8",
+  "snapshot_sha256": "67d856ef6c9b4dcfbe45ce6c8ecde70aa6cf14986c24f72df34264aaf05f9b75",
+  "events": [
+    "job.accepted",
+    "job.replayed"
+  ],
+  "evidence_dir": "session4-unity",
+  "finished_at": "2026-08-15T11:56:51.608146+00:00"
+}

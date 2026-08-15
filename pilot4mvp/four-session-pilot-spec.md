@@ -176,6 +176,40 @@ Responses + Images 真实调用并全部落盘，随后 Unity 经 HTTP 消费同
 通过门槛：报告、SQLite 记录和截图的 `run_id` 与 Snapshot 哈希一致；重放期间没有新
 模型请求，且重新加载后小窝位置和类型不变。
 
+#### 会话 4 通过记录（2026-08-15）
+
+会话 4 已通过。两阶段编排 `run_unity_session4.py` 一次运行完成统一输入、Unity
+交互、v2 放置、报告回传与重启离线重放（`ALL_CHECKS_PASSED`，run
+`session4-20260815-115620-0a9e`）。
+
+- 契约演进：`contracts/scene-snapshot/v0.2.schema.json` 在 v0.1 基础上为
+  `build_slots` 增加可选 `placed_prefab`（省略 = 未放置）。v0.1 快照仍通过原
+  Schema（回归用例覆盖），Unity 渲染 v0.2 起由字段驱动。
+- 统一输入：`POST /runs`（`run_id` + 输入）返回相同 ID，落盘 `input.json` 并写
+  SQLite `job.accepted`；随后仅从源 run artifact（world-spec + scene-plan +
+  assets）确定性物化 Snapshot，全程零模型调用。缺输入负例返回 `422` 且不创建
+  运行目录（编排内实测）。
+- Unity 运行时：宠物区内移动被接受、活动区外目标被拒绝且位置不变；`pet_wave`
+  可触发；`PlacePrefab` 仅接受槽位 `allowed_prefabs` 内的 Prefab（`rocket` 被
+  拒绝），行为全部由 Snapshot 字段驱动。
+- v2 保存重载：放置后上传 `scene-snapshot-v2.json`（服务端执行 v0.2 Schema +
+  业务字段一致性校验，越权修改业务字段返回 `422`），清空场景仅用 v2 重载，
+  小窝位置 `(430, 96)` 与类型 `small_shelter` 不变；v1 加载路径由 EditMode
+  回归保留。
+- 报告回传：Unity 生成 6 项检查报告并 POST 回 FastAPI，服务端强校验
+  `snapshot_sha256` 与活动快照一致，截图 Base64 解码后经 Pillow 重开（512 x 288
+  PNG）落盘；SQLite `validation_reports`、`unity-report.json` 与截图三者
+  `run_id` 与 Snapshot 哈希（`67d856ef…`）一致。
+- 离线重放：服务进程重启（干净环境，无任何 `OPENAI_*`/`RESPONSES_*`/
+  `IMAGES_*` 变量），`POST /runs/{id}/replay` 仅从既有 artifact 重建 v2 并写入
+  `job.replayed`；SQLite 事件序列恰为 `job.accepted` + `job.replayed`，事件
+  明细 `model_calls: none`，服务日志无模型端点痕迹；重放快照哈希与重启前一致。
+- 测试：session4 pytest 29 通过（正例/负例/重启重放/篡改 fail-closed）；Unity
+  EditMode 14/14（含 v0.1 回归）；PlayMode 交互流与重放加载各 1/1 通过；
+  session2（18）与 session3（54）pytest 分目录回归全绿。
+- 证据：`runs/session4-20260815-115620-0a9e/`（run 目录全套产物）与
+  `runs/session4-unity/`（两份 PlayMode XML、日志、双截图、SQLite 事件汇总）。
+
 ## Testing Decisions
 
 - 测试只判断外部可观察行为：接口响应、已校验的 JSON、实际图片文件、Unity 截图、

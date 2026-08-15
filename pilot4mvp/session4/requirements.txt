@@ -1,0 +1,11 @@
+# PetTrip 会话3 外部模型、内容服务与离线测试依赖
+# 解释器: Python 3.12
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+pydantic==2.13.4
+pillow==12.3.0
+opencv-python==5.0.0.93
+jsonschema==4.26.0
+httpx==0.28.1
+python-dotenv==1.2.2
+pytest==9.1.1
