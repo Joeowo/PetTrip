@@ -1,0 +1,9 @@
+# PetTrip Agent Service Pilot dependencies
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+pydantic==2.13.4
+httpx==0.28.1
+Pillow==12.0.0
+python-multipart==0.0.22
+jsonschema==4.26.0
+pytest==9.1.1

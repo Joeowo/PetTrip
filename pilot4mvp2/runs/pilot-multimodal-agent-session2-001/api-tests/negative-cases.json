@@ -1,0 +1,6 @@
+{
+  "disguised_extension_status": 400,
+  "disguised_extension_error": "FILE_TYPE_UNSUPPORTED",
+  "oversized_status": 400,
+  "oversized_error": "FILE_TOO_LARGE"
+}

@@ -1,0 +1,7 @@
+edge_provider=cloudflare
+public_scheme=https
+public_hostname=<redacted>
+public_base_url_sha256=a673d785a1d23ac060b18dba23a8af1274d49544ecea094891a65ec19cf70ccc
+origin_host=<loopback>
+origin_port=<redacted>
+origin_listener_loopback_only=true

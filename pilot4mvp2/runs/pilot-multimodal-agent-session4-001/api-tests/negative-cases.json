@@ -1,0 +1,71 @@
+{
+  "provider_fixture_calls": 2,
+  "cases": [
+    {
+      "case": "missing_title",
+      "schema_version": "0.1",
+      "statuses_observed": [
+        "queued",
+        "running",
+        "failed"
+      ],
+      "terminal_status": "failed",
+      "events": [
+        "run.queued",
+        "run.started",
+        "run.failed"
+      ],
+      "error": {
+        "code": "STRUCTURED_OUTPUT_INVALID",
+        "message": "结构化输出不符合请求的 Schema。",
+        "retryable": false
+      },
+      "output_present": false,
+      "assistant_messages_persisted": 0
+    },
+    {
+      "case": "wrong_type",
+      "schema_version": "0.1",
+      "statuses_observed": [
+        "queued",
+        "running",
+        "failed"
+      ],
+      "terminal_status": "failed",
+      "events": [
+        "run.queued",
+        "run.started",
+        "run.failed"
+      ],
+      "error": {
+        "code": "STRUCTURED_OUTPUT_INVALID",
+        "message": "结构化输出不符合请求的 Schema。",
+        "retryable": false
+      },
+      "output_present": false,
+      "assistant_messages_persisted": 0
+    },
+    {
+      "case": "unsupported_version",
+      "schema_version": "9.9",
+      "statuses_observed": [
+        "queued",
+        "failed"
+      ],
+      "terminal_status": "failed",
+      "events": [
+        "run.queued",
+        "run.started",
+        "run.failed"
+      ],
+      "error": {
+        "code": "STRUCTURED_OUTPUT_INVALID",
+        "message": "结构化输出不符合请求的 Schema。",
+        "retryable": false
+      },
+      "output_present": false,
+      "assistant_messages_persisted": 0
+    }
+  ],
+  "client_text_json_fallback_rejected": true
+}

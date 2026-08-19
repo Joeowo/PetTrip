@@ -1,0 +1,6 @@
+HOST=<local>
+PORT=<local>
+CHAT_BASE_URL=<redacted>
+CHAT_API_KEY=<redacted>
+CHAT_MODEL=<redacted>
+PILOT_API_KEY=<ephemeral>

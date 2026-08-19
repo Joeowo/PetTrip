@@ -1,0 +1,57 @@
+INFO:     Started server process [23868]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+INFO:     request_completed request_id=req_01KZZ706EDANAXZ8TJH4SG9GZZ method=GET path=/health status=200
+INFO:     request_completed request_id=req_01KZZ706M19EVH8TWEGG8YQ7KD method=POST path=/api/v1/sessions status=201
+INFO:     request_completed request_id=req_01KZZ706M5MFZ8RDG1M2WB2SPG method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZ706M850FYAZZG1B1M2C2Q method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ706X5BHRCBANB80BTJHN0 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ7073FPH85T6GDRPWB1PDS method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ7079TCSB0K78TM8NZN8C8 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ707G4MKBBRM6QVF2GHVX0 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ707PES2FAMFFMWZA4FTCZ method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ707WR11B24MQ6AF9PD9ZC method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ708333WTXP4A93N6V1B3Z method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ7089CGG8D1GSNAFGWB6CV method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ708FP5QEMCZD7ES2ENAN8 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ708P0QHYH05C07NJHBPSN method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ708WAJJ0CYZNT9VKW7NQ4 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ7092MY95YCHB9HVN1DKT8 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ7098XQPE80FK9ANN6BZ1J method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ709F8V0E36YQFM80X076M method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ709NJTM3Z3XP1THE8JHMG method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ709VWBZH3H55EGCBP4993 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70A263WYGWFE92A0S1JV7 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70A8GG147GD9BERQCH7EX method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70AETRTM8SD4Q6YZHNM3B method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70AN4B7JDAVJ0TCS56Q5X method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70AVE9Q674TXTNXHZD3NW method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70B1R7TQ65DHMPCHFYP17 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70B82JZW6Y7P56R3JWQM4 method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70BECFZGD6GHVNYA9PXTQ method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9 status=200
+INFO:     request_completed request_id=req_01KZZ70BEEYFAPZD147WACN6FJ method=GET path=/api/v1/runs/run_01KZZ706M61DFMVCP4B7RASSS9/events status=200
+
+INFO:     Started server process [25420]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8001 (Press CTRL+C to quit)
+INFO:     request_completed request_id=req_01KZZ70C4VQBSWPWYAH7DH97KW method=GET path=/health status=200
+INFO:     request_completed request_id=req_01KZZ70CAMZKMEXZV1F12HNQ3D method=POST path=/api/v1/sessions status=201
+INFO:     request_completed request_id=req_01KZZ70CAR3TXM9BY83NQAGJS7 method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZ70CAVTHTW0GTHP7CAENMN method=GET path=/api/v1/runs/run_01KZZ70CASHZAJY6WY3XKH4ABZ status=200
+INFO:     request_completed request_id=req_01KZZ70CNME5J7KSG1F9XYE5R9 method=GET path=/api/v1/runs/run_01KZZ70CASHZAJY6WY3XKH4ABZ status=200
+WARNING:  structured_output_invalid request_id=req_01KZZ70CERCX987TM10YF15V2X run_id=run_01KZZ70CASHZAJY6WY3XKH4ABZ
+INFO:     request_completed request_id=req_01KZZ70CVY9NQGFFFW3TJK9TXY method=GET path=/api/v1/runs/run_01KZZ70CASHZAJY6WY3XKH4ABZ status=200
+INFO:     request_completed request_id=req_01KZZ70CW0K0Z42K9D1KVW6VZR method=GET path=/api/v1/runs/run_01KZZ70CASHZAJY6WY3XKH4ABZ/events status=200
+INFO:     request_completed request_id=req_01KZZ70CWFV8ENJ3KTEHRQM4HB method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZ70CWJX4W3Y96SXCSGS9SN method=GET path=/api/v1/runs/run_01KZZ70CWFZV1514BT79KC66C4 status=200
+INFO:     request_completed request_id=req_01KZZ70D7RM4ZPWZ9VZS62PP6Y method=GET path=/api/v1/runs/run_01KZZ70CWFZV1514BT79KC66C4 status=200
+WARNING:  structured_output_invalid request_id=req_01KZZ70D24MQCJWNPA13J5MM2F run_id=run_01KZZ70CWFZV1514BT79KC66C4
+INFO:     request_completed request_id=req_01KZZ70DE4NAXFG4025M9G23Y8 method=GET path=/api/v1/runs/run_01KZZ70CWFZV1514BT79KC66C4 status=200
+INFO:     request_completed request_id=req_01KZZ70DE53YAC4XQ8MJJZPAEK method=GET path=/api/v1/runs/run_01KZZ70CWFZV1514BT79KC66C4/events status=200
+INFO:     request_completed request_id=req_01KZZ70DECDHXNBHX7XHANN27F method=POST path=/api/v1/runs status=202
+INFO:     request_completed request_id=req_01KZZ70DEE8RR3N0BS6PWNR8H1 method=GET path=/api/v1/runs/run_01KZZ70DEDT8Z932TBDDGCQM55 status=200
+WARNING:  structured_output_invalid request_id=req_01KZZ70DM4JCYZYJ78H8BTTPDX run_id=run_01KZZ70DEDT8Z932TBDDGCQM55
+INFO:     request_completed request_id=req_01KZZ70DMSVT4GW7MRBTWKPP91 method=GET path=/api/v1/runs/run_01KZZ70DEDT8Z932TBDDGCQM55 status=200
+INFO:     request_completed request_id=req_01KZZ70DMT55KRNFBNKCCPYHAR method=GET path=/api/v1/runs/run_01KZZ70DEDT8Z932TBDDGCQM55/events status=200

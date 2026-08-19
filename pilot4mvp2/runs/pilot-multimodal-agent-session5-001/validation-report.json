@@ -1,0 +1,14 @@
+{
+  "session": 5,
+  "passed": true,
+  "real_provider_positive": true,
+  "provider_configuration_sha256": "db29f7f586a9d7280e3397b613de4cf8a97d6cc1cea2a72768bd2e30d5251b71",
+  "same_run_and_assistant_message": true,
+  "client_validates_text_structured_data_and_image": true,
+  "controlled_failure_cases": [
+    "structured_failure",
+    "text_failure",
+    "image_failure"
+  ],
+  "partial_assistant_messages_committed": 0
+}

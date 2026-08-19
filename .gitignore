@@ -58,3 +58,6 @@ htmlcov/
 *.db-wal
 *.sqlite
 *.sqlite3
+.pilot-api-key.local
+pilot4mvp2/runs/*/server/*.log
+!pilot4mvp2/runs/*/server/redacted.log

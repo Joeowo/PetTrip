@@ -1,0 +1,30 @@
+{
+  "scope": "public_image_api",
+  "passed": true,
+  "transport": "public_https",
+  "session_id": "session_01M004GV5PW2DNPEK5D8RRE81N",
+  "run_id": "run_01M004GV95T7B737BM0G2BH1PC",
+  "statuses_observed": [
+    "running",
+    "succeeded"
+  ],
+  "terminal_status": "succeeded",
+  "file_id": "file_01M004HZ2ZBHD76JVQPZQKG721",
+  "source": "agent_generated",
+  "purpose": "generated_image",
+  "mime_type": "image/png",
+  "width": 1024,
+  "height": 1024,
+  "size_bytes": 1967935,
+  "metadata_sha256": "8faf18abb063b31a738471be7c046fec7cca36f10f72c959843e70c6feb2a623",
+  "download_sha256": "8faf18abb063b31a738471be7c046fec7cca36f10f72c959843e70c6feb2a623",
+  "repeat_download_sha256": "8faf18abb063b31a738471be7c046fec7cca36f10f72c959843e70c6feb2a623",
+  "hashes_match": true,
+  "pillow_format": "PNG",
+  "pillow_size": [
+    1024,
+    1024
+  ],
+  "provider_configuration": "IMAGES_BASE_URL + IMAGES_API_KEY + IMAGES_MODEL",
+  "provider_values_redacted": true
+}

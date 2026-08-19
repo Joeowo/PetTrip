@@ -45,8 +45,9 @@ Pilot 包含以下能力：
 - 可选 SSE 事件流；轮询必须独立可用。
 - 服务重启后的已完成结果恢复和遗留 Run 处理。
 - 面向普通外部客户端的稳定 HTTP 契约和 OpenAPI 文档。
-- 提供给 Unity 主程序的 DTO、请求示例、状态机和错误码交接材料；Unity 客户端实现和
-  联调不属于本 Pilot。
+- 提供给 Unity 主程序的 DTO、请求示例、状态机和错误码交接材料；默认情况下，Unity
+  客户端实现和联调不属于 Agent Service Pilot。MVP 明确要求跨设备或跨网络演示时，
+  通过条件性会话 7 单独验收。
 
 ### 2.2 非目标
 
@@ -58,7 +59,7 @@ Pilot 包含以下能力：
 - 不使用 Redis、Kafka、Celery 或多实例 Worker 集群。
 - 不实现多 Agent 自由协作或复杂工具编排。
 - 不实现图片分层、抠图、场景组装或 Addressables 发布。
-- 不实现 Unity 客户端，也不验收 Unity 与 Agent API 的通信线路。
+- 不实现 Unity 客户端，也不在前六个会话中验收 Unity 与 Agent API 的通信线路。
 - 不将图片二进制、模型密钥或完整 API Key 写入 SQLite。
 - 不把固定 Pilot API Key 视为正式玩家身份凭据。
 
@@ -109,7 +110,7 @@ class ImageGenerationProvider(Protocol):
 首版实现可以分别配置：
 
 - `CHAT_BASE_URL`、`CHAT_API_KEY`、`CHAT_MODEL`。
-- `IMAGE_BASE_URL`、`IMAGE_API_KEY`、`IMAGE_MODEL`。
+- `IMAGES_BASE_URL`、`IMAGES_API_KEY`、`IMAGES_MODEL`。
 
 如果同一中转站同时支持两种 API，可以复用 Base URL 和 Key；业务层仍保持两个接口。
 
@@ -118,9 +119,9 @@ class ImageGenerationProvider(Protocol):
 截至 2026-08-13，Pilot 已实测以下图片生成路径可用：
 
 ```text
-IMAGE_BASE_URL=https://5202828.xyz/v1
-IMAGE_API_KEY=<通过服务端环境变量注入>
-IMAGE_MODEL=gpt-image-2
+IMAGES_BASE_URL=https://5202828.xyz/v1
+IMAGES_API_KEY=<通过服务端环境变量注入>
+IMAGES_MODEL=gpt-image-2
 IMAGE_GENERATION_PATH=/images/generations
 ```
 
@@ -140,6 +141,18 @@ Chat Completions API。模型名称必须保持配置化；文档或代码中的
 `GET /v1/models` 可用，但 `POST /v1/images/generations` 持续返回 `502`，不得作为 Pilot
 默认图片 Provider。该结论只覆盖图片生成，不代表 `5202828.xyz` 的 Chat、Vision、
 Responses 或结构化输出能力已经通过验证。
+
+### 3.4 已验证的结构化输出基线
+
+截至 2026-08-14，当前 Chat Provider 已实测支持
+`POST /v1/chat/completions + response_format(json_object)`。Provider 返回 JSON
+字符串后，服务端仍独立执行版本注册表查找、JSON 解析、JSON Schema 校验和固定 DTO
+校验。
+
+当前网关的 `response_format(json_schema)` 探针在 60 秒内未返回，不能宣称原生严格 Schema
+模式可用。首版把注册的 Schema 作为系统指令发送给模型，并使用 `json_object` 约束响应
+格式。模型或网关约束不能替代服务端复验；只有服务端校验通过的数据才能持久化并进入 API
+响应。
 
 ## 4. Agent 内核
 
@@ -268,6 +281,8 @@ JSON 解析
 ```
 
 模型输出 Markdown 代码块或未经校验的 JSON 不得直接作为结构化输出发送给客户端。
+客户端必须从专用 `output.structured_data` 字段读取结果，并使用版本对应的固定 DTO 校验；
+即使 `output.text` 包含可解析 JSON，也不得将其转换为结构化结果。
 
 ## 6. 异步 Run 与事件
 
@@ -287,19 +302,32 @@ queued -> running -> succeeded
 
 ### 6.2 持久化事件
 
-服务端为关键阶段写入 `run_events`：
+服务端为关键阶段写入 `run_events`。事件类型包括：
 
 ```text
 run.queued
 run.started
-message.created
 image_generation.started
 artifact.created
+message.created
 run.completed
 run.failed
 ```
 
-事件用于排错、轮询补充信息和后续 SSE，不替代 `runs.status` 作为事实来源。
+包含图片输出的成功 Run 必须按以下顺序持久化事件：
+
+```text
+run.queued
+run.started
+image_generation.started
+artifact.created
+message.created
+run.completed
+```
+
+`message.created` 只能在全部请求输出准备完成后写入，不能在图片生成前提交部分助手消息。
+失败 Run 只保留已经实际开始的阶段事件，并以 `run.failed` 结束。事件用于排错、轮询补充
+信息和后续 SSE，不替代 `runs.status` 作为事实来源。
 
 ### 6.3 SSE
 
@@ -552,6 +580,7 @@ Pilot 可以只有一个内部 API Client，但数据库关系必须保留文件
 | `AUTHENTICATION_FAILED` | API Key 缺失或错误 | 否 |
 | `RESOURCE_NOT_FOUND` | Session、Run 或文件不存在 | 否 |
 | `VALIDATION_ERROR` | 请求字段不合法 | 否 |
+| `IDEMPOTENCY_KEY_REUSED` | 同一幂等键用于不同请求体 | 否 |
 | `FILE_TYPE_UNSUPPORTED` | 文件类型不支持 | 否 |
 | `FILE_TOO_LARGE` | 文件超过配置值 | 否 |
 | `FILE_DECODE_FAILED` | 图片无法解码 | 否 |
@@ -584,7 +613,9 @@ Unity 作为未来消费者必须通过上述 HTTP 契约访问服务，不得�
 
 ## 12. 验证会话
 
-验证按风险从低到高执行。前一会话未通过时，后续会话不能标记为通过。
+会话 1 至会话 6 按风险从低到高验证 Agent Service。前一会话未通过时，后续基础会话
+不能标记为通过。会话 7 是条件性的部署验收，独立于前六个会话；执行会话 7 时复用已经
+通过的服务端能力和证据，不要求重跑前六个会话。
 
 ### 会话 1：服务、鉴权和文本
 
@@ -623,9 +654,7 @@ Unity 作为未来消费者必须通过上述 HTTP 契约访问服务，不得�
 6. 重复下载同一 `file_id`，确认内容哈希一致。
 7. 使用错误端点或无效 Base64 响应执行 Provider 负例测试。
 
-通过条件：Run 返回生成图片引用；客户端能下载并校验真实图片；请求尺寸与 Provider 实际
-尺寸不一致时仍能得到配置的目标画布；响应和日志不含 Base64、API Key 或服务端路径；
-Provider 负例进入 `failed`，且不会留下可下载的部分文件。
+通过条件：Run 返回生成图片引用；客户端能下载并校验真实图片；请求尺寸与 Provider 实际尺寸不一致时仍能得到配置的目标画布；响应和日志不含 Base64、API Key 或服务端路径；Provider 负例进入 `failed`，且不会留下可下载的部分文件。
 
 ### 会话 4：结构化输出
 
@@ -639,6 +668,12 @@ Provider 负例进入 `failed`，且不会留下可下载的部分文件。
 通过条件：合法结果完整返回；非法结果进入 `failed`，错误码为
 `STRUCTURED_OUTPUT_INVALID`；客户端不从文本中提取 JSON。
 
+截至 2026-08-14，本会话已经通过。真实 Chat Provider 正例返回 `scene_draft` `0.1`，
+Run 和助手消息在 SQLite 中保存与 API 一致的结构化对象。缺少 `title` 和错误 `type`
+通过本地 OpenAI-compatible 受控 Provider 注入，不支持版本在 Provider 调用前失败；三个
+负例均未提交助手消息。脱敏证据保存在
+`runs/pilot-multimodal-agent-session4-001/`。
+
 ### 会话 5：组合输出
 
 本会话证明一次 Run 可以同时返回文本、结构化数据和图片。
@@ -650,6 +685,12 @@ Provider 负例进入 `failed`，且不会留下可下载的部分文件。
 
 通过条件：三种输出都与同一 Run 和助手消息关联，任何一个失败时不会提交部分成功消息。
 
+截至 2026-08-14，本会话已经通过。真实 Chat/Vision 和图片 Provider 正例上传非敏感参考图，
+同一 Run 返回文本、`scene_draft` `0.1` 和规范化 PNG。公共消息历史、事件载荷与 SQLite
+共同确认三种输出属于同一助手消息。结构化、文本和图片阶段的受控失败例均未提交助手消息、
+生成文件记录或输出附件关系。脱敏证据保存在
+`runs/pilot-multimodal-agent-session5-001/`。
+
 ### 会话 6：持久化与恢复
 
 本会话证明 SQLite 和文件目录支持重启恢复。
@@ -660,8 +701,48 @@ Provider 负例进入 `failed`，且不会留下可下载的部分文件。
 4. 在执行中重启服务，验证遗留 `running` Run 进入 `failed`。
 5. 再创建新 Run，确认会话可以继续。
 
-通过条件：已完成结果保持一致；遗留 Run 不会永久卡住或自动重复计费；外部客户端不需要
-直接访问存储。
+通过条件：已完成结果保持一致；遗留 Run 不会永久卡住或自动重复计费；外部客户端不需要直接访问存储。
+
+截至 2026-08-14，本会话已经通过。受控 Provider 验收客户端通过 HTTP API 在同一
+Session 中完成两轮对话，并在服务重启前后重新读取历史、已完成 Run 和生成图片；图片字节数
+和 SHA-256 保持一致。执行中强制终止服务后，遗留 `running` Run 在新进程启动时进入
+`failed(SERVICE_RESTARTED)`；该 Run 的 Provider 调用没有被自动重复，且新 Run 可以在同一
+Session 中成功完成。验收客户端没有直接读取 SQLite 或服务端文件目录。脱敏证据保存在
+`runs/pilot-multimodal-agent-session6-001/`，机器可读结论位于
+`runs/pilot-multimodal-agent-session6-001/api-tests/recovery-report.json`。
+
+本会话使用受控 Provider 专门验证持久化和恢复边界，不替代会话 5 已完成的真实 Chat/Vision
+和图片 Provider 组合输出验收，也不宣称重启期间真实 Provider 调用可以恢复或重试。
+
+### 会话 7：部署与跨网络接入（条件性）
+
+MVP 明确要求跨设备或跨网络演示时执行本会话。本会话先证明远程外部客户端可以通过公网
+HTTPS 入口访问 Agent Service。Unity 主程序联调由游戏开发阶段单独执行；只有后续明确要求
+Unity 演示时，才增加远程 Unity 设备对同一 API 契约的验收。
+
+1. 通过内网穿透或反向代理提供 HTTPS Base URL，不直接暴露本地服务端口。
+2. 在非服务端设备上使用 Bearer Key 创建 Session。
+3. 上传一张真实图片，使用返回的 `file_id` 创建异步 Run。
+4. 轮询 Run 到终态，并读取文本或结构化结果。
+5. 验证缺失鉴权、错误鉴权、请求参数和资源不存在等稳定错误响应。
+6. 通过鉴权下载输入图片或生成图片，并校验文件哈希。
+7. 保存脱敏的远程请求、响应和网络入口配置。
+8. 可选：后续明确要求 Unity 演示时，由 Unity 主程序在远程设备上重复主链路并保存报告。
+
+本轮通过条件：非服务端设备可以通过 HTTPS 完成鉴权、上传、Run 轮询、错误响应和文件下载。
+模型 Key、本地端口、服务器私有路径和完整 Bearer Key 不得固化到客户端构建或进入日志、
+证据；Bearer Key 只允许通过受保护的临时配置在运行时注入。如果后续要求 Unity 演示，远程
+Unity 设备必须另行完成同一主链路。
+
+截至 2026-08-14，本轮远程 Agent API 范围已经通过。操作员在另一台非服务端 Windows 设备上
+通过 Cloudflare Quick Tunnel 完成缺失/错误 Key、Session、真实 PNG 上传、异步 Vision Run、
+稳定错误响应、鉴权下载和 SHA-256 校验。机器报告的入口哈希和远程脚本哈希与服务端实际值一致，
+服务端通过 HTTP API 独立重读 Run、消息、事件、文件元数据和下载内容。核心脱敏证据保存在
+`runs/pilot-cross-network-001/`。当前公网实例还通过一次真实图片生成 Run，返回规范化 PNG，
+两次鉴权下载与 API 元数据哈希一致；部署证据保存在 `runs/pilot-public-image-api-001/`。
+
+本轮没有执行 Unity 主程序，不生成 `unity-connectivity-report.json`，也不宣称 Unity 跨网络
+主链路已经通过。
 
 ## 13. 证据目录
 
@@ -688,6 +769,45 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
     redacted.log
     recovery.log
   validation-report.json
+
+pilot4mvp2/runs/pilot-multimodal-agent-session6-001/
+  README.md
+  validation-report.json
+  versions.txt
+  deployment-config.redacted.txt
+  api-tests/
+    completed-before-restart.json
+    completed-after-restart.json
+    interrupted-run.json
+    recovery-report.json
+  files/
+    generated-image.png
+    generated-image.sha256.txt
+  server/
+    first-server.log
+    second-server.log
+    interrupted-server.log
+    recovery-server.log
+    provider-calls.jsonl
+```
+
+执行条件性会话 7 时，额外保存以下脱敏证据：
+
+```text
+pilot4mvp2/runs/pilot-cross-network-001/
+  README.md
+  https-endpoint.redacted.txt
+  remote-client-run.json
+  remote-file-hash.txt
+  validation-report.json
+  evidence-audit.json
+  supplemental-remote-test-report.md
+  # 后续要求 Unity 演示时才增加 unity-connectivity-report.json
+
+pilot4mvp2/runs/pilot-public-image-api-001/
+  README.md
+  validation-report.json
+  generated-image.sha256.txt
 ```
 
 证据不得包含模型 API Key、Pilot API Key、Cookie、完整 Authorization Header、SQLite
@@ -695,21 +815,26 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 
 ## 14. 完成定义
 
-只有以下条件全部满足，Pilot 才算完成：
+完成定义分为 Agent Service 和跨网络端到端演示两层。前者由会话 1 至会话 6 验证；后者
+只有在 MVP 明确要求远程演示时才启用，并由条件性会话 7 验证。
 
-- [ ] 外部客户端可以通过 HTTP(S) 和 Bearer Key 调用 Agent Service。
-- [ ] 异步 Run 可以创建、轮询、成功和失败。
-- [ ] 外部客户端能发送文本并读取真实模型文本回复。
-- [ ] 外部客户端能上传真实图片并获得模型理解结果。
-- [ ] Chatbot 能生成真实图片，外部客户端能鉴权下载并校验。
-- [ ] 一次 Run 能同时返回文本、合法结构化数据和图片。
-- [ ] 非法结构化输出不会作为合法 DTO 返回客户端。
-- [ ] 会话、消息、Run、事件和文件元数据写入 SQLite。
-- [ ] 图片保存在文件目录而非 SQLite。
-- [ ] 服务端重启后，外部客户端能恢复已完成结果。
-- [ ] 遗留 `running` Run 按规则失败，不会永久卡住或重复计费。
-- [ ] API 和模型密钥没有出现在客户端、日志、数据库或证据中。
-- [ ] 所有正例和关键负例都有脱敏证据。
+### 14.1 Agent Service Pilot 完成
+
+只有以下条件全部满足，Agent Service Pilot 才算完成：
+
+- [x] 外部客户端可以通过 HTTP(S) 和 Bearer Key 调用 Agent Service。
+- [x] 异步 Run 可以创建、轮询、成功和失败。
+- [x] 外部客户端能发送文本并读取真实模型文本回复。
+- [x] 外部客户端能上传真实图片并获得模型理解结果。
+- [x] Chatbot 能生成真实图片，外部客户端能鉴权下载并校验。
+- [x] 一次 Run 能同时返回文本、合法结构化数据和图片。
+- [x] 非法结构化输出不会作为合法 DTO 返回客户端。
+- [x] 会话、消息、Run、事件和文件元数据写入 SQLite。
+- [x] 图片保存在文件目录而非 SQLite。
+- [x] 服务端重启后，外部客户端能恢复已完成结果。
+- [x] 遗留 `running` Run 按规则失败，不会永久卡住或重复计费。
+- [x] Provider Key 没有进入客户端、日志、数据库或证据；Pilot Bearer Key 没有固化到客户端构建或进入日志、数据库和证据。
+- [x] 所有正例和关键负例都有脱敏证据。
 
 通过本 Pilot 可以得出：
 
@@ -719,7 +844,26 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 不能据此宣称：
 
 > 当前服务已经满足正式玩家鉴权、水平扩展、生产 SLA、内容安全审核或 PetTrip 正式
-> 场景生成要求。
+> 场景生成要求，也不能宣称远程 Unity 设备到服务端的跨网络链路已经通过。
+
+### 14.2 远程 Agent API 验收完成（条件性）
+
+MVP 要求跨设备或跨网络访问 Agent API 时，只有以下条件全部满足，才能宣布远程 Agent API
+范围完成：
+
+- [x] Agent Service Pilot 已完成，不需要重跑会话 1 至会话 6。
+- [x] Agent Service 通过受控的公网 HTTPS Base URL 提供服务。
+- [x] 非服务端设备能完成鉴权、Session、图片上传、Run 轮询、错误响应和文件下载。
+- [x] 远程链路的请求、响应、文件哈希和失败信息都有脱敏证据。
+- [x] Provider Key、本地端口、完整 Bearer Key 和服务器私有路径没有泄漏到日志或证据。
+
+通过本轮会话 7 后可以额外得出：
+
+> 非服务端设备可以通过公网 HTTPS 入口消费 Agent Service，完成一次可复查的远程 API
+> Pilot 验收。
+
+本轮不能据此宣称 Unity 主程序已经完成跨网络联调。如果游戏开发阶段明确要求 Unity 演示，
+必须由目标远程 Unity 设备另行完成同一主链路并保存 `unity-connectivity-report.json`。
 
 ## 15. 实施顺序
 
@@ -735,17 +879,19 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 8. 实现 `run_events`；按需要增加 SSE。
 9. 生成 OpenAPI、DTO 示例、curl/Postman collection 和 Unity 交接说明。
 10. 执行六个 API 验证会话和服务端重启恢复测试。
+11. 如果 MVP 要求远程演示，部署 HTTPS 入口并执行条件性会话 7。
 
 ## 16. 下一步
 
 开始实现前，需要锁定以下外部配置，但密钥不得写入仓库或聊天：
 
 - 单独探测 Chat/Vision 中转站的 Base URL、模型 ID 和 API 兼容形态。
-- 单独探测结构化输出模型支持 `/v1/responses`，还是支持
-  `/v1/chat/completions + response_format(json_schema)`。
-- 使用已验证的 `IMAGE_BASE_URL=https://5202828.xyz/v1`、
-  `IMAGE_MODEL=gpt-image-2` 和 `/images/generations` 路径。
-- 将 `IMAGE_API_KEY` 通过服务端环境变量注入，不写入仓库、日志或证据。
+- 结构化输出使用已验证的
+  `/v1/chat/completions + response_format(json_object)`，并由服务端执行版本注册和 Schema
+  复验；当前不得配置为尚未验证可用的 `response_format(json_schema)`。
+- 使用已验证的 `IMAGES_BASE_URL=https://5202828.xyz/v1`、
+  `IMAGES_MODEL=gpt-image-2` 和 `/images/generations` 路径。
+- 将 `IMAGES_API_KEY` 通过服务端环境变量注入，不写入仓库、日志或证据。
 - 配置图片 Provider 120 秒超时、目标画布尺寸和解码后最大字节数。
 - Pilot API Key 的生成与注入方式。
 - 输入文件大小、像素总量和允许 MIME 类型的具体配置值。
@@ -753,3 +899,22 @@ pilot4mvp2/runs/pilot-multimodal-agent-001/
 
 第一段代码只实现鉴权、SQLite、纯文本 Run 和 `curl` 验证。该链路通过后再增加文件与
 图片模型，避免同时调试网络、数据库、Chat/Vision 和图片生成。
+
+### 16.1 会话 2 已锁定参数
+
+会话 2 使用以下输入图片约束，所有值都可通过服务端环境变量覆盖：
+
+- 最大上传大小为 10 MiB（`MAX_UPLOAD_BYTES=10485760`）。
+- 图片宽和高分别不超过 4096 像素（`MAX_IMAGE_DIMENSION=4096`）。
+- 图片总像素不超过 20,000,000（`MAX_IMAGE_PIXELS=20000000`）。
+- 本会话只允许 PNG 和 JPEG；WebP 不进入本轮验收范围。
+- 同一 Run 最多引用四张图片，同一 `file_id` 不能重复，且附件总字节数不超过 10 MiB。
+- 上传入口在 multipart 解析前完成 Bearer 鉴权和有界请求体读取，避免匿名超大请求先耗尽
+  临时磁盘。
+- 对话历史保留成功 Run 的文本，但只把当前 Run 的图片附件发送给 Vision 模型，避免每轮
+  重复发送历史图片导致请求体和模型成本持续增长。
+
+Chat/Vision Provider 使用 OpenAI-compatible Chat Completions 多模态内容格式。服务端从
+本地文件存储读取图片，仅在出站请求内存中临时编码为 `image_url` data URL。Base64 不写入
+SQLite、Run、消息历史、日志、响应或证据。真实网关是否接受该格式必须由会话 2 在线验收
+确认；离线协议测试不能替代真实模型验证。

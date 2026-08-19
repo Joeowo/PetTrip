@@ -1,0 +1,86 @@
+{
+  "cases": [
+    {
+      "case": "structured_failure",
+      "terminal_status": "failed",
+      "error": {
+        "code": "STRUCTURED_OUTPUT_INVALID",
+        "message": "结构化输出不符合请求的 Schema。",
+        "retryable": false
+      },
+      "output_present": false,
+      "message_roles": [
+        "user"
+      ],
+      "assistant_messages_persisted": 0,
+      "generated_file_records": 0,
+      "output_relations": 0,
+      "generated_files_on_disk": 0,
+      "events": [
+        "run.queued",
+        "run.started",
+        "run.failed"
+      ],
+      "provider_calls": {
+        "structured": 1,
+        "text": 0,
+        "image": 0
+      }
+    },
+    {
+      "case": "text_failure",
+      "terminal_status": "failed",
+      "error": {
+        "code": "CHAT_PROVIDER_UNAVAILABLE",
+        "message": "文本模型服务暂时不可用。",
+        "retryable": true
+      },
+      "output_present": false,
+      "message_roles": [
+        "user"
+      ],
+      "assistant_messages_persisted": 0,
+      "generated_file_records": 0,
+      "output_relations": 0,
+      "generated_files_on_disk": 0,
+      "events": [
+        "run.queued",
+        "run.started",
+        "run.failed"
+      ],
+      "provider_calls": {
+        "structured": 1,
+        "text": 1,
+        "image": 0
+      }
+    },
+    {
+      "case": "image_failure",
+      "terminal_status": "failed",
+      "error": {
+        "code": "IMAGE_PROVIDER_UNAVAILABLE",
+        "message": "图片生成服务暂时不可用。",
+        "retryable": true
+      },
+      "output_present": false,
+      "message_roles": [
+        "user"
+      ],
+      "assistant_messages_persisted": 0,
+      "generated_file_records": 0,
+      "output_relations": 0,
+      "generated_files_on_disk": 0,
+      "events": [
+        "run.queued",
+        "run.started",
+        "image_generation.started",
+        "run.failed"
+      ],
+      "provider_calls": {
+        "structured": 1,
+        "text": 1,
+        "image": 1
+      }
+    }
+  ]
+}

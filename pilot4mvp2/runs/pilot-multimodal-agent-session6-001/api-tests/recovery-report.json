@@ -1,0 +1,34 @@
+{
+  "session": 6,
+  "passed": true,
+  "same_session_two_rounds": true,
+  "completed_results_restored": true,
+  "recovery_history_valid": true,
+  "image_hash_before_restart": "7b849cb70adfc612fa0400f80213be4668a5d97e7eaae746a95ef653681e4df3",
+  "image_hash_after_restart": "7b849cb70adfc612fa0400f80213be4668a5d97e7eaae746a95ef653681e4df3",
+  "image_bytes_before_restart": 161,
+  "image_bytes_after_restart": 161,
+  "image_metadata_matches_download": true,
+  "interrupted_run_id": "run_01KZZNTC4MQE9WE8HV7VQY42W7",
+  "interrupted_run_status_after_restart": "failed",
+  "interrupted_run_error": {
+    "code": "SERVICE_RESTARTED",
+    "message": "服务重启，遗留的 running Run 已终止，请重新创建。",
+    "retryable": true
+  },
+  "interrupted_run_events_after_restart": [
+    "run.queued",
+    "run.started",
+    "run.failed"
+  ],
+  "new_run_after_restart_id": "run_01KZZNTD3NB8PNSF8AQWWMH7VA",
+  "new_run_after_restart_status": "succeeded",
+  "provider_calls_for_interrupted_run_before_recovery": 1,
+  "provider_calls_for_interrupted_run_after_recovery": 1,
+  "provider_call_count_before_recovery": 5,
+  "provider_call_count_after_recovery": 6,
+  "provider_call_log": {
+    "path": "server/provider-calls.jsonl",
+    "sha256": "ffd70b328743be982c5740dee33838e6eba17d2b73b654633c1e1f6c39595f6e"
+  }
+}

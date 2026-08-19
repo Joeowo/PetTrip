@@ -1,0 +1,13 @@
+{
+  "session": 4,
+  "passed": true,
+  "real_provider_positive": true,
+  "provider_configuration_sha256": "0605d3088571813b9c0e5b5415259c9f941dda55a42e91fabc3c2a1a6f10585e",
+  "controlled_provider_negative_cases": [
+    "missing_title",
+    "wrong_type"
+  ],
+  "unsupported_version_failed_before_provider": true,
+  "client_uses_fixed_dto": true,
+  "client_text_json_fallback_rejected": true
+}

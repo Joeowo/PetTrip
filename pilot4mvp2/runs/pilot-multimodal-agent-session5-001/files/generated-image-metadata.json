@@ -1,0 +1,17 @@
+{
+  "file_id": "file_01KZZAQPG4MS2T7ZK2AGNJC4P5",
+  "mime_type": "image/png",
+  "size_bytes": 8082,
+  "sha256": "b06e25d1c7dc2afb3a8734d05d1e9bde58e4f126a750e3c8d868ef0066c14a0f",
+  "width": 64,
+  "height": 48,
+  "download_hash_matches": true,
+  "repeat_download_matches": true,
+  "saved_copy": "files/generated-image.png",
+  "saved_copy_hash_matches": true,
+  "pillow_format": "PNG",
+  "pillow_size": [
+    64,
+    48
+  ]
+}

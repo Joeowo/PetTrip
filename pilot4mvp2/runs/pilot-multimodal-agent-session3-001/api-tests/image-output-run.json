@@ -1,0 +1,36 @@
+{
+  "health_status": "ok",
+  "create_status": 202,
+  "statuses_observed": [
+    "queued",
+    "running",
+    "succeeded"
+  ],
+  "terminal_status": "succeeded",
+  "error": null,
+  "file_id": "file_01KZZ0HKBPRVH07JHSNJ9010D1",
+  "mime_type": "image/png",
+  "width": 64,
+  "height": 48,
+  "size_bytes": 6870,
+  "sha256": "10745a39d901e5383cd9879799fea42aa91c268e6b737650fe2907e7cd76a634",
+  "download_status": 200,
+  "repeat_download_status": 200,
+  "download_hash_matches": true,
+  "repeat_download_hash_matches": true,
+  "saved_copy": "files/generated-image.png",
+  "saved_copy_hash_matches": true,
+  "pillow_format": "PNG",
+  "pillow_size": [
+    64,
+    48
+  ],
+  "events": [
+    "run.queued",
+    "run.started",
+    "image_generation.started",
+    "artifact.created",
+    "message.created",
+    "run.completed"
+  ]
+}
