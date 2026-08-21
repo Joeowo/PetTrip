@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetTrip 统一契约原型 - 数据模型与状态转换验证</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: #f5f5f5;
+  padding: 2rem;
+}
+.container { max-width: 1400px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+h1 { color: #2c3e50; margin-bottom: 0.5rem; font-size: 1.8rem; }
+.subtitle { color: #7f8c8d; margin-bottom: 2rem; font-size: 0.95rem; }
+.question { background: #fff8e1; padding: 1rem; border-left: 4px solid #ffc107; margin-bottom: 2rem; }
+.question h2 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #f57c00; }
+
+.state-panel {
+  background: #eceff1;
+  padding: 1.5rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  border: 2px solid #90a4ae;
+}
+.state-panel h2 { font-size: 1.2rem; margin-bottom: 1rem; color: #37474f; }
+.state-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+.state-item { background: white; padding: 1rem; border-radius: 4px; border-left: 3px solid #5c6bc0; }
+.state-item h3 { font-size: 0.9rem; color: #5c6bc0; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.state-item pre { font-size: 0.85rem; white-space: pre-wrap; word-break: break-all; color: #424242; }
+.state-item .highlight { background: #ffeb3b; padding: 2px 4px; }
+
+.controls { margin-bottom: 2rem; }
+.controls h2 { font-size: 1.2rem; margin-bottom: 1rem; color: #37474f; }
+.button-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.button-group button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  background: #5c6bc0;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+.button-group button:hover { background: #3949ab; }
+.button-group button:disabled { background: #b0bec5; cursor: not-allowed; }
+.button-group button.danger { background: #e53935; }
+.button-group button.danger:hover { background: #c62828; }
+.button-group button.success { background: #43a047; }
+.button-group button.success:hover { background: #2e7d32; }
+
+.tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 1rem; }
+.tabs button {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #757575;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+.tabs button.active { color: #5c6bc0; border-bottom-color: #5c6bc0; font-weight: 600; }
+.tabs button:hover { color: #5c6bc0; }
+
+.scenario { display: none; padding: 1.5rem; background: #fafafa; border-radius: 6px; }
+.scenario.active { display: block; }
+.scenario h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #37474f; }
+.scenario p { margin-bottom: 1rem; color: #616161; }
+.scenario .steps { display: flex; flex-direction: column; gap: 0.5rem; }
+.scenario .steps button {
+  padding: 0.8rem;
+  text-align: left;
+  border: 2px solid #e0e0e0;
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+.scenario .steps button:hover { border-color: #5c6bc0; background: #f5f7ff; }
+.scenario .steps button.completed { background: #e8f5e9; border-color: #66bb6a; }
+.scenario .steps button.current { border-color: #5c6bc0; background: #e8eaf6; font-weight: 600; }
+
+.log { background: #263238; color: #aed581; padding: 1rem; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto; margin-top: 1rem; }
+.log .timestamp { color: #78909c; }
+.log .action { color: #ffeb3b; }
+.log .error { color: #ff5252; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>PetTrip 统一契约原型</h1>
+  <div class="subtitle">验证目的地规格、场景产物与 Unity 契约的数据模型与状态转换</div>
+
+  <div class="question">
+    <h2>核心问题</h2>
+    <p>如何在已确认的领域边界基础上，形成一套不改变既有交互原则、可供 /to-spec 使用的统一数据模型与契约草案？</p>
+    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+      <li>destination_requirements 按类别细化是否会造成不可接受的系统复杂度</li>
+      <li>destination_spec、scene_plan、scene_artifact 的统一字段边界</li>
+      <li>共享环境母版、Clean Plate、最终场景产物和 Unity 资源引用的契约表达</li>
+      <li>规格版本、目的地内容版本、共建草稿与正式版本的统一追溯关系</li>
+      <li>失败重试、生成决策记录和规划不可执行时的后续处理</li>
+    </ul>
+  </div>
+
+  <div class="state-panel">
+    <h2>当前状态</h2>
+    <div class="state-grid" id="stateDisplay"></div>
+  </div>
+
+  <div class="controls">
+    <h2>自由操作</h2>
+    <div class="button-group" id="freePlayButtons"></div>
+  </div>
+
+  <div class="controls">
+    <h2>引导场景</h2>
+    <div class="tabs" id="scenarioTabs"></div>
+    <div id="scenarioContent"></div>
+  </div>
+
+  <div class="log" id="log"></div>
+</div>
+
+<script>
+// ============================================================================
+// 核心逻辑模块 - 可提取到实际代码
+// ============================================================================
+
+const ContractLogic = (() => {
+
+  // 初始状态
+  const createInitialState = () => ({
+    // 愿望澄清阶段
+    clarification: {
+      session_id: null,
+      rounds: [],
+      accepted_inputs_count: 0,
+      unaccepted_inputs_count: 0,
+      is_closed: false,
+      closed_by: null, // 'unity_signal' | 'third_round' | 'max_unaccepted'
+    },
+
+    // 目的地需求（锁定后不可变）
+    destination_requirements: null,
+
+    // 目的地规格（锁定后不可变）
+    destination_spec: {
+      destination_id: null,
+      spec_version: null, // 规格版本（模板变化时递增）
+      content_version: 0, // 内容版本（共建时递增）
+      title: null,
+      setting: null,
+      core_experience: null,
+      constraints: {
+        required: [],
+        suggested: [],
+        forbidden: []
+      },
+      visual_profile: {
+        style_id: null,
+        composition_template_id: null,
+        prompt_template_version: null
+      },
+      locked: false,
+      locked_at: null
+    },
+
+    // 场景计划
+    scene_plans: [], // [{scene_id, order, state_id, pet_behavior, semantic_anchor}]
+
+    // 共享环境资源
+    shared_environment: {
+      hero_frame: null, // {file_id, url, sha256, approved_at}
+      clean_plate: null, // {file_id, url, sha256, extracted_at}
+      revision: 1
+    },
+
+    // 场景产物
+    scene_artifacts: {}, // scene_id -> artifact
+
+    // 运行状态
+    runs: {}, // run_id -> run_state
+
+    // 目的地清单（Unity 可见）
+    destination_manifest: null,
+
+    // 操作日志
+    operation_log: []
+  });
+
+  // 动作处理器
+  const reducer = (state, action) => {
+    const newState = JSON.parse(JSON.stringify(state)); // 深拷贝
+    newState.operation_log.push({
+      timestamp: new Date().toISOString(),
+      action: action.type,
+      payload: action.payload
+    });
+
+    switch (action.type) {
+      case 'START_CLARIFICATION':
+        newState.clarification.session_id = `sess_${Date.now()}`;
+        newState.clarification.rounds = [];
+        newState.clarification.accepted_inputs_count = 0;
+        newState.clarification.unaccepted_inputs_count = 0;
+        newState.clarification.is_closed = false;
+        break;
+
+      case 'SUBMIT_PLAYER_INPUT':
+        if (newState.clarification.is_closed) {
+          throw new Error('澄清已封盘，不能提交新输入');
+        }
+        const { input_type, content } = action.payload;
+
+        if (input_type === 'empty') {
+          // 空输入不推进
+        } else if (input_type === 'accepted') {
+          newState.clarification.accepted_inputs_count++;
+          newState.clarification.rounds.push({
+            round: newState.clarification.rounds.length + 1,
+            player_input: content,
+            accepted: true
+          });
+
+          // 检查是否达到第三轮
+          if (newState.clarification.accepted_inputs_count >= 3) {
+            newState.clarification.is_closed = true;
+            newState.clarification.closed_by = 'third_round';
+          }
+        } else if (input_type === 'unaccepted') {
+          newState.clarification.unaccepted_inputs_count++;
+          newState.clarification.rounds.push({
+            round: newState.clarification.rounds.length + 1,
+            player_input: content,
+            accepted: false
+          });
+
+          // 检查是否累计五次未接受
+          if (newState.clarification.unaccepted_inputs_count >= 5) {
+            newState.clarification.is_closed = true;
+            newState.clarification.closed_by = 'max_unaccepted';
+          }
+        }
+        break;
+
+      case 'UNITY_END_CLARIFICATION':
+        if (!newState.clarification.is_closed) {
+          newState.clarification.is_closed = true;
+          newState.clarification.closed_by = 'unity_signal';
+        }
+        break;
+
+      case 'GENERATE_DESTINATION_REQUIREMENTS':
+        if (!newState.clarification.is_closed) {
+          throw new Error('澄清未封盘，不能生成 destination_requirements');
+        }
+
+        newState.destination_requirements = {
+          requirements_id: `req_${Date.now()}`,
+          session_id: newState.clarification.session_id,
+          created_at: new Date().toISOString(),
+          categories: {
+            required_constraints: action.payload.required || [],
+            suggested_preferences: action.payload.suggested || [],
+            creative_freedom: action.payload.freedom || [],
+            forbidden_content: action.payload.forbidden || []
+          },
+          source_rounds: newState.clarification.rounds.filter(r => r.accepted).map(r => r.round),
+          locked: true
+        };
+        break;
+
+      case 'LOCK_DESTINATION_SPEC':
+        if (!newState.destination_requirements) {
+          throw new Error('必须先生成 destination_requirements');
+        }
+        if (newState.destination_spec.locked) {
+          throw new Error('destination_spec 已锁定，不可重复锁定');
+        }
+
+        const { title, setting, core_experience, visual_profile } = action.payload;
+        newState.destination_spec.destination_id = `dest_${Date.now()}`;
+        newState.destination_spec.spec_version = '1.0';
+        newState.destination_spec.title = title;
+        newState.destination_spec.setting = setting;
+        newState.destination_spec.core_experience = core_experience;
+        newState.destination_spec.constraints = newState.destination_requirements.categories;
+        newState.destination_spec.visual_profile = visual_profile;
+        newState.destination_spec.locked = true;
+        newState.destination_spec.locked_at = new Date().toISOString();
+
+        // 创建目的地清单
+        newState.destination_manifest = {
+          destination_id: newState.destination_spec.destination_id,
+          revision: 1,
+          required_scene_count: 2,
+          ready_scene_count: 0,
+          status: 'planned',
+          scenes: []
+        };
+        break;
+
+      case 'CREATE_SCENE_PLANS':
+        if (!newState.destination_spec.locked) {
+          throw new Error('必须先锁定 destination_spec');
+        }
+
+        newState.scene_plans = action.payload.plans.map((plan, index) => ({
+          scene_id: `scene_${Date.now()}_${index}`,
+          order: index + 1,
+          state_id: plan.state_id,
+          pet_behavior: plan.pet_behavior,
+          semantic_anchor: plan.semantic_anchor
+        }));
+
+        // 更新清单
+        newState.destination_manifest.scenes = newState.scene_plans.map(plan => ({
+          scene_id: plan.scene_id,
+          order: plan.order,
+          state_id: plan.state_id,
+          status: 'planned',
+          run_id: null
+        }));
+        break;
+
+      case 'APPROVE_HERO_FRAME':
+        if (!newState.destination_spec.locked) {
+          throw new Error('必须先锁定 destination_spec');
+        }
+
+        const { file_id, url, sha256 } = action.payload;
+        newState.shared_environment.hero_frame = {
+          file_id,
+          url,
+          sha256,
+          approved_at: new Date().toISOString()
+        };
+        break;
+
+      case 'EXTRACT_CLEAN_PLATE':
+        if (!newState.shared_environment.hero_frame) {
+          throw new Error('必须先批准 Hero Frame');
+        }
+
+        newState.shared_environment.clean_plate = {
+          file_id: `clean_plate_${Date.now()}`,
+          url: action.payload.url,
+          sha256: action.payload.sha256,
+          extracted_at: new Date().toISOString(),
+          source_hero_frame: newState.shared_environment.hero_frame.file_id
+        };
+        break;
+
+      case 'START_SCENE_RUN':
+        const { scene_id } = action.payload;
+        const run_id = `run_${scene_id}_${Date.now()}`;
+
+        newState.runs[run_id] = {
+          run_id,
+          scene_id,
+          status: 'queued',
+          progress: { stage: 'initializing', percent: 0 },
+          attempts: 0,
+          max_attempts: 3,
+          created_at: new Date().toISOString(),
+          error: null
+        };
+
+        // 更新清单
+        const sceneInManifest = newState.destination_manifest.scenes.find(s => s.scene_id === scene_id);
+        if (sceneInManifest) {
+          sceneInManifest.status = 'queued';
+          sceneInManifest.run_id = run_id;
+        }
+
+        newState.destination_manifest.status = 'generating';
+        break;
+
+      case 'UPDATE_RUN_PROGRESS':
+        const { run_id: rid, stage, percent, status } = action.payload;
+        if (newState.runs[rid]) {
+          newState.runs[rid].status = status || newState.runs[rid].status;
+          newState.runs[rid].progress = { stage, percent };
+        }
+        break;
+
+      case 'FAIL_SCENE_RUN':
+        const { run_id: frid, error } = action.payload;
+        if (newState.runs[frid]) {
+          newState.runs[frid].attempts++;
+          newState.runs[frid].error = error;
+
+          if (newState.runs[frid].attempts < newState.runs[frid].max_attempts) {
+            // 自动重试
+            newState.runs[frid].status = 'queued';
+            newState.runs[frid].progress = { stage: 'retrying', percent: 0 };
+          } else {
+            // 达到最大重试次数
+            newState.runs[frid].status = 'failed';
+
+            // 更新清单
+            const fsid = newState.runs[frid].scene_id;
+            const fscene = newState.destination_manifest.scenes.find(s => s.scene_id === fsid);
+            if (fscene) {
+              fscene.status = 'failed';
+            }
+          }
+        }
+        break;
+
+      case 'COMPLETE_SCENE':
+        const { scene_id: csid, artifact } = action.payload;
+
+        // 保存场景产物
+        newState.scene_artifacts[csid] = {
+          scene_id: csid,
+          destination_id: newState.destination_spec.destination_id,
+          revision: newState.shared_environment.revision,
+          state_frame: artifact.state_frame,
+          video: artifact.video,
+          audio: artifact.audio,
+          pet_targets: artifact.pet_targets,
+          created_at: new Date().toISOString()
+        };
+
+        // 更新运行状态
+        const crun = Object.values(newState.runs).find(r => r.scene_id === csid && r.status !== 'failed');
+        if (crun) {
+          crun.status = 'succeeded';
+          crun.progress = { stage: 'completed', percent: 100 };
+        }
+
+        // 更新清单
+        const cscene = newState.destination_manifest.scenes.find(s => s.scene_id === csid);
+        if (cscene) {
+          cscene.status = 'ready';
+        }
+
+        newState.destination_manifest.ready_scene_count++;
+
+        // 检查是否所有场景都完成
+        const allScenes = newState.destination_manifest.scenes;
+        const allReady = allScenes.every(s => s.status === 'ready' || s.status === 'failed');
+        if (allReady) {
+          newState.destination_manifest.status = 'done';
+        }
+        break;
+
+      case 'START_CO_BUILD':
+        if (!newState.destination_spec.locked) {
+          throw new Error('必须先锁定原始目的地');
+        }
+        if (newState.destination_spec.content_version >= 2) {
+          throw new Error('当前每个目的地最多完成一次共建');
+        }
+
+        // 创建新版本的共享环境（草稿）
+        newState.shared_environment.revision = 2;
+        newState.shared_environment.hero_frame = null; // 待生成新版
+        newState.shared_environment.clean_plate = null;
+
+        // 递增内容版本
+        newState.destination_spec.content_version = 2;
+
+        // 清空场景产物（准备生成新版）
+        newState.scene_artifacts = {};
+
+        // 更新清单为暂存状态
+        newState.destination_manifest.revision = 2;
+        newState.destination_manifest.status = 'staging';
+        newState.destination_manifest.ready_scene_count = 0;
+        newState.destination_manifest.scenes = newState.scene_plans.map(plan => ({
+          scene_id: `${plan.scene_id}_v2`,
+          order: plan.order,
+          state_id: plan.state_id,
+          status: 'planned',
+          run_id: null
+        }));
+
+        // 添加新的互动场景
+        newState.scene_plans.push({
+          scene_id: `scene_${Date.now()}_interaction`,
+          order: 3,
+          state_id: 'pet_interacting_with_co_build',
+          pet_behavior: action.payload.interaction_behavior,
+          semantic_anchor: action.payload.interaction_anchor
+        });
+
+        newState.destination_manifest.scenes.push({
+          scene_id: `scene_${Date.now()}_interaction`,
+          order: 3,
+          state_id: 'pet_interacting_with_co_build',
+          status: 'planned',
+          run_id: null
+        });
+        newState.destination_manifest.required_scene_count = 3;
+        break;
+
+      case 'PUBLISH_CO_BUILD_REVISION':
+        if (newState.destination_manifest.revision !== 2 || newState.destination_manifest.status !== 'staging') {
+          throw new Error('只能发布暂存中的共建版本');
+        }
+
+        const allNewScenes = newState.destination_manifest.scenes;
+        const allNewReady = allNewScenes.every(s => s.status === 'ready');
+
+        if (!allNewReady) {
+          throw new Error('所有新版本场景必须都 ready 才能发布');
+        }
+
+        // 原子切换
+        newState.destination_manifest.status = 'published';
+        break;
+
+      case 'RESET':
+        return createInitialState();
+
+      default:
+        throw new Error(`Unknown action: ${action.type}`);
+    }
+
+    return newState;
+  };
+
+  return {
+    createInitialState,
+    reducer
+  };
+})();
+
+// ============================================================================
+// UI 层 - 可视化和交互
+// ============================================================================
+
+let currentState = ContractLogic.createInitialState();
+let currentScenario = 0;
+let scenarioProgress = {};
+
+const actions = [
+  { label: '开始澄清会话', type: 'START_CLARIFICATION', payload: {} },
+  { label: '提交已接受的愿望输入', type: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: '我想要一个云海灯塔' } },
+  { label: '提交空输入', type: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'empty', content: '' } },
+  { label: '提交未接受输入', type: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'unaccepted', content: '...' } },
+  { label: 'Unity 结束澄清', type: 'UNITY_END_CLARIFICATION', payload: {} },
+  { label: '生成 destination_requirements', type: 'GENERATE_DESTINATION_REQUIREMENTS', payload: {
+    required: ['灯塔必须清晰可辨'],
+    suggested: ['温暖氛围'],
+    freedom: ['云海形态'],
+    forbidden: ['现代城市天际线']
+  }},
+  { label: '锁定 destination_spec', type: 'LOCK_DESTINATION_SPEC', payload: {
+    title: '云海灯塔',
+    setting: '漂浮在云层上的海边灯塔',
+    core_experience: '在远行途中发现一处温暖停靠点',
+    visual_profile: {
+      style_id: 'neva_v1',
+      composition_template_id: 'travel_sideview_01',
+      prompt_template_version: '3.0'
+    }
+  }},
+  { label: '创建场景计划（2个场景）', type: 'CREATE_SCENE_PLANS', payload: {
+    plans: [
+      { state_id: 'pet_watching_clouds', pet_behavior: '坐着看云海', semantic_anchor: '灯塔右侧草地' },
+      { state_id: 'pet_near_lighthouse', pet_behavior: '藏在灯塔旁', semantic_anchor: '灯塔左侧入口' }
+    ]
+  }},
+  { label: '批准 Hero Frame', type: 'APPROVE_HERO_FRAME', payload: {
+    file_id: 'file_hero_001',
+    url: '/files/file_hero_001',
+    sha256: 'abc123...'
+  }},
+  { label: '提取 Clean Plate', type: 'EXTRACT_CLEAN_PLATE', payload: {
+    url: '/files/clean_plate_001',
+    sha256: 'def456...'
+  }},
+  { label: '开始场景1生成', type: 'START_SCENE_RUN', payload: { scene_id: 'scene_1' } },
+  { label: '更新场景1进度（定位）', type: 'UPDATE_RUN_PROGRESS', payload: { run_id: 'run_1', stage: 'semantic_anchor', percent: 25, status: 'running' } },
+  { label: '更新场景1进度（生成）', type: 'UPDATE_RUN_PROGRESS', payload: { run_id: 'run_1', stage: 'generating_state_frame', percent: 50, status: 'running' } },
+  { label: '场景1失败（触发重试）', type: 'FAIL_SCENE_RUN', payload: { run_id: 'run_1', error: '黑圈检测失败' } },
+  { label: '完成场景1', type: 'COMPLETE_SCENE', payload: {
+    scene_id: 'scene_1',
+    artifact: {
+      state_frame: { file_id: 'sf_001', url: '/files/sf_001' },
+      video: { file_id: 'vid_001', url: '/files/vid_001', duration_ms: 8000 },
+      audio: { file_id: 'aud_001', url: '/files/aud_001' },
+      pet_targets: [{ target_id: 'pet_001', position: [0.61, 0.72], interaction_hitbox: { shape: 'rect', rect: [0.54, 0.5, 0.14, 0.24] } }]
+    }
+  }},
+  { label: '开始共建', type: 'START_CO_BUILD', payload: {
+    interaction_behavior: '与共建景观互动',
+    interaction_anchor: '新增景观位置'
+  }},
+  { label: '发布共建版本', type: 'PUBLISH_CO_BUILD_REVISION', payload: {} },
+  { label: '重置', type: 'RESET', payload: {}, class: 'danger' }
+];
+
+const scenarios = [
+  {
+    name: '正常流程：完整目的地生成',
+    description: '从愿望澄清到两个场景都成功生成的标准流程',
+    steps: [
+      { label: '1. 开始澄清', action: 'START_CLARIFICATION' },
+      { label: '2. 提交第一个愿望', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: '云海灯塔' } },
+      { label: '3. 提交第二个愿望', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: '温暖氛围' } },
+      { label: '4. Unity 结束澄清', action: 'UNITY_END_CLARIFICATION' },
+      { label: '5. 生成 requirements', action: 'GENERATE_DESTINATION_REQUIREMENTS', payload: { required: ['灯塔'], suggested: ['温暖'], freedom: ['云海'], forbidden: [] } },
+      { label: '6. 锁定 spec', action: 'LOCK_DESTINATION_SPEC', payload: { title: '云海灯塔', setting: '云海灯塔', core_experience: '温暖停靠', visual_profile: { style_id: 'neva_v1', composition_template_id: 'travel_01', prompt_template_version: '3.0' } } },
+      { label: '7. 创建场景计划', action: 'CREATE_SCENE_PLANS', payload: { plans: [{ state_id: 's1', pet_behavior: '看云', semantic_anchor: '右侧' }, { state_id: 's2', pet_behavior: '休息', semantic_anchor: '左侧' }] } },
+      { label: '8. 批准 Hero Frame', action: 'APPROVE_HERO_FRAME', payload: { file_id: 'hero_1', url: '/hero', sha256: 'h1' } },
+      { label: '9. 提取 Clean Plate', action: 'EXTRACT_CLEAN_PLATE', payload: { url: '/clean', sha256: 'c1' } }
+    ]
+  },
+  {
+    name: '边缘案例：第三轮自动封盘',
+    description: '测试三个已接受愿望后自动封盘的逻辑',
+    steps: [
+      { label: '1. 开始澄清', action: 'START_CLARIFICATION' },
+      { label: '2. 第一个愿望', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: '愿望1' } },
+      { label: '3. 第二个愿望', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: '愿望2' } },
+      { label: '4. 第三个愿望（自动封盘）', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: '愿望3' } },
+      { label: '5. 尝试第四个愿望（应失败）', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: '愿望4' }, expectError: true }
+    ]
+  },
+  {
+    name: '边缘案例：五次未接受输入封盘',
+    description: '测试累计五次未接受输入后自动封盘',
+    steps: [
+      { label: '1. 开始澄清', action: 'START_CLARIFICATION' },
+      { label: '2. 未接受输入 1', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'unaccepted', content: '...' } },
+      { label: '3. 未接受输入 2', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'unaccepted', content: '...' } },
+      { label: '4. 未接受输入 3', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'unaccepted', content: '...' } },
+      { label: '5. 未接受输入 4', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'unaccepted', content: '...' } },
+      { label: '6. 未接受输入 5（自动封盘）', action: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'unaccepted', content: '...' } }
+    ]
+  },
+  {
+    name: '边缘案例：场景失败与重试',
+    description: '测试场景生成失败后的自动重试逻辑',
+    steps: [
+      { label: '1. 准备目的地', action: 'LOCK_DESTINATION_SPEC', payload: { title: 'Test', setting: 'test', core_experience: 'test', visual_profile: { style_id: 'neva', composition_template_id: 't1', prompt_template_version: '1' } }, preps: ['START_CLARIFICATION', 'SUBMIT_PLAYER_INPUT', 'UNITY_END_CLARIFICATION', 'GENERATE_DESTINATION_REQUIREMENTS'] },
+      { label: '2. 创建场景计划', action: 'CREATE_SCENE_PLANS', payload: { plans: [{ state_id: 's1', pet_behavior: 'test', semantic_anchor: 'test' }] } },
+      { label: '3. 批准资源', action: 'EXTRACT_CLEAN_PLATE', payload: { url: '/c', sha256: 'c' }, preps: ['APPROVE_HERO_FRAME'] },
+      { label: '4. 开始场景生成', action: 'START_SCENE_RUN', payload: { scene_id: 'dynamic' } },
+      { label: '5. 第一次失败（重试）', action: 'FAIL_SCENE_RUN', payload: { run_id: 'dynamic', error: '失败1' } },
+      { label: '6. 第二次失败（重试）', action: 'FAIL_SCENE_RUN', payload: { run_id: 'dynamic', error: '失败2' } },
+      { label: '7. 第三次失败（终止）', action: 'FAIL_SCENE_RUN', payload: { run_id: 'dynamic', error: '失败3' } }
+    ]
+  },
+  {
+    name: '边缘案例：共建版本原子切换',
+    description: '测试共建的暂存版本和原子发布',
+    steps: [
+      { label: '1. 完成初始目的地', action: 'COMPLETE_SCENE', payload: { scene_id: 'dynamic', artifact: { state_frame: {file_id: 's1', url: '/s1'}, video: {file_id: 'v1', url: '/v1', duration_ms: 8000}, audio: {file_id: 'a1', url: '/a1'}, pet_targets: [] } }, preps: ['full_destination'] },
+      { label: '2. 开始共建（进入 revision 2）', action: 'START_CO_BUILD', payload: { interaction_behavior: '互动', interaction_anchor: '新位置' } },
+      { label: '3. 尝试发布（应失败：未全部 ready）', action: 'PUBLISH_CO_BUILD_REVISION', expectError: true },
+      { label: '4. 完成新版场景1', action: 'COMPLETE_SCENE', payload: { scene_id: 'dynamic_v2_1', artifact: { state_frame: {file_id: 's2', url: '/s2'}, video: {file_id: 'v2', url: '/v2', duration_ms: 8000}, audio: {file_id: 'a2', url: '/a2'}, pet_targets: [] } } },
+      { label: '5. 完成新版场景2', action: 'COMPLETE_SCENE', payload: { scene_id: 'dynamic_v2_2', artifact: { state_frame: {file_id: 's3', url: '/s3'}, video: {file_id: 'v3', url: '/v3', duration_ms: 8000}, audio: {file_id: 'a3', url: '/a3'}, pet_targets: [] } } },
+      { label: '6. 完成互动场景', action: 'COMPLETE_SCENE', payload: { scene_id: 'dynamic_interaction', artifact: { state_frame: {file_id: 's4', url: '/s4'}, video: {file_id: 'v4', url: '/v4', duration_ms: 8000}, audio: {file_id: 'a4', url: '/a4'}, pet_targets: [] } } },
+      { label: '7. 原子发布（成功）', action: 'PUBLISH_CO_BUILD_REVISION' }
+    ]
+  }
+];
+
+function dispatch(action, silent = false) {
+  try {
+    currentState = ContractLogic.reducer(currentState, action);
+    if (!silent) {
+      log(`<span class="action">${action.type}</span>`, false);
+    }
+    render();
+    return true;
+  } catch (error) {
+    log(`<span class="error">错误: ${error.message}</span>`, true);
+    return false;
+  }
+}
+
+function render() {
+  renderState();
+  renderFreePlay();
+  renderScenarios();
+}
+
+function renderState() {
+  const container = document.getElementById('stateDisplay');
+  const state = currentState;
+
+  const items = [
+    {
+      title: '澄清阶段',
+      content: `会话ID: ${state.clarification.session_id || '未开始'}
+已接受轮次: ${state.clarification.accepted_inputs_count}
+未接受次数: ${state.clarification.unaccepted_inputs_count}
+封盘状态: ${state.clarification.is_closed ? `<span class="highlight">已封盘 (${state.clarification.closed_by})</span>` : '进行中'}
+总轮次: ${state.clarification.rounds.length}`
+    },
+    {
+      title: 'Destination Requirements',
+      content: state.destination_requirements
+        ? `ID: ${state.destination_requirements.requirements_id}
+<span class="highlight">已锁定</span>
+必须约束: ${state.destination_requirements.categories.required_constraints.length} 项
+建议偏好: ${state.destination_requirements.categories.suggested_preferences.length} 项
+创作自由: ${state.destination_requirements.categories.creative_freedom.length} 项
+禁止内容: ${state.destination_requirements.categories.forbidden_content.length} 项`
+        : '未生成'
+    },
+    {
+      title: 'Destination Spec',
+      content: `ID: ${state.destination_spec.destination_id || '未创建'}
+规格版本: ${state.destination_spec.spec_version || 'N/A'}
+内容版本: ${state.destination_spec.content_version}
+标题: ${state.destination_spec.title || '未设置'}
+锁定: ${state.destination_spec.locked ? `<span class="highlight">是</span> (${state.destination_spec.locked_at})` : '否'}`
+    },
+    {
+      title: '共享环境',
+      content: `Revision: ${state.shared_environment.revision}
+Hero Frame: ${state.shared_environment.hero_frame ? `<span class="highlight">已批准</span> (${state.shared_environment.hero_frame.file_id})` : '未批准'}
+Clean Plate: ${state.shared_environment.clean_plate ? `<span class="highlight">已提取</span> (${state.shared_environment.clean_plate.file_id})` : '未提取'}`
+    },
+    {
+      title: '场景计划',
+      content: state.scene_plans.length > 0
+        ? state.scene_plans.map(p => `场景 ${p.order}: ${p.state_id} (${p.scene_id})`).join('\n')
+        : '未创建'
+    },
+    {
+      title: '目的地清单 (Unity 可见)',
+      content: state.destination_manifest
+        ? `状态: <span class="highlight">${state.destination_manifest.status}</span>
+Revision: ${state.destination_manifest.revision}
+场景数: ${state.destination_manifest.ready_scene_count} / ${state.destination_manifest.required_scene_count} ready
+
+场景状态:
+${state.destination_manifest.scenes.map(s => `  • 场景 ${s.order}: ${s.status}`).join('\n')}`
+        : '未创建'
+    },
+    {
+      title: '运行状态',
+      content: Object.keys(state.runs).length > 0
+        ? Object.values(state.runs).map(r =>
+            `${r.run_id}:
+  状态: ${r.status}
+  阶段: ${r.progress.stage} (${r.progress.percent}%)
+  尝试: ${r.attempts}/${r.max_attempts}
+  ${r.error ? `错误: ${r.error}` : ''}`
+          ).join('\n\n')
+        : '无运行中任务'
+    },
+    {
+      title: '场景产物',
+      content: Object.keys(state.scene_artifacts).length > 0
+        ? Object.values(state.scene_artifacts).map(a =>
+            `场景 ${a.scene_id}:
+  Revision: ${a.revision}
+  视频: ${a.video.file_id}
+  音频: ${a.audio.file_id}
+  宠物目标: ${a.pet_targets.length} 个`
+          ).join('\n\n')
+        : '无完成产物'
+    }
+  ];
+
+  container.innerHTML = items.map(item => `
+    <div class="state-item">
+      <h3>${item.title}</h3>
+      <pre>${item.content}</pre>
+    </div>
+  `).join('');
+}
+
+function renderFreePlay() {
+  const container = document.getElementById('freePlayButtons');
+  container.innerHTML = actions.map((action, index) => `
+    <button
+      onclick="handleFreePlay(${index})"
+      class="${action.class || ''}"
+    >${action.label}</button>
+  `).join('');
+}
+
+function handleFreePlay(index) {
+  const action = actions[index];
+
+  // 动态替换 scene_id 和 run_id
+  const payload = JSON.parse(JSON.stringify(action.payload));
+  if (payload.scene_id === 'scene_1' || payload.scene_id === 'scene_2') {
+    const plans = currentState.scene_plans;
+    if (plans.length > 0) {
+      const sceneIndex = payload.scene_id === 'scene_1' ? 0 : 1;
+      if (plans[sceneIndex]) {
+        payload.scene_id = plans[sceneIndex].scene_id;
+      }
+    }
+  }
+
+  if (payload.run_id === 'run_1') {
+    const runs = Object.values(currentState.runs);
+    if (runs.length > 0) {
+      payload.run_id = runs[0].run_id;
+    }
+  }
+
+  dispatch({ type: action.type, payload });
+}
+
+function renderScenarios() {
+  const tabsContainer = document.getElementById('scenarioTabs');
+  const contentContainer = document.getElementById('scenarioContent');
+
+  tabsContainer.innerHTML = scenarios.map((scenario, index) => `
+    <button
+      class="${index === currentScenario ? 'active' : ''}"
+      onclick="switchScenario(${index})"
+    >${scenario.name}</button>
+  `).join('');
+
+  contentContainer.innerHTML = scenarios.map((scenario, index) => `
+    <div class="scenario ${index === currentScenario ? 'active' : ''}" id="scenario-${index}">
+      <h3>${scenario.name}</h3>
+      <p>${scenario.description}</p>
+      <div class="steps">
+        ${scenario.steps.map((step, stepIndex) => {
+          const progress = scenarioProgress[index] || 0;
+          let className = '';
+          if (stepIndex < progress) className = 'completed';
+          if (stepIndex === progress) className = 'current';
+
+          return `<button
+            class="${className}"
+            onclick="executeScenarioStep(${index}, ${stepIndex})"
+          >${step.label}</button>`;
+        }).join('')}
+      </div>
+      <button
+        onclick="resetScenario(${index})"
+        style="margin-top: 1rem; padding: 0.5rem 1rem; background: #ff9800; color: white; border: none; border-radius: 4px; cursor: pointer;"
+      >重置此场景</button>
+    </div>
+  `).join('');
+}
+
+function switchScenario(index) {
+  currentScenario = index;
+  render();
+}
+
+function executeScenarioStep(scenarioIndex, stepIndex) {
+  const scenario = scenarios[scenarioIndex];
+  const step = scenario.steps[stepIndex];
+  const progress = scenarioProgress[scenarioIndex] || 0;
+
+  if (stepIndex !== progress) {
+    log(`<span class="error">请按顺序执行场景步骤</span>`, true);
+    return;
+  }
+
+  // 处理预备步骤
+  if (step.preps) {
+    for (const prep of step.preps) {
+      if (prep === 'full_destination') {
+        // 执行完整目的地准备
+        const prepActions = [
+          { type: 'START_CLARIFICATION', payload: {} },
+          { type: 'SUBMIT_PLAYER_INPUT', payload: { input_type: 'accepted', content: 'test' } },
+          { type: 'UNITY_END_CLARIFICATION', payload: {} },
+          { type: 'GENERATE_DESTINATION_REQUIREMENTS', payload: { required: [], suggested: [], freedom: [], forbidden: [] } },
+          { type: 'LOCK_DESTINATION_SPEC', payload: { title: 'Test', setting: 'test', core_experience: 'test', visual_profile: { style_id: 'neva', composition_template_id: 't1', prompt_template_version: '1' } } },
+          { type: 'CREATE_SCENE_PLANS', payload: { plans: [{ state_id: 's1', pet_behavior: 'test', semantic_anchor: 'test' }] } },
+          { type: 'APPROVE_HERO_FRAME', payload: { file_id: 'hero', url: '/hero', sha256: 'h' } },
+          { type: 'EXTRACT_CLEAN_PLATE', payload: { url: '/clean', sha256: 'c' } },
+          { type: 'START_SCENE_RUN', payload: { scene_id: 'dynamic' } },
+          { type: 'UPDATE_RUN_PROGRESS', payload: { run_id: 'dynamic', stage: 'generating', percent: 50, status: 'running' } }
+        ];
+
+        for (const pa of prepActions) {
+          let payload = JSON.parse(JSON.stringify(pa.payload));
+          if (payload.scene_id === 'dynamic') {
+            payload.scene_id = currentState.scene_plans[0]?.scene_id;
+          }
+          if (payload.run_id === 'dynamic') {
+            payload.run_id = Object.keys(currentState.runs)[0];
+          }
+          dispatch({ type: pa.type, payload }, true);
+        }
+      } else if (prep === 'APPROVE_HERO_FRAME') {
+        dispatch({ type: 'APPROVE_HERO_FRAME', payload: { file_id: 'hero', url: '/hero', sha256: 'h' } }, true);
+      } else {
+        // 执行其他预备步骤
+        const prepAction = actions.find(a => a.type === prep);
+        if (prepAction) {
+          dispatch({ type: prepAction.type, payload: prepAction.payload }, true);
+        }
+      }
+    }
+  }
+
+  // 动态替换 payload
+  let payload = JSON.parse(JSON.stringify(step.payload || {}));
+
+  if (payload.scene_id === 'dynamic') {
+    const plans = currentState.scene_plans;
+    if (plans.length > 0) {
+      payload.scene_id = plans[0].scene_id;
+    }
+  }
+
+  if (payload.scene_id === 'dynamic_v2_1' || payload.scene_id === 'dynamic_v2_2') {
+    const scenes = currentState.destination_manifest?.scenes;
+    if (scenes && scenes.length >= 2) {
+      payload.scene_id = payload.scene_id === 'dynamic_v2_1' ? scenes[0].scene_id : scenes[1].scene_id;
+    }
+  }
+
+  if (payload.scene_id === 'dynamic_interaction') {
+    const scenes = currentState.destination_manifest?.scenes;
+    if (scenes && scenes.length >= 3) {
+      payload.scene_id = scenes[2].scene_id;
+    }
+  }
+
+  if (payload.run_id === 'dynamic') {
+    const runs = Object.keys(currentState.runs);
+    if (runs.length > 0) {
+      payload.run_id = runs[0];
+    }
+  }
+
+  const success = dispatch({ type: step.action, payload }, false);
+
+  if (success && !step.expectError) {
+    scenarioProgress[scenarioIndex] = progress + 1;
+    render();
+  } else if (!success && step.expectError) {
+    log(`<span class="action">预期错误已触发 ✓</span>`, false);
+    scenarioProgress[scenarioIndex] = progress + 1;
+    render();
+  } else if (!success && !step.expectError) {
+    log(`<span class="error">步骤执行失败（非预期）</span>`, true);
+  } else if (success && step.expectError) {
+    log(`<span class="error">步骤应该失败但成功了</span>`, true);
+  }
+}
+
+function resetScenario(index) {
+  currentState = ContractLogic.createInitialState();
+  scenarioProgress[index] = 0;
+  log(`<span class="action">场景 ${index + 1} 已重置</span>`, false);
+  render();
+}
+
+function log(message, isError) {
+  const logContainer = document.getElementById('log');
+  const timestamp = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+  logContainer.innerHTML += `<div><span class="timestamp">[${timestamp}]</span> ${message}</div>`;
+  logContainer.scrollTop = logContainer.scrollHeight;
+}
+
+// 初始化
+render();
+log('原型已加载。开始探索数据模型和状态转换。', false);
+</script>
+</body>
+</html>
