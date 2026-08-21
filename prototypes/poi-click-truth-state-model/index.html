@@ -1,0 +1,886 @@
+<title>点击真值台</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="PetTrip 兴趣点从生成计划到 Unity 点击几何的决策原型">
+<style>
+  :root {
+    --ground: #f2f7f8;
+    --grid: rgba(22, 93, 115, 0.055);
+    --paper: #fbfdfd;
+    --paper-strong: #ffffff;
+    --ink: #183038;
+    --muted: #5c7077;
+    --line: #bfd0d4;
+    --line-strong: #8facb4;
+    --plan: #7568a7;
+    --plan-soft: #ebe8f6;
+    --observed: #165d73;
+    --observed-soft: #dcecf1;
+    --ready: #267a5b;
+    --ready-soft: #dcefe7;
+    --warn: #b5632b;
+    --warn-soft: #f7e7d9;
+    --danger: #9f4343;
+    --danger-soft: #f4dfdf;
+    --shadow: 0 18px 48px rgba(24, 48, 56, 0.09);
+    --radius: 7px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #101b1f;
+      --grid: rgba(153, 206, 220, 0.055);
+      --paper: #152429;
+      --paper-strong: #1b2d33;
+      --ink: #e5f0f2;
+      --muted: #9fb3b9;
+      --line: #355158;
+      --line-strong: #54727a;
+      --plan: #b8aaf0;
+      --plan-soft: #302d46;
+      --observed: #79bfd1;
+      --observed-soft: #1c3c45;
+      --ready: #72c39f;
+      --ready-soft: #1e3e32;
+      --warn: #e1a06c;
+      --warn-soft: #493323;
+      --danger: #e58b8b;
+      --danger-soft: #482a2a;
+      --shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #101b1f;
+    --grid: rgba(153, 206, 220, 0.055);
+    --paper: #152429;
+    --paper-strong: #1b2d33;
+    --ink: #e5f0f2;
+    --muted: #9fb3b9;
+    --line: #355158;
+    --line-strong: #54727a;
+    --plan: #b8aaf0;
+    --plan-soft: #302d46;
+    --observed: #79bfd1;
+    --observed-soft: #1c3c45;
+    --ready: #72c39f;
+    --ready-soft: #1e3e32;
+    --warn: #e1a06c;
+    --warn-soft: #493323;
+    --danger: #e58b8b;
+    --danger-soft: #482a2a;
+    --shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light dark; }
+  body {
+    margin: 0;
+    min-width: 0;
+    color: var(--ink);
+    background:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+      var(--ground);
+    background-size: 24px 24px;
+    font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+    line-height: 1.55;
+  }
+  button, select { font: inherit; }
+  button:focus-visible, select:focus-visible { outline: 3px solid color-mix(in srgb, var(--observed) 55%, transparent); outline-offset: 2px; }
+  h1, h2, h3, p { margin: 0; }
+  h1, h2, h3 { text-wrap: balance; }
+  code, .metric-value, .coordinate, .stage-index {
+    font-family: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .shell { width: min(1460px, calc(100% - 32px)); margin: 0 auto; padding: 28px 0 56px; }
+  .prototype-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 9px;
+    border: 1px solid var(--warn);
+    color: var(--warn);
+    background: var(--warn-soft);
+    border-radius: 3px;
+    font: 700 11px/1.2 "IBM Plex Mono", "Cascadia Mono", monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; margin-bottom: 22px; }
+  .eyebrow { color: var(--observed); font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+  h1 { font-family: "Noto Serif SC", "Songti SC", serif; font-size: clamp(30px, 4vw, 52px); line-height: 1.08; letter-spacing: -0.035em; }
+  .lede { max-width: 72ch; margin-top: 12px; color: var(--muted); font-size: 15px; }
+  .question { color: var(--ink); font-weight: 700; }
+  .header-note { max-width: 320px; font-size: 12px; color: var(--muted); text-align: right; }
+
+  .stage-rail {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+  .stage { display: grid; grid-template-columns: auto 1fr; gap: 9px; align-items: center; padding: 11px 13px; border-right: 1px solid var(--line); color: var(--muted); }
+  .stage:last-child { border-right: 0; }
+  .stage-index { font-size: 11px; }
+  .stage strong { display: block; font-size: 12px; }
+  .stage small { display: block; font-size: 10px; }
+  .stage.active { color: var(--observed); background: var(--observed-soft); }
+  .stage.done { color: var(--ready); background: var(--ready-soft); }
+  .stage.blocked { color: var(--danger); background: var(--danger-soft); }
+
+  .workbench { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(310px, 0.75fr); gap: 18px; align-items: start; }
+  .panel { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); min-width: 0; }
+  .panel-head { display: flex; justify-content: space-between; gap: 18px; align-items: center; padding: 13px 15px; border-bottom: 1px solid var(--line); }
+  .panel-head h2 { font-size: 14px; }
+  .panel-head p { color: var(--muted); font-size: 11px; }
+
+  .scene-wrap { padding: 14px; }
+  .scene {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    isolation: isolate;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    background:
+      radial-gradient(circle at 74% 22%, #fff4c9 0 5%, transparent 5.5%),
+      linear-gradient(180deg, #8ccbd3 0 52%, #7cb8c2 52.2% 56%, #d7c78e 56.2% 100%);
+  }
+  .scene::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse at 22% 58%, #5f8c6e 0 12%, transparent 12.5%),
+      radial-gradient(ellipse at 87% 61%, #517c66 0 10%, transparent 10.5%),
+      linear-gradient(155deg, transparent 0 47%, rgba(255,255,255,.22) 47.5% 49%, transparent 49.5%);
+    opacity: .9;
+  }
+  .lighthouse { position: absolute; left: 18%; top: 19%; width: 7%; height: 39%; background: repeating-linear-gradient(180deg, #f3e8da 0 18%, #c96359 18% 35%); clip-path: polygon(18% 100%, 34% 7%, 66% 7%, 82% 100%); }
+  .lighthouse::before { content: ""; position: absolute; left: -22%; top: -8%; width: 144%; height: 14%; background: #3d5660; clip-path: polygon(0 100%, 50% 0, 100% 100%); }
+  .bench { position: absolute; left: 63%; top: 59%; width: 17%; height: 5%; background: #7a573c; box-shadow: 0 8px 0 -2px #5f4937; transform: skewX(-8deg); }
+  .pet {
+    position: absolute;
+    left: var(--pet-x, 43%);
+    top: var(--pet-y, 54%);
+    width: 12%;
+    aspect-ratio: 1.15;
+    border-radius: 53% 47% 45% 50%;
+    background: #d99058;
+    transform: rotate(var(--pet-angle, -4deg));
+    transition: none;
+  }
+  .pet::before, .pet::after { content: ""; position: absolute; top: -24%; width: 34%; aspect-ratio: 1; background: #b86e41; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .pet::before { left: 4%; transform: rotate(-13deg); }
+  .pet::after { right: 4%; transform: rotate(13deg); }
+  .pet-eye { position: absolute; left: 67%; top: 36%; width: 7%; aspect-ratio: 1; border-radius: 50%; background: #2b2724; }
+
+  .overlay { position: absolute; pointer-events: none; display: none; }
+  .overlay.visible { display: block; }
+  .plan-mask { border: 3px dashed var(--plan); background: color-mix(in srgb, var(--plan) 13%, transparent); border-radius: 50%; }
+  .observed-mask { border: 3px solid var(--observed); background: color-mix(in srgb, var(--observed) 10%, transparent); clip-path: polygon(13% 20%, 39% 5%, 76% 12%, 94% 44%, 83% 83%, 55% 97%, 18% 81%, 4% 48%); }
+  .click-geometry { border: 3px solid var(--ready); background: color-mix(in srgb, var(--ready) 10%, transparent); }
+  .click-geometry.polygon { clip-path: polygon(13% 20%, 39% 5%, 76% 12%, 94% 44%, 83% 83%, 55% 97%, 18% 81%, 4% 48%); }
+  .click-geometry.bbox { border-radius: 2px; }
+  .click-geometry.circle { border-radius: 50%; }
+  .click-geometry.point { width: 16px !important; height: 16px !important; border-radius: 50%; border-width: 4px; background: var(--ready); transform: translate(-50%, -50%); }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 11px; color: var(--muted); font-size: 11px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 17px; height: 3px; display: inline-block; }
+  .swatch.plan { background: var(--plan); }
+  .swatch.observed { background: var(--observed); }
+  .swatch.ready { background: var(--ready); }
+  .sample-warning { margin-top: 10px; padding: 9px 11px; border-left: 3px solid var(--warn); background: var(--warn-soft); color: var(--warn); font-size: 11px; }
+
+  .state-body { padding: 14px; display: grid; gap: 12px; }
+  .status-banner { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 11px; border: 1px solid var(--line); background: var(--paper-strong); border-radius: 4px; }
+  .status-dot { width: 10px; height: 10px; margin-top: 5px; border-radius: 50%; background: var(--muted); }
+  .status-banner.ready .status-dot { background: var(--ready); }
+  .status-banner.warning .status-dot { background: var(--warn); }
+  .status-banner.rejected .status-dot { background: var(--danger); }
+  .status-banner strong { display: block; font-size: 13px; }
+  .status-banner p { color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .state-section { border-top: 1px solid var(--line); padding-top: 10px; }
+  .state-section h3 { color: var(--muted); font-size: 10px; letter-spacing: .11em; text-transform: uppercase; margin-bottom: 7px; }
+  .state-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; font-size: 11px; }
+  .state-grid dt { color: var(--muted); }
+  .state-grid dd { margin: 0; text-align: right; font-weight: 700; overflow-wrap: anywhere; }
+  .source-plan { color: var(--plan); }
+  .source-observed { color: var(--observed); }
+  .source-ready { color: var(--ready); }
+  .gate-list { display: grid; gap: 5px; }
+  .gate { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
+  .gate .pass { color: var(--ready); }
+  .gate .fail { color: var(--danger); }
+  .gate .pending { color: var(--muted); }
+
+  .controls { margin-top: 18px; padding: 15px; }
+  .controls h2, .walkthroughs h2 { font-size: 15px; }
+  .controls > p, .walkthroughs > p { color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .control-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 13px; }
+  .control-group { border: 1px solid var(--line); padding: 10px; border-radius: 4px; background: var(--paper-strong); }
+  .control-group h3 { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .button-stack { display: grid; gap: 6px; }
+  button, select {
+    width: 100%;
+    min-height: 34px;
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    background: var(--paper);
+    border-radius: 3px;
+    padding: 7px 9px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 11px;
+  }
+  button:hover { border-color: var(--observed); background: var(--observed-soft); }
+  button.primary { color: var(--paper-strong); background: var(--observed); border-color: var(--observed); font-weight: 800; }
+  button.danger { color: var(--danger); border-color: var(--danger); }
+  button:disabled { cursor: not-allowed; opacity: .48; }
+  label { display: grid; gap: 4px; color: var(--muted); font-size: 10px; }
+
+  .walkthroughs { margin-top: 18px; padding: 15px; }
+  .tabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--line); margin-top: 12px; }
+  .tab { width: auto; border: 0; border-bottom: 3px solid transparent; border-radius: 0; white-space: nowrap; background: transparent; color: var(--muted); padding: 9px 12px; }
+  .tab.active { color: var(--observed); border-bottom-color: var(--observed); font-weight: 800; }
+  .walkthrough { display: none; padding-top: 14px; }
+  .walkthrough.active { display: grid; grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr); gap: 18px; }
+  .walkthrough-copy h3 { font-size: 14px; }
+  .walkthrough-copy p { color: var(--muted); font-size: 11px; margin-top: 6px; }
+  .watch-for { margin-top: 10px; padding: 9px; border: 1px solid var(--plan); background: var(--plan-soft); color: var(--plan); font-size: 11px; }
+  .steps { display: grid; gap: 7px; counter-reset: guided-step; }
+  .step { display: grid; grid-template-columns: 24px 1fr auto; gap: 9px; align-items: center; border: 1px solid var(--line); background: var(--paper-strong); padding: 8px; border-radius: 4px; }
+  .step::before { counter-increment: guided-step; content: counter(guided-step); font: 700 10px "IBM Plex Mono", monospace; color: var(--muted); text-align: center; }
+  .step p { font-size: 11px; }
+  .step button { width: auto; min-width: 110px; text-align: center; }
+  .step.current { border-color: var(--observed); background: var(--observed-soft); }
+  .step.completed { opacity: .55; }
+  .step.completed button { pointer-events: none; }
+
+  .decision-strip { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .decision-card { padding: 15px; }
+  .decision-card h2 { font-size: 14px; }
+  .decision-card p { color: var(--muted); font-size: 11px; margin-top: 5px; }
+  .decision-options { display: grid; gap: 7px; margin-top: 10px; }
+  .decision-options label { grid-template-columns: auto 1fr; align-items: start; gap: 8px; padding: 8px; border: 1px solid var(--line); background: var(--paper-strong); border-radius: 4px; color: var(--ink); }
+  .decision-options input { margin-top: 3px; }
+  .decision-options strong { display: block; font-size: 11px; }
+  .decision-options span { display: block; color: var(--muted); font-size: 10px; margin-top: 2px; }
+  footer { padding-top: 18px; color: var(--muted); font-size: 10px; text-align: center; }
+
+  @media (max-width: 980px) {
+    header, .workbench, .decision-strip { grid-template-columns: 1fr; }
+    .header-note { text-align: left; max-width: none; }
+    .control-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .shell { width: min(100% - 20px, 1460px); padding-top: 16px; }
+    .stage-rail { grid-template-columns: 1fr 1fr; }
+    .stage:nth-child(2) { border-right: 0; }
+    .stage:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+    .control-grid, .walkthrough.active { grid-template-columns: 1fr; }
+    .step { grid-template-columns: 24px 1fr; }
+    .step button { grid-column: 2; width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<main class="shell">
+  <header>
+    <div>
+      <div class="eyebrow">PetTrip · Wayfinder 决策原型</div>
+      <h1>点击真值台</h1>
+      <p class="lede"><span class="question">要验证的问题：</span>Agent 是否应把生成前的兴趣点意图，仅作为最终图定位的先验；再从最终像素中确认实体并导出 Unity 可消费的点击几何？请通过下方场景亲自找出模型中“不该被允许”的状态。</p>
+    </div>
+    <div class="header-note">
+      <span class="prototype-flag">Throwaway Prototype</span>
+      <p style="margin-top:9px">这是决策工具，不是正式 API 或 Unity 界面。样本为合成校准图，不能当作真实模型效果证据。</p>
+    </div>
+  </header>
+
+  <section class="stage-rail" id="stageRail" aria-label="处理阶段"></section>
+
+  <section class="workbench">
+    <article class="panel">
+      <div class="panel-head">
+        <div><h2>最终场景检查台</h2><p>同一画布叠加计划、观测、交付三种来源</p></div>
+        <label>兴趣点
+          <select id="poiSelect">
+            <option value="pet">宠物 · 小橘</option>
+            <option value="lighthouse">非宠物 · 灯塔</option>
+            <option value="bench">非宠物 · 长椅</option>
+          </select>
+        </label>
+      </div>
+      <div class="scene-wrap">
+        <div class="scene" id="scene" role="img" aria-label="合成海边场景，用于比较计划区域、最终观测和点击几何">
+          <div class="lighthouse"></div>
+          <div class="bench"></div>
+          <div class="pet" id="pet"><span class="pet-eye"></span></div>
+          <div class="overlay plan-mask" id="planOverlay"></div>
+          <div class="overlay observed-mask" id="observedOverlay"></div>
+          <div class="overlay click-geometry" id="clickOverlay"></div>
+        </div>
+        <div class="legend">
+          <span><i class="swatch plan"></i>计划 Mask（生成前意图）</span>
+          <span><i class="swatch observed"></i>最终图观测（检测/分割）</span>
+          <span><i class="swatch ready"></i>Unity 点击几何（可交付真值）</span>
+        </div>
+        <div class="sample-warning"><strong>证据等级：合成校准样本。</strong> 可追溯的历史结论仅有：语义选点/可站立性均 4.31/5，Mask 尺寸稳定性 2.25/5、角色服从 Mask 边界 2.44/5；原始逐样本材料已不在可访问历史，不能复算。本页不证明检测器或生成模型已达到生产质量。</div>
+      </div>
+    </article>
+
+    <aside class="panel" aria-live="polite">
+      <div class="panel-head"><div><h2>完整状态</h2><p>每次操作后重新计算，不隐藏失败原因</p></div></div>
+      <div class="state-body" id="statePanel"></div>
+    </aside>
+  </section>
+
+  <section class="panel controls">
+    <h2>自由操作</h2>
+    <p>故意乱按也可以；非法动作会被状态机拒绝，并说明缺少什么。</p>
+    <div class="control-grid">
+      <div class="control-group">
+        <h3>1 · 计划兴趣点</h3>
+        <div class="button-stack">
+          <button data-action="PLAN_POI">记录语义意图与计划 Mask</button>
+          <button data-action="RESET" class="danger">重置本样本</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <h3>2 · 模拟最终生成</h3>
+        <div class="button-stack">
+          <button data-action="GENERATE_ALIGNED">生成：实体基本对齐</button>
+          <button data-action="GENERATE_DRIFTED">生成：实体明显偏移</button>
+          <button data-action="GENERATE_MISSING">生成：目标消失</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <h3>3 · 观察最终像素</h3>
+        <div class="button-stack">
+          <button data-action="OBSERVE_STRONG">分割：高置信完整轮廓</button>
+          <button data-action="OBSERVE_WEAK">检测：低置信边界框</button>
+          <button data-action="OBSERVE_AMBIGUOUS">检测：多个候选</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <h3>4 · 决定交付</h3>
+        <label>几何表示
+          <select id="geometrySelect">
+            <option value="polygon">归一化多边形</option>
+            <option value="bbox">归一化边界框</option>
+            <option value="circle">归一化圆</option>
+            <option value="point">单点</option>
+          </select>
+        </label>
+        <label style="margin-top:7px">演示置信阈值（待真实样本校准）
+          <select id="confidenceThresholdSelect">
+            <option value="0.70">0.70</option>
+            <option value="0.80" selected>0.80</option>
+            <option value="0.90">0.90</option>
+          </select>
+        </label>
+        <label style="margin-top:7px">演示覆盖阈值（待真实样本校准）
+          <select id="coverageThresholdSelect">
+            <option value="0.75">0.75</option>
+            <option value="0.85" selected>0.85</option>
+            <option value="0.95">0.95</option>
+          </select>
+        </label>
+        <div class="button-stack" style="margin-top:7px">
+          <button data-action="DELIVER" class="primary">通过 Gate，导出点击几何</button>
+          <button data-action="HUMAN_REVIEW">人工标注最终图</button>
+          <button data-action="REJECT_POI" class="danger">标为不可点击</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel walkthroughs">
+    <h2>引导场景</h2>
+    <p>每个场景从已知初始状态开始；按顺序点击，观察关键假设是否符合你的预期。</p>
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-tab="drift" role="tab">偏移后仍可点击</button>
+      <button class="tab" data-tab="landmark" role="tab">非宠物地标</button>
+      <button class="tab" data-tab="failure" role="tab">禁止 Mask 兜底</button>
+    </div>
+    <div id="walkthroughHost"></div>
+  </section>
+
+  <section class="decision-strip">
+    <article class="panel decision-card">
+      <h2>待你裁决 A · 默认几何</h2>
+      <p>同一份最终图观测，可以压缩成不同 Unity 数据。请在完成三个 walkthrough 后选择。</p>
+      <div class="decision-options">
+        <label><input type="radio" name="geometryDecision" value="polygon"><span><strong>多边形为主，bbox 为派生</strong><span>贴合不规则实体；点位多、契约略重。</span></span></label>
+        <label><input type="radio" name="geometryDecision" value="bbox"><span><strong>边界框为首版默认</strong><span>简单稳健；对灯塔等细长物体会包含较多空白。</span></span></label>
+        <label><input type="radio" name="geometryDecision" value="typed"><span><strong>按实体类型选择几何</strong><span>宠物用多边形，地标可用 bbox/circle；灵活但规则更多。</span></span></label>
+      </div>
+    </article>
+    <article class="panel decision-card">
+      <h2>待你裁决 B · 自动失败后的首选</h2>
+      <p>低置信、多候选或目标消失时，首个默认目的地应优先怎样处理？</p>
+      <div class="decision-options">
+        <label><input type="radio" name="fallbackDecision" value="human"><span><strong>进入人工最终图标注</strong><span>保留该兴趣点，增加人工依赖与等待。</span></span></label>
+        <label><input type="radio" name="fallbackDecision" value="retry"><span><strong>换提示/检测器后有限重试</strong><span>先自动恢复；必须规定次数和停止条件。</span></span></label>
+        <label><input type="radio" name="fallbackDecision" value="omit"><span><strong>本场景省略该点击点</strong><span>保持自动闭环；牺牲局部互动。</span></span></label>
+      </div>
+    </article>
+  </section>
+
+  <footer>点击真值台 · Issue “验证兴趣点到点击区域的可靠转换” · 单文件内存原型</footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  const POIS = {
+    pet: {
+      name: "宠物 · 小橘",
+      kind: "pet",
+      semanticId: "pet:primary",
+      plan: { x: 0.43, y: 0.49, w: 0.17, h: 0.23 },
+      aligned: { x: 0.44, y: 0.51, w: 0.15, h: 0.20 },
+      drifted: { x: 0.59, y: 0.47, w: 0.15, h: 0.20 }
+    },
+    lighthouse: {
+      name: "非宠物 · 灯塔",
+      kind: "landmark",
+      semanticId: "landmark:lighthouse",
+      plan: { x: 0.15, y: 0.14, w: 0.13, h: 0.47 },
+      aligned: { x: 0.17, y: 0.18, w: 0.09, h: 0.42 },
+      drifted: { x: 0.28, y: 0.22, w: 0.09, h: 0.42 }
+    },
+    bench: {
+      name: "非宠物 · 长椅",
+      kind: "prop",
+      semanticId: "prop:bench",
+      plan: { x: 0.60, y: 0.53, w: 0.24, h: 0.16 },
+      aligned: { x: 0.62, y: 0.56, w: 0.20, h: 0.12 },
+      drifted: { x: 0.70, y: 0.62, w: 0.20, h: 0.12 }
+    }
+  };
+
+  const STAGES = [
+    ["planned", "计划", "语义意图"],
+    ["generated", "生成", "最终像素"],
+    ["observed", "观测", "检测 / 分割"],
+    ["resolved", "决议", "交付或拒绝"]
+  ];
+
+  const initialState = (poiKey = "pet") => ({
+    poiKey,
+    lifecycle: "empty",
+    planned: false,
+    generation: null,
+    observation: null,
+    resolution: null,
+    geometryType: "polygon",
+    thresholds: { confidence: 0.8, coverage: 0.85 },
+    confidence: null,
+    candidateCount: 0,
+    planRegion: null,
+    finalEntityRegion: null,
+    observedRegion: null,
+    clickGeometry: null,
+    sourceOfTruth: "none",
+    lastEvent: "等待记录兴趣点计划",
+    rejectedAction: null,
+    measurements: { centerDrift: null, iouPlanVsObserved: null, coverage: null },
+    audit: []
+  });
+
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const round = value => Math.round(value * 1000) / 1000;
+  const center = r => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
+  const centerDistance = (a, b) => {
+    const ca = center(a); const cb = center(b);
+    return Math.sqrt((ca.x - cb.x) ** 2 + (ca.y - cb.y) ** 2);
+  };
+  const iou = (a, b) => {
+    const left = Math.max(a.x, b.x), top = Math.max(a.y, b.y);
+    const right = Math.min(a.x + a.w, b.x + b.w), bottom = Math.min(a.y + a.h, b.y + b.h);
+    const intersection = Math.max(0, right - left) * Math.max(0, bottom - top);
+    const union = a.w * a.h + b.w * b.h - intersection;
+    return union ? intersection / union : 0;
+  };
+  const expand = (r, amount = 0.015) => ({
+    x: Math.max(0, r.x - amount), y: Math.max(0, r.y - amount),
+    w: Math.min(1 - Math.max(0, r.x - amount), r.w + amount * 2),
+    h: Math.min(1 - Math.max(0, r.y - amount), r.h + amount * 2)
+  });
+  const audit = (state, event) => [...state.audit, event].slice(-5);
+  const reject = (state, message) => ({ ...state, rejectedAction: message, lastEvent: `动作被拒绝：${message}`, audit: audit(state, `拒绝 · ${message}`) });
+
+  function reduce(state, action) {
+    const next = clone(state);
+    const poi = POIS[state.poiKey];
+    next.rejectedAction = null;
+
+    switch (action.type) {
+      case "RESET":
+        return initialState(state.poiKey);
+      case "SELECT_POI":
+        return initialState(action.poiKey);
+      case "SET_GEOMETRY":
+        next.geometryType = action.geometryType;
+        next.clickGeometry = null;
+        if (next.resolution === "deliverable") {
+          next.resolution = null;
+          next.lifecycle = "observed";
+          next.sourceOfTruth = "final-image-observation";
+        }
+        next.lastEvent = `点击几何候选改为：${geometryLabel(action.geometryType)}`;
+        next.audit = audit(next, next.lastEvent);
+        return next;
+      case "SET_THRESHOLD":
+        next.thresholds[action.key] = action.value;
+        next.clickGeometry = null;
+        if (next.resolution === "deliverable") {
+          next.resolution = null;
+          next.lifecycle = "observed";
+          next.sourceOfTruth = "final-image-observation";
+        }
+        next.lastEvent = `演示${action.key === "confidence" ? "置信" : "覆盖"}阈值改为 ${action.value.toFixed(2)}；仍待真实样本校准`;
+        next.audit = audit(next, next.lastEvent);
+        return next;
+      case "PLAN_POI":
+        next.planned = true;
+        next.lifecycle = "planned";
+        next.planRegion = clone(poi.plan);
+        next.sourceOfTruth = "plan-only-not-click-truth";
+        next.lastEvent = `已记录 ${poi.name} 的语义身份与计划区域；尚不可点击`;
+        next.audit = audit(next, "记录计划 · 不作为点击真值");
+        return next;
+      case "GENERATE_ALIGNED":
+      case "GENERATE_DRIFTED":
+      case "GENERATE_MISSING": {
+        if (!state.planned) return reject(state, "必须先记录兴趣点计划");
+        const mode = action.type === "GENERATE_ALIGNED" ? "aligned" : action.type === "GENERATE_DRIFTED" ? "drifted" : "missing";
+        next.lifecycle = "generated";
+        next.generation = mode;
+        next.finalEntityRegion = mode === "missing" ? null : clone(poi[mode]);
+        next.observation = null;
+        next.resolution = null;
+        next.observedRegion = null;
+        next.clickGeometry = null;
+        next.confidence = null;
+        next.candidateCount = 0;
+        next.sourceOfTruth = "final-pixels-unobserved";
+        next.measurements = { centerDrift: mode === "missing" ? null : round(centerDistance(next.planRegion, next.finalEntityRegion)), iouPlanVsObserved: null, coverage: null };
+        next.lastEvent = mode === "missing" ? "最终图已生成，但计划实体未出现" : `最终图已生成；实体相对计划${mode === "drifted" ? "明显偏移" : "基本对齐"}`;
+        next.audit = audit(next, `生成最终图 · ${mode}`);
+        return next;
+      }
+      case "OBSERVE_STRONG":
+      case "OBSERVE_WEAK":
+      case "OBSERVE_AMBIGUOUS": {
+        if (!state.generation) return reject(state, "必须先得到最终生成图");
+        const quality = action.type === "OBSERVE_STRONG" ? "strong" : action.type === "OBSERVE_WEAK" ? "weak" : "ambiguous";
+        next.lifecycle = "observed";
+        next.observation = quality;
+        next.resolution = null;
+        next.clickGeometry = null;
+        next.sourceOfTruth = "final-image-observation";
+        if (!next.finalEntityRegion) {
+          next.observedRegion = null;
+          next.confidence = quality === "strong" ? 0.18 : 0.11;
+          next.candidateCount = quality === "ambiguous" ? 2 : 0;
+          next.measurements.iouPlanVsObserved = null;
+          next.measurements.coverage = 0;
+          next.lastEvent = "最终图中没有确认到目标实体";
+        } else {
+          const observed = quality === "weak" ? expand(next.finalEntityRegion, 0.05) : expand(next.finalEntityRegion, 0.012);
+          next.observedRegion = observed;
+          next.confidence = quality === "strong" ? 0.93 : quality === "weak" ? 0.58 : 0.71;
+          next.candidateCount = quality === "ambiguous" ? 2 : 1;
+          next.measurements.iouPlanVsObserved = round(iou(next.planRegion, observed));
+          next.measurements.coverage = quality === "weak" ? 0.68 : 0.96;
+          next.lastEvent = quality === "strong" ? "最终图分割得到单一高置信轮廓" : quality === "weak" ? "只得到低置信宽边界框" : "最终图中存在多个语义候选";
+        }
+        next.audit = audit(next, `观察最终图 · ${quality}`);
+        return next;
+      }
+      case "HUMAN_REVIEW":
+        if (!state.generation) return reject(state, "没有最终图可供人工标注");
+        if (!state.finalEntityRegion) return reject(state, "最终图目标缺失，人工不能凭计划 Mask 造出实体");
+        next.lifecycle = "observed";
+        next.observation = "human-verified";
+        next.observedRegion = expand(next.finalEntityRegion, 0.008);
+        next.confidence = 1;
+        next.candidateCount = 1;
+        next.measurements.iouPlanVsObserved = round(iou(next.planRegion, next.observedRegion));
+        next.measurements.coverage = 0.99;
+        next.sourceOfTruth = "human-annotated-final-image";
+        next.lastEvent = "人工已在最终图上确认并修正轮廓";
+        next.audit = audit(next, "人工标注最终图");
+        return next;
+      case "DELIVER": {
+        if (!state.observation) return reject(state, "必须先观察最终图，计划 Mask 不能直接交付");
+        const gate = evaluateGate(state);
+        if (!gate.pass) return reject(state, gate.reasons.join("；"));
+        next.lifecycle = "resolved";
+        next.resolution = "deliverable";
+        next.clickGeometry = toGeometry(state.observedRegion, state.geometryType);
+        next.sourceOfTruth = state.sourceOfTruth;
+        next.lastEvent = `已从最终图观测导出 ${geometryLabel(state.geometryType)}；可交付 Unity`;
+        next.audit = audit(next, `交付 · ${geometryLabel(state.geometryType)}`);
+        return next;
+      }
+      case "REJECT_POI":
+        if (!state.generation) return reject(state, "尚无最终图，不能判断该兴趣点是否可点击");
+        next.lifecycle = "resolved";
+        next.resolution = "not-clickable";
+        next.clickGeometry = null;
+        next.sourceOfTruth = "explicit-failure-record";
+        next.lastEvent = "本场景保留画面，但该兴趣点明确标为不可点击";
+        next.audit = audit(next, "显式失败 · 不可点击");
+        return next;
+      default:
+        return state;
+    }
+  }
+
+  function evaluateGate(state) {
+    const reasons = [];
+    if (!state.observedRegion) reasons.push("最终图中没有确认目标区域");
+    if ((state.confidence ?? 0) < state.thresholds.confidence && state.observation !== "human-verified") reasons.push(`自动观测置信度低于演示阈值 ${state.thresholds.confidence.toFixed(2)}（待真实样本校准）`);
+    if (state.candidateCount !== 1) reasons.push("目标候选不唯一");
+    if ((state.measurements.coverage ?? 0) < state.thresholds.coverage) reasons.push(`轮廓覆盖低于演示阈值 ${state.thresholds.coverage.toFixed(2)}（待真实样本校准）`);
+    return { pass: reasons.length === 0, reasons };
+  }
+
+  function toGeometry(region, type) {
+    if (!region) return null;
+    const r = Object.fromEntries(Object.entries(region).map(([k, v]) => [k, round(v)]));
+    if (type === "bbox") return { type: "bbox", ...r };
+    if (type === "circle") return { type: "circle", cx: round(r.x + r.w / 2), cy: round(r.y + r.h / 2), radius: round(Math.max(r.w, r.h) / 2) };
+    if (type === "point") return { type: "point", x: round(r.x + r.w / 2), y: round(r.y + r.h / 2) };
+    return {
+      type: "polygon",
+      points: [
+        [round(r.x + r.w * .13), round(r.y + r.h * .2)], [round(r.x + r.w * .39), round(r.y + r.h * .05)],
+        [round(r.x + r.w * .76), round(r.y + r.h * .12)], [round(r.x + r.w * .94), round(r.y + r.h * .44)],
+        [round(r.x + r.w * .83), round(r.y + r.h * .83)], [round(r.x + r.w * .55), round(r.y + r.h * .97)],
+        [round(r.x + r.w * .18), round(r.y + r.h * .81)], [round(r.x + r.w * .04), round(r.y + r.h * .48)]
+      ],
+      bbox: r
+    };
+  }
+
+  function geometryLabel(type) {
+    return ({ polygon: "归一化多边形", bbox: "归一化边界框", circle: "归一化圆", point: "中心点" })[type];
+  }
+
+  const ACTIONS = {
+    PLAN_POI: { type: "PLAN_POI" }, RESET: { type: "RESET" },
+    GENERATE_ALIGNED: { type: "GENERATE_ALIGNED" }, GENERATE_DRIFTED: { type: "GENERATE_DRIFTED" }, GENERATE_MISSING: { type: "GENERATE_MISSING" },
+    OBSERVE_STRONG: { type: "OBSERVE_STRONG" }, OBSERVE_WEAK: { type: "OBSERVE_WEAK" }, OBSERVE_AMBIGUOUS: { type: "OBSERVE_AMBIGUOUS" },
+    DELIVER: { type: "DELIVER" }, HUMAN_REVIEW: { type: "HUMAN_REVIEW" }, REJECT_POI: { type: "REJECT_POI" }
+  };
+
+  const WALKTHROUGHS = {
+    drift: {
+      title: "生成偏移不等于点击失效",
+      description: "宠物没有落在计划黑圈内，但最终图分割准确找到它。检查点击区域是否跟随最终像素，而不是停留在旧 Mask。",
+      watch: "看紫色计划圈与蓝/绿色最终轮廓分离；中心偏移会被记录，但不应单独阻止交付。",
+      poi: "pet",
+      steps: [
+        ["记录宠物的生成意图", "PLAN_POI"], ["让最终宠物明显偏移", "GENERATE_DRIFTED"],
+        ["在最终图上得到高置信分割", "OBSERVE_STRONG"], ["导出 Unity 点击几何", "DELIVER"]
+      ]
+    },
+    landmark: {
+      title: "同一管线覆盖非宠物兴趣点",
+      description: "灯塔不是生成时的宠物 Mask，也应有稳定语义身份与最终图几何。检查流程是否错误地只为宠物服务。",
+      watch: "语义身份从 pet:primary 变为 landmark:lighthouse；点击真值仍来自最终图观测。",
+      poi: "lighthouse",
+      steps: [
+        ["记录灯塔语义意图", "PLAN_POI"], ["生成基本对齐的最终场景", "GENERATE_ALIGNED"],
+        ["分割最终图中的灯塔", "OBSERVE_STRONG"], ["比较不同几何后交付", "DELIVER"]
+      ]
+    },
+    failure: {
+      title: "目标消失时禁止 Mask 兜底",
+      description: "计划里有长椅，但最终生成图没有它。尝试直接交付，确认系统拒绝；再选择显式失败，而不是发送幽灵点击区。",
+      watch: "计划 Mask 仍可见，但最终观测为空；任何点击几何都不能从紫色区域偷渡生成。",
+      poi: "bench",
+      steps: [
+        ["记录长椅计划", "PLAN_POI"], ["模拟最终图中长椅消失", "GENERATE_MISSING"],
+        ["运行最终图检测", "OBSERVE_STRONG"], ["尝试交付（应被拒绝）", "DELIVER"],
+        ["显式标为不可点击", "REJECT_POI"]
+      ]
+    }
+  };
+
+  let state = initialState();
+  let activeWalkthrough = "drift";
+  let walkthroughStep = 0;
+
+  function dispatch(action) {
+    state = reduce(state, action);
+    render();
+  }
+
+  const LEGACY_FIXTURE = { width: 512, height: 288, pixelsPerUnit: 16, origin: "bottom-left" };
+
+  function formatRegion(region) {
+    if (!region) return "—";
+    return `x ${region.x.toFixed(3)} · y ${region.y.toFixed(3)} · w ${region.w.toFixed(3)} · h ${region.h.toFixed(3)}`;
+  }
+  function coordinateViews(region) {
+    if (!region) return null;
+    const normalized = center(region);
+    const pixel = {
+      x: Math.round(normalized.x * LEGACY_FIXTURE.width),
+      y: Math.round((1 - normalized.y) * LEGACY_FIXTURE.height)
+    };
+    const world = {
+      x: round((pixel.x - LEGACY_FIXTURE.width / 2) / LEGACY_FIXTURE.pixelsPerUnit),
+      y: round((pixel.y - LEGACY_FIXTURE.height / 2) / LEGACY_FIXTURE.pixelsPerUnit)
+    };
+    return { normalized, pixel, world };
+  }
+  function metric(value, suffix = "") { return value == null ? "—" : `${value.toFixed(3)}${suffix}`; }
+  function sourceLabel(source) {
+    return ({
+      none: "无", "plan-only-not-click-truth": "仅计划（不可交付）", "final-pixels-unobserved": "最终像素（未观测）",
+      "final-image-observation": "自动观测的最终图", "human-annotated-final-image": "人工标注的最终图", "explicit-failure-record": "显式失败记录"
+    })[source] || source;
+  }
+
+  function renderStages() {
+    const order = { empty: -1, planned: 0, generated: 1, observed: 2, resolved: 3 };
+    const current = order[state.lifecycle];
+    document.getElementById("stageRail").innerHTML = STAGES.map(([key, name, sub], index) => {
+      let cls = index < current ? "done" : index === current ? "active" : "";
+      if (state.resolution === "not-clickable" && index === 3) cls = "blocked";
+      return `<div class="stage ${cls}"><span class="stage-index">0${index + 1}</span><span><strong>${name}</strong><small>${sub}</small></span></div>`;
+    }).join("");
+  }
+
+  function setRect(element, region) {
+    if (!region) { element.classList.remove("visible"); return; }
+    element.style.left = `${region.x * 100}%`; element.style.top = `${region.y * 100}%`;
+    element.style.width = `${region.w * 100}%`; element.style.height = `${region.h * 100}%`;
+    element.classList.add("visible");
+  }
+
+  function renderScene() {
+    const plan = document.getElementById("planOverlay");
+    const observed = document.getElementById("observedOverlay");
+    const click = document.getElementById("clickOverlay");
+    setRect(plan, state.planRegion);
+    setRect(observed, state.observedRegion);
+    const clickRegion = state.clickGeometry ? (state.clickGeometry.bbox || (state.clickGeometry.type === "bbox" ? state.clickGeometry : state.observedRegion)) : null;
+    setRect(click, clickRegion);
+    click.className = `overlay click-geometry ${state.geometryType}${clickRegion ? " visible" : ""}`;
+    if (state.geometryType === "point" && state.clickGeometry) {
+      click.style.left = `${state.clickGeometry.x * 100}%`; click.style.top = `${state.clickGeometry.y * 100}%`;
+    }
+    const pet = document.getElementById("pet");
+    const petRegion = state.poiKey === "pet" && state.finalEntityRegion ? state.finalEntityRegion : POIS.pet.aligned;
+    pet.style.setProperty("--pet-x", `${petRegion.x * 100}%`);
+    pet.style.setProperty("--pet-y", `${petRegion.y * 100}%`);
+    pet.style.opacity = state.poiKey === "pet" && state.generation === "missing" ? "0" : "1";
+  }
+
+  function renderState() {
+    const gate = evaluateGate(state);
+    const views = coordinateViews(state.observedRegion);
+    const status = state.resolution === "deliverable" ? ["ready", "可交付", "点击几何来自最终图观测并通过 Gate。"]
+      : state.resolution === "not-clickable" ? ["rejected", "明确不可点击", "场景可继续交付，但不会产生幽灵点击区。"]
+      : state.rejectedAction ? ["rejected", "刚刚拒绝了一次动作", state.rejectedAction]
+      : state.observation && !gate.pass ? ["warning", "需要处理", gate.reasons.join("；")]
+      : ["", "尚不可交付", state.lastEvent];
+    const gateItems = [
+      ["最终图存在观测区域", !!state.observedRegion],
+      [`置信度 ≥ ${state.thresholds.confidence.toFixed(2)} 或人工确认`, (state.confidence ?? 0) >= state.thresholds.confidence || state.observation === "human-verified"],
+      ["语义候选唯一", state.candidateCount === 1],
+      [`轮廓覆盖 ≥ ${state.thresholds.coverage.toFixed(2)}`, (state.measurements.coverage ?? 0) >= state.thresholds.coverage]
+    ];
+    document.getElementById("statePanel").innerHTML = `
+      <div class="status-banner ${status[0]}"><i class="status-dot"></i><div><strong>${status[1]}</strong><p>${status[2]}</p></div></div>
+      <section class="state-section"><h3>领域边界</h3><dl class="state-grid">
+        <dt>destination_spec</dt><dd>不含生成后坐标 / hitbox</dd>
+        <dt>scene_plan</dt><dd>${state.planned ? `语义锚点 ${POIS[state.poiKey].semanticId}` : "尚无语义意图"}</dd>
+        <dt>scene_artifact</dt><dd>${state.generation ? state.resolution === "deliverable" ? "最终图 + 定位 + hitbox" : "最终图；hitbox 未就绪" : "尚未生成"}</dd>
+      </dl></section>
+      <section class="state-section"><h3>兴趣点身份</h3><dl class="state-grid">
+        <dt>名称</dt><dd>${POIS[state.poiKey].name}</dd><dt>类型</dt><dd>${POIS[state.poiKey].kind}</dd><dt>稳定语义 ID</dt><dd class="coordinate">${POIS[state.poiKey].semanticId}</dd>
+      </dl></section>
+      <section class="state-section"><h3>三种来源</h3><dl class="state-grid">
+        <dt class="source-plan">计划区域</dt><dd class="coordinate source-plan">${formatRegion(state.planRegion)}</dd>
+        <dt class="source-observed">最终图观测</dt><dd class="coordinate source-observed">${formatRegion(state.observedRegion)}</dd>
+        <dt class="source-ready">点击几何</dt><dd class="coordinate source-ready">${state.clickGeometry ? geometryLabel(state.clickGeometry.type) : "—"}</dd>
+        <dt>点击真值来源</dt><dd>${sourceLabel(state.sourceOfTruth)}</dd>
+      </dl></section>
+      <section class="state-section"><h3>坐标换算（旧契约回归基线）</h3><dl class="state-grid">
+        <dt>画布 / 原点</dt><dd class="coordinate">512×288 / 左下</dd>
+        <dt>归一化中心（页面左上原点）</dt><dd class="coordinate">${views ? `${views.normalized.x.toFixed(3)}, ${views.normalized.y.toFixed(3)}` : "—"}</dd>
+        <dt>像素 anchor（Unity 左下原点）</dt><dd class="coordinate">${views ? `${views.pixel.x}, ${views.pixel.y}` : "—"}</dd>
+        <dt>世界坐标（16 px/unit）</dt><dd class="coordinate">${views ? `${views.world.x.toFixed(3)}, ${views.world.y.toFixed(3)}` : "—"}</dd>
+      </dl></section>
+      <section class="state-section"><h3>可复查测量</h3><dl class="state-grid">
+        <dt>计划→实体中心偏移</dt><dd class="metric-value">${metric(state.measurements.centerDrift)}</dd>
+        <dt>计划/观测 IoU（诊断量）</dt><dd class="metric-value">${metric(state.measurements.iouPlanVsObserved)}</dd>
+        <dt>最终实体轮廓覆盖</dt><dd class="metric-value">${metric(state.measurements.coverage)}</dd>
+        <dt>观测置信度</dt><dd class="metric-value">${metric(state.confidence)}</dd>
+        <dt>候选数</dt><dd class="metric-value">${state.observation ? state.candidateCount : "—"}</dd>
+      </dl></section>
+      <section class="state-section"><h3>交付 Gate</h3><div class="gate-list">${gateItems.map(([label, pass]) => `<div class="gate"><span>${label}</span><strong class="${state.observation ? pass ? "pass" : "fail" : "pending"}">${state.observation ? pass ? "通过" : "未通过" : "待测"}</strong></div>`).join("")}</div></section>
+      <section class="state-section"><h3>最近事件</h3><div class="gate-list">${state.audit.length ? state.audit.slice().reverse().map(item => `<div class="gate"><span>${item}</span></div>`).join("") : `<div class="gate"><span>暂无</span></div>`}</div></section>`;
+  }
+
+  function renderWalkthrough() {
+    const data = WALKTHROUGHS[activeWalkthrough];
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab.dataset.tab === activeWalkthrough));
+    const steps = data.steps.map(([label, action], index) => `
+      <div class="step ${index < walkthroughStep ? "completed" : index === walkthroughStep ? "current" : ""}">
+        <p>${label}</p><button data-guided-action="${action}" data-step="${index}" ${index !== walkthroughStep ? "disabled" : ""}>${index === walkthroughStep ? "执行这一步" : index < walkthroughStep ? "已执行" : "等待前一步"}</button>
+      </div>`).join("");
+    document.getElementById("walkthroughHost").innerHTML = `<div class="walkthrough active"><div class="walkthrough-copy"><h3>${data.title}</h3><p>${data.description}</p><div class="watch-for"><strong>重点观察：</strong>${data.watch}</div><button id="restartWalkthrough" style="margin-top:10px">从头开始此场景</button></div><div class="steps">${steps}</div></div>`;
+  }
+
+  function render() {
+    renderStages(); renderScene(); renderState(); renderWalkthrough();
+    document.getElementById("poiSelect").value = state.poiKey;
+    document.getElementById("geometrySelect").value = state.geometryType;
+    document.getElementById("confidenceThresholdSelect").value = state.thresholds.confidence.toFixed(2);
+    document.getElementById("coverageThresholdSelect").value = state.thresholds.coverage.toFixed(2);
+  }
+
+  document.addEventListener("click", event => {
+    const actionButton = event.target.closest("[data-action]");
+    if (actionButton) dispatch(ACTIONS[actionButton.dataset.action]);
+    const tab = event.target.closest("[data-tab]");
+    if (tab) {
+      activeWalkthrough = tab.dataset.tab; walkthroughStep = 0;
+      const data = WALKTHROUGHS[activeWalkthrough]; state = initialState(data.poi); render();
+    }
+    const guided = event.target.closest("[data-guided-action]");
+    if (guided && Number(guided.dataset.step) === walkthroughStep) {
+      dispatch(ACTIONS[guided.dataset.guidedAction]); walkthroughStep += 1; render();
+    }
+    if (event.target.id === "restartWalkthrough") {
+      walkthroughStep = 0; state = initialState(WALKTHROUGHS[activeWalkthrough].poi); render();
+    }
+  });
+  document.getElementById("poiSelect").addEventListener("change", event => dispatch({ type: "SELECT_POI", poiKey: event.target.value }));
+  document.getElementById("geometrySelect").addEventListener("change", event => dispatch({ type: "SET_GEOMETRY", geometryType: event.target.value }));
+  document.getElementById("confidenceThresholdSelect").addEventListener("change", event => dispatch({ type: "SET_THRESHOLD", key: "confidence", value: Number(event.target.value) }));
+  document.getElementById("coverageThresholdSelect").addEventListener("change", event => dispatch({ type: "SET_THRESHOLD", key: "coverage", value: Number(event.target.value) }));
+
+  state = initialState(WALKTHROUGHS[activeWalkthrough].poi);
+  render();
+})();
+</script>
