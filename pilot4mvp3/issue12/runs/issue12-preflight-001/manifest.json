@@ -2,7 +2,7 @@
   "schema_version": "issue12-run/0.1",
   "run_id": "issue12-preflight-001",
   "created_at": "2026-08-22T17:19:00.881136+00:00",
-  "updated_at": "2026-08-22T17:19:01.583376+00:00",
+  "updated_at": "2026-08-22T17:38:08.417366+00:00",
   "config": {
     "schema_version": "issue12-experiment/0.1",
     "issue": 12,
@@ -263,7 +263,7 @@
   },
   "base_candidates": {
     "M0": {
-      "status": "pending",
+      "status": "waiting_for_review",
       "snapshot": {
         "variant": "M0",
         "prompt": {
@@ -301,11 +301,34 @@
         "idem_key": "issue12-issue12-preflight-001-g06-m0-environment-base",
         "snapshot_sha256": "4e8c199e6757bfdbdc48a05bac95b32f6001f2e9b203cc263b857270b3262f3a"
       },
-      "approval": null,
-      "attempts": []
+      "approval": {
+        "snapshot_sha256": "4e8c199e6757bfdbdc48a05bac95b32f6001f2e9b203cc263b857270b3262f3a",
+        "approved_at": "2026-08-22T17:35:46.132764+00:00"
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_at": "2026-08-22T17:36:22.130621+00:00",
+          "idem_key": "issue12-issue12-preflight-001-g06-m0-environment-base",
+          "task_id": "img_26cd821fc4ca52590f670ddce83a1de7",
+          "error": null,
+          "outputs": [
+            {
+              "path": "base_candidates/M0/environment-base.png",
+              "sha256": "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1",
+              "size": [
+                2048,
+                1152
+              ]
+            }
+          ],
+          "submitted_at": "2026-08-22T17:36:23.679576+00:00",
+          "finished_at": "2026-08-22T17:36:56.684942+00:00"
+        }
+      ]
     },
     "M1": {
-      "status": "pending",
+      "status": "waiting_for_review",
       "snapshot": {
         "variant": "M1",
         "prompt": {
@@ -357,8 +380,31 @@
         "idem_key": "issue12-issue12-preflight-001-g06-m1-environment-base",
         "snapshot_sha256": "ef997e8cbaa719e6bd21a90e247207da516e54e632cc3ef15d0aa27de99fb214"
       },
-      "approval": null,
-      "attempts": []
+      "approval": {
+        "snapshot_sha256": "ef997e8cbaa719e6bd21a90e247207da516e54e632cc3ef15d0aa27de99fb214",
+        "approved_at": "2026-08-22T17:35:46.453243+00:00"
+      },
+      "attempts": [
+        {
+          "attempt": 1,
+          "started_at": "2026-08-22T17:37:33.866718+00:00",
+          "idem_key": "issue12-issue12-preflight-001-g06-m1-environment-base",
+          "task_id": "img_b99659e8770dd83643688442b6a0fdd6",
+          "error": null,
+          "outputs": [
+            {
+              "path": "base_candidates/M1/environment-base.png",
+              "sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb",
+              "size": [
+                2048,
+                1152
+              ]
+            }
+          ],
+          "submitted_at": "2026-08-22T17:37:35.501958+00:00",
+          "finished_at": "2026-08-22T17:38:08.417366+00:00"
+        }
+      ]
     }
   },
   "workflows": {
@@ -653,6 +699,16 @@
       "at": "2026-08-22T17:19:01.583376+00:00",
       "variant": "M1",
       "event": "preflight"
+    },
+    {
+      "at": "2026-08-22T17:35:46.132764+00:00",
+      "variant": "M0",
+      "event": "call_approved"
+    },
+    {
+      "at": "2026-08-22T17:35:46.453243+00:00",
+      "variant": "M1",
+      "event": "call_approved"
     }
   ],
   "warnings": [
