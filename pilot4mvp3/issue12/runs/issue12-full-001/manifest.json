@@ -2,7 +2,7 @@
   "schema_version": "issue12-run/0.2",
   "run_id": "issue12-full-001",
   "created_at": "2026-08-22T22:36:55.907847+00:00",
-  "updated_at": "2026-08-22T22:38:01.009185+00:00",
+  "updated_at": "2026-08-22T23:29:13.277973+00:00",
   "config": {
     "schema_version": "issue12-experiment/0.2",
     "issue": 12,
@@ -464,6 +464,568 @@
         "source_path": "base_candidates/M1/environment-base.png",
         "source_sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb"
       }
+    },
+    "environment:G02:M0": {
+      "kind": "environment",
+      "producer_call_id": "environment:G02:M0",
+      "destination": "G02",
+      "route": "M0",
+      "scene": null,
+      "path": "artifacts/environments/G02/M0.png",
+      "sha256": "ed816755c0abf6b07a4a750a4e4d0f9efaf213d36c47a2d9c72384c8363479ae",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "environment:G02:M1": {
+      "kind": "environment",
+      "producer_call_id": "environment:G02:M1",
+      "destination": "G02",
+      "route": "M1",
+      "scene": null,
+      "path": "artifacts/environments/G02/M1.png",
+      "sha256": "ac4f757eb5940d5da872ac3243d37efc043bbd55bdce2acd73b11cde53aae01e",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "environment:G03:M0": {
+      "kind": "environment",
+      "producer_call_id": "environment:G03:M0",
+      "destination": "G03",
+      "route": "M0",
+      "scene": null,
+      "path": "artifacts/environments/G03/M0.png",
+      "sha256": "c17e598ebbe728d4c0d38a48dabf39832d6b0ab0de1c0a44aded3cd5864c3889",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "environment:G03:M1": {
+      "kind": "environment",
+      "producer_call_id": "environment:G03:M1",
+      "destination": "G03",
+      "route": "M1",
+      "scene": null,
+      "path": "artifacts/environments/G03/M1.png",
+      "sha256": "a5824acbd463703fe4f6f4a7f3d7e0634ea55e2d755ef44a3be976754923c52c",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "environment:G08:M0": {
+      "kind": "environment",
+      "producer_call_id": "environment:G08:M0",
+      "destination": "G08",
+      "route": "M0",
+      "scene": null,
+      "path": "artifacts/environments/G08/M0.png",
+      "sha256": "81f3a5fefa9b7ace93db7afeca05e3048ec4463262da1019c2ab47f91074c1ef",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "environment:G08:M1": {
+      "kind": "environment",
+      "producer_call_id": "environment:G08:M1",
+      "destination": "G08",
+      "route": "M1",
+      "scene": null,
+      "path": "artifacts/environments/G08/M1.png",
+      "sha256": "c0fe76463b32bd8c0f32beb9367ad8b9797f38228831ada7df8dfc311c59132b",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G02:M0:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G02:M0:A",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/locators/G02/M0/A.png",
+      "sha256": "29a272e4c2aaa834544401944633c044ccdde35ef7fd01aa773365da6b41edcd",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G02:M0:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G02:M0:B",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/locators/G02/M0/B.png",
+      "sha256": "de1af80a17634c5bbc05a183ad4717c06fd8b29599b4b3e3d60684123055ef82",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G02:M1:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G02:M1:A",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/locators/G02/M1/A.png",
+      "sha256": "16908863d7471df1637cab19ba116299381c9f8a325914e7581c4e1524269fe8",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "aperture:G02:M1:A": {
+      "path": "artifacts/apertures/G02/M1/A.png",
+      "center": [
+        646,
+        772
+      ],
+      "radius": 81,
+      "diameter": 162,
+      "sha256": "b75de801512f49d95e06d98095c0e4c2e0a649e342658c09236a7328da094ff1",
+      "truth_boundary": "planned aperture; not final click truth",
+      "kind": "deterministic_aperture",
+      "measurement": {
+        "planned_locator_center_float": [
+          645.6454054054054,
+          772.1178378378378
+        ],
+        "planned_locator_center": [
+          646,
+          772
+        ],
+        "bbox": [
+          629,
+          756,
+          664,
+          790
+        ],
+        "area": 925
+      },
+      "derived_from_call_id": "locator:G02:M1:A",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "A"
+    },
+    "locator:G02:M1:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G02:M1:B",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/locators/G02/M1/B.png",
+      "sha256": "fc51089b60cb5108d7df9f193d37733d4a28d6cde840a9ecb00bd2f4d2b82213",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "aperture:G02:M1:B": {
+      "path": "artifacts/apertures/G02/M1/B.png",
+      "center": [
+        1628,
+        828
+      ],
+      "radius": 81,
+      "diameter": 162,
+      "sha256": "14c1c2961e7c5dabf918eba33116d1283347e33da0f055ea287ba433280fdf4b",
+      "truth_boundary": "planned aperture; not final click truth",
+      "kind": "deterministic_aperture",
+      "measurement": {
+        "planned_locator_center_float": [
+          1627.6756619144603,
+          828.4969450101833
+        ],
+        "planned_locator_center": [
+          1628,
+          828
+        ],
+        "bbox": [
+          1603,
+          804,
+          1653,
+          854
+        ],
+        "area": 1964
+      },
+      "derived_from_call_id": "locator:G02:M1:B",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "B"
+    },
+    "locator:G03:M0:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G03:M0:A",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/locators/G03/M0/A.png",
+      "sha256": "2c6bec5835564d05428c95c83a42818b582f9fc33a4c0633fef49e74939c4330",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G03:M0:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G03:M0:B",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/locators/G03/M0/B.png",
+      "sha256": "f3725fbbe9188e69ae74501a96f03db0e589eff9b5a35b0f012e32bb3f846348",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G03:M1:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G03:M1:A",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/locators/G03/M1/A.png",
+      "sha256": "e6029dd57b5615679ff2ae8165624103e7ada9addd0516f8014c26b409e95d40",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G03:M1:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G03:M1:B",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/locators/G03/M1/B.png",
+      "sha256": "1911b6b1b3229fd9adde99b9e015194f343f2172d8e88bdcbce2118c554c2e2b",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G06:M0:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G06:M0:A",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/locators/G06/M0/A.png",
+      "sha256": "70af0c3425e2352aac2eddc9cbf1112f12dec893d6c537ad750b99f102e3b79e",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G06:M0:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G06:M0:B",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/locators/G06/M0/B.png",
+      "sha256": "874624a0cf2f2f5268aa5df9da40922d85407944873c110a3cc98864a0397201",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G06:M1:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G06:M1:A",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/locators/G06/M1/A.png",
+      "sha256": "1093d3cd2b5dab6df2372b80ba72e311da4f0b670a4b85f94b4c73c0466b3460",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G06:M1:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G06:M1:B",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/locators/G06/M1/B.png",
+      "sha256": "df0ce807ac787e48dbbccc516cf26649e7b56c50126fb3bb947973c4e10fdaf3",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "locator:G08:M0:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G08:M0:A",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/locators/G08/M0/A.png",
+      "sha256": "4c8353c07f39805ffe3cc33519b73d52ff3cc0140dcf585c70c3d6df4a140762",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "aperture:G08:M0:A": {
+      "path": "artifacts/apertures/G08/M0/A.png",
+      "center": [
+        396,
+        940
+      ],
+      "radius": 81,
+      "diameter": 162,
+      "sha256": "993feaf317cec9a6fbb9ee2bcbc0922d2b249df72c4a0392f6dc63ca2dfb1cfa",
+      "truth_boundary": "planned aperture; not final click truth",
+      "kind": "deterministic_aperture",
+      "measurement": {
+        "planned_locator_center_float": [
+          396.25361677000296,
+          939.559492175967
+        ],
+        "planned_locator_center": [
+          396,
+          940
+        ],
+        "bbox": [
+          364,
+          907,
+          429,
+          973
+        ],
+        "area": 3387
+      },
+      "derived_from_call_id": "locator:G08:M0:A",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "A"
+    },
+    "locator:G08:M0:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G08:M0:B",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/locators/G08/M0/B.png",
+      "sha256": "9d3095bfca19ffbc03dc72bcd7248ff4dbb8f6ac9b2cc1e939ec10fdb775e81a",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "aperture:G08:M0:B": {
+      "path": "artifacts/apertures/G08/M0/B.png",
+      "center": [
+        1536,
+        879
+      ],
+      "radius": 81,
+      "diameter": 162,
+      "sha256": "aef0fc27fd7af27dc8cdab3945b0fbf034281c56db344a994946d54817868b6b",
+      "truth_boundary": "planned aperture; not final click truth",
+      "kind": "deterministic_aperture",
+      "measurement": {
+        "planned_locator_center_float": [
+          1536.161657189277,
+          879.1852152721365
+        ],
+        "planned_locator_center": [
+          1536,
+          879
+        ],
+        "bbox": [
+          1517,
+          860,
+          1556,
+          899
+        ],
+        "area": 1231
+      },
+      "derived_from_call_id": "locator:G08:M0:B",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "B"
+    },
+    "locator:G08:M1:A": {
+      "kind": "locator",
+      "producer_call_id": "locator:G08:M1:A",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/locators/G08/M1/A.png",
+      "sha256": "dbaf0757ac733dd6f15ba6f56d1b7d1319967a3fad061c80ca9d99799ae35512",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "aperture:G08:M1:A": {
+      "path": "artifacts/apertures/G08/M1/A.png",
+      "center": [
+        631,
+        917
+      ],
+      "radius": 81,
+      "diameter": 162,
+      "sha256": "e22f048d06f3762b679d68ad42c61de93463e64e7c32410ae58f0e73de2c7b26",
+      "truth_boundary": "planned aperture; not final click truth",
+      "kind": "deterministic_aperture",
+      "measurement": {
+        "planned_locator_center_float": [
+          631.1053333333333,
+          917.2433333333333
+        ],
+        "planned_locator_center": [
+          631,
+          917
+        ],
+        "bbox": [
+          610,
+          896,
+          654,
+          939
+        ],
+        "area": 1500
+      },
+      "derived_from_call_id": "locator:G08:M1:A",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "A"
+    },
+    "locator:G08:M1:B": {
+      "kind": "locator",
+      "producer_call_id": "locator:G08:M1:B",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/locators/G08/M1/B.png",
+      "sha256": "32f5ebcca6841f4e245e696736d27d3b23315a16a948912aa14567c3b3ce503d",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "aperture:G08:M1:B": {
+      "path": "artifacts/apertures/G08/M1/B.png",
+      "center": [
+        1525,
+        861
+      ],
+      "radius": 81,
+      "diameter": 162,
+      "sha256": "67db866a3af8dc5d446e59f0f375759dbba7ac3ade08103c71ce1a2665bcf56c",
+      "truth_boundary": "planned aperture; not final click truth",
+      "kind": "deterministic_aperture",
+      "measurement": {
+        "planned_locator_center_float": [
+          1525.0507960576194,
+          860.7308567096285
+        ],
+        "planned_locator_center": [
+          1525,
+          861
+        ],
+        "bbox": [
+          1493,
+          849,
+          1558,
+          874
+        ],
+        "area": 1319
+      },
+      "derived_from_call_id": "locator:G08:M1:B",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "B"
+    },
+    "final:G02:M1:A": {
+      "kind": "final",
+      "producer_call_id": "final:G02:M1:A",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/finals/G02/M1/A.png",
+      "sha256": "47653c07691485ea8461d2a1ffe866284b7b6de5e789590763efc612d402c7eb",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G02:M1:B": {
+      "kind": "final",
+      "producer_call_id": "final:G02:M1:B",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/finals/G02/M1/B.png",
+      "sha256": "5680d82c54f70b1d81658665d3a162ff2f9a01cc7e3727c0c37a80bd967f854e",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G08:M0:A": {
+      "kind": "final",
+      "producer_call_id": "final:G08:M0:A",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/finals/G08/M0/A.png",
+      "sha256": "9bbb1001f2b34b0d4633bf7ed9f529fda9b00be9a032faa0aada499c863f4b3c",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G08:M0:B": {
+      "kind": "final",
+      "producer_call_id": "final:G08:M0:B",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/finals/G08/M0/B.png",
+      "sha256": "29b46bf04bfcb503a69fa419fac93494c57b478034366c354c8e7ff8bb3e36a6",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G08:M1:A": {
+      "kind": "final",
+      "producer_call_id": "final:G08:M1:A",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/finals/G08/M1/A.png",
+      "sha256": "f4701322b88159dc812dd23de7270320ae2cdbb1a82cec54f50402260977d686",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G08:M1:B": {
+      "kind": "final",
+      "producer_call_id": "final:G08:M1:B",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/finals/G08/M1/B.png",
+      "sha256": "25edc64de9e7dde54b72d8bdf18556debb69e028e10df20d950a032dd411dc0c",
+      "size": [
+        2048,
+        1152
+      ]
     }
   },
   "calls": {
@@ -474,7 +1036,7 @@
       "destination": "G02",
       "route": "M0",
       "scene": null,
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -510,8 +1072,52 @@
         "depends_on": [],
         "snapshot_sha256": "e844c5bf415e83a4594351005868a0e7dbf54477c74afd5bbcdbe45625e7885e"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:13:29.539754+00:00",
+        "idem_key": "issue12-issue12-full-001-environment-g02-m0",
+        "task_id": "img_cd9147b1b3f7276a1e652dcfdba18765",
+        "submitted_at": "2026-08-22T23:13:31.113300+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E42",
+            "path": "assets/styles/E42.png",
+            "sha256": "fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61"
+          }
+        ],
+        "resolved_request_sha256": "ace1bd13f007064b267f795d21a8c4fddddd17be9eef7876afe21a6ecdae82c7",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_cd9147b1b3f7276a1e652dcfdba18765",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:13:32.979201Z"
+        },
+        "outputs": [
+          {
+            "kind": "environment",
+            "producer_call_id": "environment:G02:M0",
+            "destination": "G02",
+            "route": "M0",
+            "scene": null,
+            "path": "artifacts/environments/G02/M0.png",
+            "sha256": "ed816755c0abf6b07a4a750a4e4d0f9efaf213d36c47a2d9c72384c8363479ae",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:14:03.406092+00:00"
+      }
     },
     "environment:G02:M1": {
       "id": "environment:G02:M1",
@@ -520,7 +1126,7 @@
       "destination": "G02",
       "route": "M1",
       "scene": null,
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -561,8 +1167,59 @@
         "depends_on": [],
         "snapshot_sha256": "742e2c5c98b529830e2dd25eaaecf383d96385424a4ebbb720e280af7ec8e188"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:14:03.456502+00:00",
+        "idem_key": "issue12-issue12-full-001-environment-g02-m1",
+        "task_id": "img_1732a23e59a608147e3f9b4c3aa9c533",
+        "submitted_at": "2026-08-22T23:14:05.201451+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E42",
+            "path": "assets/styles/E42.png",
+            "sha256": "fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "b5eab083dd8e4047024b5e958b5d9f17653da05a49bf93a5dfc170af8d7d3a92",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_1732a23e59a608147e3f9b4c3aa9c533",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:14:07.062361Z"
+        },
+        "outputs": [
+          {
+            "kind": "environment",
+            "producer_call_id": "environment:G02:M1",
+            "destination": "G02",
+            "route": "M1",
+            "scene": null,
+            "path": "artifacts/environments/G02/M1.png",
+            "sha256": "ac4f757eb5940d5da872ac3243d37efc043bbd55bdce2acd73b11cde53aae01e",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:14:31.783165+00:00"
+      }
     },
     "environment:G03:M0": {
       "id": "environment:G03:M0",
@@ -571,7 +1228,7 @@
       "destination": "G03",
       "route": "M0",
       "scene": null,
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -607,8 +1264,52 @@
         "depends_on": [],
         "snapshot_sha256": "c6fc00ee15e5ba6886743322d00454f20d03a403d2e010ebfe73e803f5a2fbcb"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:14:31.827284+00:00",
+        "idem_key": "issue12-issue12-full-001-environment-g03-m0",
+        "task_id": "img_fe0523aac630c191542df983e479d091",
+        "submitted_at": "2026-08-22T23:14:33.034286+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E3",
+            "path": "assets/styles/E3.png",
+            "sha256": "92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec"
+          }
+        ],
+        "resolved_request_sha256": "0e3da74632273fbe6689abac608b0b72e2d7db402d4e1a7a0534ef98cdcec96a",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_fe0523aac630c191542df983e479d091",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:14:34.90451Z"
+        },
+        "outputs": [
+          {
+            "kind": "environment",
+            "producer_call_id": "environment:G03:M0",
+            "destination": "G03",
+            "route": "M0",
+            "scene": null,
+            "path": "artifacts/environments/G03/M0.png",
+            "sha256": "c17e598ebbe728d4c0d38a48dabf39832d6b0ab0de1c0a44aded3cd5864c3889",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:14:59.809803+00:00"
+      }
     },
     "environment:G03:M1": {
       "id": "environment:G03:M1",
@@ -617,7 +1318,7 @@
       "destination": "G03",
       "route": "M1",
       "scene": null,
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -658,8 +1359,59 @@
         "depends_on": [],
         "snapshot_sha256": "dbc3cd6ee25b8fac7e673af66bc641930d81ad07a08dbfcb65c31b41424e3c41"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:14:59.842204+00:00",
+        "idem_key": "issue12-issue12-full-001-environment-g03-m1",
+        "task_id": "img_5c84877c6efb7dfdfba170e868cdfb46",
+        "submitted_at": "2026-08-22T23:15:01.513685+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E3",
+            "path": "assets/styles/E3.png",
+            "sha256": "92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "c8ec51f594cec6dee6f7c7b01cd7f9624dd62e30254a832859094baff9c8724f",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_5c84877c6efb7dfdfba170e868cdfb46",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:15:03.377679Z"
+        },
+        "outputs": [
+          {
+            "kind": "environment",
+            "producer_call_id": "environment:G03:M1",
+            "destination": "G03",
+            "route": "M1",
+            "scene": null,
+            "path": "artifacts/environments/G03/M1.png",
+            "sha256": "a5824acbd463703fe4f6f4a7f3d7e0634ea55e2d755ef44a3be976754923c52c",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:15:27.830634+00:00"
+      }
     },
     "environment:G08:M0": {
       "id": "environment:G08:M0",
@@ -668,7 +1420,7 @@
       "destination": "G08",
       "route": "M0",
       "scene": null,
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -704,8 +1456,52 @@
         "depends_on": [],
         "snapshot_sha256": "99c36dfe27313345ec1f5ac5d5595c017b4186af84939bc24eb24dc7e92f315f"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:15:27.872610+00:00",
+        "idem_key": "issue12-issue12-full-001-environment-g08-m0",
+        "task_id": "img_a4ce77d42ad5749cdf85a5cfb3d6d880",
+        "submitted_at": "2026-08-22T23:15:29.135614+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E15",
+            "path": "assets/styles/E15.png",
+            "sha256": "ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001"
+          }
+        ],
+        "resolved_request_sha256": "5d5144747d103d71baa439ac78b5b17a1dbfbfe040c17d1ae3f48aa051698f94",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_a4ce77d42ad5749cdf85a5cfb3d6d880",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:15:31.0018Z"
+        },
+        "outputs": [
+          {
+            "kind": "environment",
+            "producer_call_id": "environment:G08:M0",
+            "destination": "G08",
+            "route": "M0",
+            "scene": null,
+            "path": "artifacts/environments/G08/M0.png",
+            "sha256": "81f3a5fefa9b7ace93db7afeca05e3048ec4463262da1019c2ab47f91074c1ef",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:15:50.295717+00:00"
+      }
     },
     "environment:G08:M1": {
       "id": "environment:G08:M1",
@@ -714,7 +1510,7 @@
       "destination": "G08",
       "route": "M1",
       "scene": null,
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -755,8 +1551,59 @@
         "depends_on": [],
         "snapshot_sha256": "02637a15285d0f591a3498a43a605d1352328034836c10aa9ea2809404a26dc6"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:15:50.334600+00:00",
+        "idem_key": "issue12-issue12-full-001-environment-g08-m1",
+        "task_id": "img_ad7c614e35168be86ad2aa5cd27972a2",
+        "submitted_at": "2026-08-22T23:15:52.062027+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E15",
+            "path": "assets/styles/E15.png",
+            "sha256": "ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "da19af0a9228a58e623dd5b07729ca7d83410053fb33095c586599ec90d65707",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_ad7c614e35168be86ad2aa5cd27972a2",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:15:53.926818Z"
+        },
+        "outputs": [
+          {
+            "kind": "environment",
+            "producer_call_id": "environment:G08:M1",
+            "destination": "G08",
+            "route": "M1",
+            "scene": null,
+            "path": "artifacts/environments/G08/M1.png",
+            "sha256": "c0fe76463b32bd8c0f32beb9367ad8b9797f38228831ada7df8dfc311c59132b",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:16:12.915707+00:00"
+      }
     },
     "locator:G02:M0:A": {
       "id": "locator:G02:M0:A",
@@ -765,7 +1612,7 @@
       "destination": "G02",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -803,8 +1650,56 @@
         ],
         "snapshot_sha256": "1669a8650202e750ab1bb0701c0d65b36b60c9234aed7a78dfb3f26b1bae10b2"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:16:12.946611+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m0-a",
+        "task_id": "img_ba4cad84349e99cebd8ffaec6886c081",
+        "submitted_at": "2026-08-22T23:16:15.963263+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M0",
+            "path": "artifacts/environments/G02/M0.png",
+            "sha256": "ed816755c0abf6b07a4a750a4e4d0f9efaf213d36c47a2d9c72384c8363479ae"
+          }
+        ],
+        "resolved_request_sha256": "7fe846db4e894a13c16c9caa74adc113ecc696937fd7702cd54be39c8d266542",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_ba4cad84349e99cebd8ffaec6886c081",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:16:17.763295Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G02:M0:A",
+            "destination": "G02",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/locators/G02/M0/A.png",
+            "sha256": "29a272e4c2aaa834544401944633c044ccdde35ef7fd01aa773365da6b41edcd",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:16:48.294858+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 37"
+        }
+      }
     },
     "locator:G02:M0:B": {
       "id": "locator:G02:M0:B",
@@ -813,7 +1708,7 @@
       "destination": "G02",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -851,8 +1746,56 @@
         ],
         "snapshot_sha256": "978560140f3bccae2d2eb426cd162aadf74bfe6ca7569a57e586e5ee6128dadd"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:16:49.832195+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m0-b",
+        "task_id": "img_c6a16faf75090d7ade3f73b047a56d88",
+        "submitted_at": "2026-08-22T23:16:52.899964+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M0",
+            "path": "artifacts/environments/G02/M0.png",
+            "sha256": "ed816755c0abf6b07a4a750a4e4d0f9efaf213d36c47a2d9c72384c8363479ae"
+          }
+        ],
+        "resolved_request_sha256": "a9627611513fe2d9dd1ca8e41f2cad2aa11e7d362308e1ea706a3eac390fa798",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_c6a16faf75090d7ade3f73b047a56d88",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:16:54.684171Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G02:M0:B",
+            "destination": "G02",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/locators/G02/M0/B.png",
+            "sha256": "de1af80a17634c5bbc05a183ad4717c06fd8b29599b4b3e3d60684123055ef82",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:17:25.035379+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 22"
+        }
+      }
     },
     "locator:G02:M1:A": {
       "id": "locator:G02:M1:A",
@@ -861,7 +1804,7 @@
       "destination": "G02",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -899,8 +1842,70 @@
         ],
         "snapshot_sha256": "aeb3d61b3b39bcf5fb058a0ca096187c5b8e58474720ea4573c3f2974210fff7"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:17:26.477301+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m1-a",
+        "task_id": "img_9105400c9b1c7023ef53c54e77c20b62",
+        "submitted_at": "2026-08-22T23:17:29.199662+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M1",
+            "path": "artifacts/environments/G02/M1.png",
+            "sha256": "ac4f757eb5940d5da872ac3243d37efc043bbd55bdce2acd73b11cde53aae01e"
+          }
+        ],
+        "resolved_request_sha256": "784f710d925f4a80cf32f8f041b53e1be0d29e328a6b7f104daf619d14181611",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_9105400c9b1c7023ef53c54e77c20b62",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:17:30.993699Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G02:M1:A",
+            "destination": "G02",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/locators/G02/M1/A.png",
+            "sha256": "16908863d7471df1637cab19ba116299381c9f8a325914e7581c4e1524269fe8",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:18:01.427188+00:00",
+        "measurement": {
+          "planned_locator_center_float": [
+            645.6454054054054,
+            772.1178378378378
+          ],
+          "planned_locator_center": [
+            646,
+            772
+          ],
+          "bbox": [
+            629,
+            756,
+            664,
+            790
+          ],
+          "area": 925
+        },
+        "aperture_artifact_id": "aperture:G02:M1:A"
+      }
     },
     "locator:G02:M1:B": {
       "id": "locator:G02:M1:B",
@@ -909,7 +1914,7 @@
       "destination": "G02",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -947,8 +1952,70 @@
         ],
         "snapshot_sha256": "0b7639b095d0d022473a15204ea0191343bbfa8274ae0566d7c97af93eb68571"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:18:03.364620+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m1-b",
+        "task_id": "img_b4c5a1af3d4ce449d85a9fed76a06efc",
+        "submitted_at": "2026-08-22T23:18:06.075726+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M1",
+            "path": "artifacts/environments/G02/M1.png",
+            "sha256": "ac4f757eb5940d5da872ac3243d37efc043bbd55bdce2acd73b11cde53aae01e"
+          }
+        ],
+        "resolved_request_sha256": "ea3d65b93fea6358c3f48b8692e235c85f1fd2b578b8fdb5bfe58881bb0e3466",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_b4c5a1af3d4ce449d85a9fed76a06efc",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:18:07.877587Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G02:M1:B",
+            "destination": "G02",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/locators/G02/M1/B.png",
+            "sha256": "fc51089b60cb5108d7df9f193d37733d4a28d6cde840a9ecb00bd2f4d2b82213",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:18:44.082102+00:00",
+        "measurement": {
+          "planned_locator_center_float": [
+            1627.6756619144603,
+            828.4969450101833
+          ],
+          "planned_locator_center": [
+            1628,
+            828
+          ],
+          "bbox": [
+            1603,
+            804,
+            1653,
+            854
+          ],
+          "area": 1964
+        },
+        "aperture_artifact_id": "aperture:G02:M1:B"
+      }
     },
     "locator:G03:M0:A": {
       "id": "locator:G03:M0:A",
@@ -957,7 +2024,7 @@
       "destination": "G03",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -995,8 +2062,56 @@
         ],
         "snapshot_sha256": "815d3a4cd358820b6ccc5839cce2b5354156a76a6c54c9abb4374500f07b8dd3"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:18:46.251285+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m0-a",
+        "task_id": "img_c7566cce4b9219eee5595376ba10c8f1",
+        "submitted_at": "2026-08-22T23:18:49.048400+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M0",
+            "path": "artifacts/environments/G03/M0.png",
+            "sha256": "c17e598ebbe728d4c0d38a48dabf39832d6b0ab0de1c0a44aded3cd5864c3889"
+          }
+        ],
+        "resolved_request_sha256": "58f4351b01fb0d1d82d150929f1d4f14b7e0541b5daedc06fc7f125cadf47e67",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_c7566cce4b9219eee5595376ba10c8f1",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:18:50.844286Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G03:M0:A",
+            "destination": "G03",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/locators/G03/M0/A.png",
+            "sha256": "2c6bec5835564d05428c95c83a42818b582f9fc33a4c0633fef49e74939c4330",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:19:15.624949+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 31"
+        }
+      }
     },
     "locator:G03:M0:B": {
       "id": "locator:G03:M0:B",
@@ -1005,7 +2120,7 @@
       "destination": "G03",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1043,8 +2158,56 @@
         ],
         "snapshot_sha256": "8e5fa66eb206b1a8888b66716bb21e0014a20e55b2f42da9af79c59cf84f37c9"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:19:17.084855+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m0-b",
+        "task_id": "img_1a72061780e739785c5b69556c602eb5",
+        "submitted_at": "2026-08-22T23:19:20.030637+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M0",
+            "path": "artifacts/environments/G03/M0.png",
+            "sha256": "c17e598ebbe728d4c0d38a48dabf39832d6b0ab0de1c0a44aded3cd5864c3889"
+          }
+        ],
+        "resolved_request_sha256": "64e052d49478b0bd65e6ec9368596e0e09b6a583974611bc78e2487c96f42a44",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_1a72061780e739785c5b69556c602eb5",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:19:21.80694Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G03:M0:B",
+            "destination": "G03",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/locators/G03/M0/B.png",
+            "sha256": "f3725fbbe9188e69ae74501a96f03db0e589eff9b5a35b0f012e32bb3f846348",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:19:52.132996+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 179"
+        }
+      }
     },
     "locator:G03:M1:A": {
       "id": "locator:G03:M1:A",
@@ -1053,7 +2216,7 @@
       "destination": "G03",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1091,8 +2254,56 @@
         ],
         "snapshot_sha256": "53998de1f9bd739f4d72c954229473a0b01b0356beadaee9842ae4124da46d92"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:19:53.719334+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m1-a",
+        "task_id": "img_dc1ff13f649e9e14ef996e5264a1788a",
+        "submitted_at": "2026-08-22T23:19:56.973069+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M1",
+            "path": "artifacts/environments/G03/M1.png",
+            "sha256": "a5824acbd463703fe4f6f4a7f3d7e0634ea55e2d755ef44a3be976754923c52c"
+          }
+        ],
+        "resolved_request_sha256": "6230b38b365e0ad8702993ddc08959f1fb1580b9b17752e6eaa7a9e8715fb85b",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_dc1ff13f649e9e14ef996e5264a1788a",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:19:58.736449Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G03:M1:A",
+            "destination": "G03",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/locators/G03/M1/A.png",
+            "sha256": "e6029dd57b5615679ff2ae8165624103e7ada9addd0516f8014c26b409e95d40",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:20:29.409897+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 555"
+        }
+      }
     },
     "locator:G03:M1:B": {
       "id": "locator:G03:M1:B",
@@ -1101,7 +2312,7 @@
       "destination": "G03",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1139,8 +2350,56 @@
         ],
         "snapshot_sha256": "7c1c6a6e39a5c538b730120d961c52c282e8cfad4dfd238469f471fc10589dcb"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:20:31.561873+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m1-b",
+        "task_id": "img_6b94ba44cfa15b81a796e3843c23eb8c",
+        "submitted_at": "2026-08-22T23:20:34.909014+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M1",
+            "path": "artifacts/environments/G03/M1.png",
+            "sha256": "a5824acbd463703fe4f6f4a7f3d7e0634ea55e2d755ef44a3be976754923c52c"
+          }
+        ],
+        "resolved_request_sha256": "37b950d7994a1620912ec9292f19aa55d03d883a936ae2641367b82d891abc47",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_6b94ba44cfa15b81a796e3843c23eb8c",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:20:36.47938Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G03:M1:B",
+            "destination": "G03",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/locators/G03/M1/B.png",
+            "sha256": "1911b6b1b3229fd9adde99b9e015194f343f2172d8e88bdcbce2118c554c2e2b",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:21:07.018274+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 269"
+        }
+      }
     },
     "locator:G06:M0:A": {
       "id": "locator:G06:M0:A",
@@ -1149,7 +2408,7 @@
       "destination": "G06",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1187,8 +2446,56 @@
         ],
         "snapshot_sha256": "e7cc1e721f8a4586668e1014292a3d7e420586188537f7c0f0edc855fa057446"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:21:08.733749+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m0-a",
+        "task_id": "img_b35ee99b3ff6c12aef60a4f43e07a2fd",
+        "submitted_at": "2026-08-22T23:21:11.776583+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M0",
+            "path": "artifacts/environments/G06/M0.png",
+            "sha256": "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1"
+          }
+        ],
+        "resolved_request_sha256": "95ded993ccf7a16db544169f84dce7e133d3085444ee6a3049ad30c8649109be",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_b35ee99b3ff6c12aef60a4f43e07a2fd",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:21:13.549624Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G06:M0:A",
+            "destination": "G06",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/locators/G06/M0/A.png",
+            "sha256": "70af0c3425e2352aac2eddc9cbf1112f12dec893d6c537ad750b99f102e3b79e",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:21:38.390214+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 11"
+        }
+      }
     },
     "locator:G06:M0:B": {
       "id": "locator:G06:M0:B",
@@ -1197,7 +2504,7 @@
       "destination": "G06",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1235,8 +2542,56 @@
         ],
         "snapshot_sha256": "54385a62da5914b15aae09dc544f056238eebca4db1f05b15d3cba4332c487fe"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:21:39.928462+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m0-b",
+        "task_id": "img_acb9d3c6c49255d8fef1231e91d20e0a",
+        "submitted_at": "2026-08-22T23:21:43.160513+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M0",
+            "path": "artifacts/environments/G06/M0.png",
+            "sha256": "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1"
+          }
+        ],
+        "resolved_request_sha256": "5fce4da6796404592b5b1ca775ab995a4277fb82cb48707f22a5f726ae4995b7",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_acb9d3c6c49255d8fef1231e91d20e0a",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:21:44.933967Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G06:M0:B",
+            "destination": "G06",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/locators/G06/M0/B.png",
+            "sha256": "874624a0cf2f2f5268aa5df9da40922d85407944873c110a3cc98864a0397201",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:22:15.528790+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 3"
+        }
+      }
     },
     "locator:G06:M1:A": {
       "id": "locator:G06:M1:A",
@@ -1245,7 +2600,7 @@
       "destination": "G06",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1283,8 +2638,56 @@
         ],
         "snapshot_sha256": "80dd15f8df44a8a2529668fc7ce066d3a5ce327a49b5d607581413e33f5626b8"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:22:17.049554+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m1-a",
+        "task_id": "img_5f590769e9ed7dce335e9b6436afcf88",
+        "submitted_at": "2026-08-22T23:22:20.422959+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M1",
+            "path": "artifacts/environments/G06/M1.png",
+            "sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb"
+          }
+        ],
+        "resolved_request_sha256": "4018c0ee41ec294ad0d5a277d499cecefa35350fa36712fd44b291df2880b0fc",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_5f590769e9ed7dce335e9b6436afcf88",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:22:22.204259Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G06:M1:A",
+            "destination": "G06",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/locators/G06/M1/A.png",
+            "sha256": "1093d3cd2b5dab6df2372b80ba72e311da4f0b670a4b85f94b4c73c0466b3460",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:22:52.616941+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 12"
+        }
+      }
     },
     "locator:G06:M1:B": {
       "id": "locator:G06:M1:B",
@@ -1293,7 +2696,7 @@
       "destination": "G06",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "failed",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1331,8 +2734,56 @@
         ],
         "snapshot_sha256": "525c413b77d72878a0aaa128d11dfdf383900d1c733919aac82cce8e7190fcfd"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:22:54.123664+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m1-b",
+        "task_id": "img_18863b4671b884e0a9246e4718c413a5",
+        "submitted_at": "2026-08-22T23:22:56.965999+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M1",
+            "path": "artifacts/environments/G06/M1.png",
+            "sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb"
+          }
+        ],
+        "resolved_request_sha256": "fbe40d42c66b928066dd207f729ced698a81b8472e2f513c23380a960396cc6b",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_18863b4671b884e0a9246e4718c413a5",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:22:58.741708Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G06:M1:B",
+            "destination": "G06",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/locators/G06/M1/B.png",
+            "sha256": "df0ce807ac787e48dbbccc516cf26649e7b56c50126fb3bb947973c4e10fdaf3",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:23:29.630850+00:00",
+        "technical_error": {
+          "code": "locator_processing_failed",
+          "message": "expected one black component, found 2"
+        }
+      }
     },
     "locator:G08:M0:A": {
       "id": "locator:G08:M0:A",
@@ -1341,7 +2792,7 @@
       "destination": "G08",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1379,8 +2830,70 @@
         ],
         "snapshot_sha256": "8c171746d4d818615d332d8279721807cc1bd8a3c0c694b56c1afb60c1103125"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:23:31.059102+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m0-a",
+        "task_id": "img_f2a60999bab34efe84aee8cc716fe810",
+        "submitted_at": "2026-08-22T23:23:33.970453+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M0",
+            "path": "artifacts/environments/G08/M0.png",
+            "sha256": "81f3a5fefa9b7ace93db7afeca05e3048ec4463262da1019c2ab47f91074c1ef"
+          }
+        ],
+        "resolved_request_sha256": "12f3ccc280133760eb17bfe375f376c42e3507c56f426b614cba1824b6e8b37f",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_f2a60999bab34efe84aee8cc716fe810",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:23:35.776071Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G08:M0:A",
+            "destination": "G08",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/locators/G08/M0/A.png",
+            "sha256": "4c8353c07f39805ffe3cc33519b73d52ff3cc0140dcf585c70c3d6df4a140762",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:24:06.097237+00:00",
+        "measurement": {
+          "planned_locator_center_float": [
+            396.25361677000296,
+            939.559492175967
+          ],
+          "planned_locator_center": [
+            396,
+            940
+          ],
+          "bbox": [
+            364,
+            907,
+            429,
+            973
+          ],
+          "area": 3387
+        },
+        "aperture_artifact_id": "aperture:G08:M0:A"
+      }
     },
     "locator:G08:M0:B": {
       "id": "locator:G08:M0:B",
@@ -1389,7 +2902,7 @@
       "destination": "G08",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1427,8 +2940,70 @@
         ],
         "snapshot_sha256": "82689515177513ef9f21203a5913f8d1f72f5c0b0e36b7c0b165474f102f5696"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:24:07.989501+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m0-b",
+        "task_id": "img_1fd38f5bd5afe0e535119f4196a60c81",
+        "submitted_at": "2026-08-22T23:24:11.085040+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M0",
+            "path": "artifacts/environments/G08/M0.png",
+            "sha256": "81f3a5fefa9b7ace93db7afeca05e3048ec4463262da1019c2ab47f91074c1ef"
+          }
+        ],
+        "resolved_request_sha256": "11e291e96210e08f79019ca4309185d9a7a3857eff04abf1ae19889220274fba",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_1fd38f5bd5afe0e535119f4196a60c81",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:24:12.893299Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G08:M0:B",
+            "destination": "G08",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/locators/G08/M0/B.png",
+            "sha256": "9d3095bfca19ffbc03dc72bcd7248ff4dbb8f6ac9b2cc1e939ec10fdb775e81a",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:24:37.801115+00:00",
+        "measurement": {
+          "planned_locator_center_float": [
+            1536.161657189277,
+            879.1852152721365
+          ],
+          "planned_locator_center": [
+            1536,
+            879
+          ],
+          "bbox": [
+            1517,
+            860,
+            1556,
+            899
+          ],
+          "area": 1231
+        },
+        "aperture_artifact_id": "aperture:G08:M0:B"
+      }
     },
     "locator:G08:M1:A": {
       "id": "locator:G08:M1:A",
@@ -1437,7 +3012,7 @@
       "destination": "G08",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1475,8 +3050,70 @@
         ],
         "snapshot_sha256": "d9dcc08c1f3053e8bbf7733096ebe70ea18cfd80958d505004ed721201cff15e"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:24:39.671388+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m1-a",
+        "task_id": "img_49368856a8ae83d715f8407fcf2f3ef5",
+        "submitted_at": "2026-08-22T23:24:42.223326+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M1",
+            "path": "artifacts/environments/G08/M1.png",
+            "sha256": "c0fe76463b32bd8c0f32beb9367ad8b9797f38228831ada7df8dfc311c59132b"
+          }
+        ],
+        "resolved_request_sha256": "c9a2c4e7f4a8087cc20c39c3fdae14445713a5c94166a01f2ad9435d85505f59",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_49368856a8ae83d715f8407fcf2f3ef5",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:24:44.051285Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G08:M1:A",
+            "destination": "G08",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/locators/G08/M1/A.png",
+            "sha256": "dbaf0757ac733dd6f15ba6f56d1b7d1319967a3fad061c80ca9d99799ae35512",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:25:08.709653+00:00",
+        "measurement": {
+          "planned_locator_center_float": [
+            631.1053333333333,
+            917.2433333333333
+          ],
+          "planned_locator_center": [
+            631,
+            917
+          ],
+          "bbox": [
+            610,
+            896,
+            654,
+            939
+          ],
+          "area": 1500
+        },
+        "aperture_artifact_id": "aperture:G08:M1:A"
+      }
     },
     "locator:G08:M1:B": {
       "id": "locator:G08:M1:B",
@@ -1485,7 +3122,7 @@
       "destination": "G08",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1523,8 +3160,70 @@
         ],
         "snapshot_sha256": "78d3ce6bbfaecffd1c7a6316e1cd7ff06cabb84d4ef173887776ea41d66c77bd"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:25:10.468811+00:00",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m1-b",
+        "task_id": "img_f98cd53250bc3c0a833c4cd85d2fea26",
+        "submitted_at": "2026-08-22T23:25:13.193985+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M1",
+            "path": "artifacts/environments/G08/M1.png",
+            "sha256": "c0fe76463b32bd8c0f32beb9367ad8b9797f38228831ada7df8dfc311c59132b"
+          }
+        ],
+        "resolved_request_sha256": "8620e5dfe7662c2fbbefe4b4e11a81f6282d38f851edad13b0d8e15aa1ed22f6",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_f98cd53250bc3c0a833c4cd85d2fea26",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:25:15.027589Z"
+        },
+        "outputs": [
+          {
+            "kind": "locator",
+            "producer_call_id": "locator:G08:M1:B",
+            "destination": "G08",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/locators/G08/M1/B.png",
+            "sha256": "32f5ebcca6841f4e245e696736d27d3b23315a16a948912aa14567c3b3ce503d",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:25:45.596766+00:00",
+        "measurement": {
+          "planned_locator_center_float": [
+            1525.0507960576194,
+            860.7308567096285
+          ],
+          "planned_locator_center": [
+            1525,
+            861
+          ],
+          "bbox": [
+            1493,
+            849,
+            1558,
+            874
+          ],
+          "area": 1319
+        },
+        "aperture_artifact_id": "aperture:G08:M1:B"
+      }
     },
     "final:G02:M0:A": {
       "id": "final:G02:M0:A",
@@ -1533,8 +3232,10 @@
       "destination": "G02",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G02:M0:A"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -1586,8 +3287,10 @@
       "destination": "G02",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G02:M0:B"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -1639,7 +3342,7 @@
       "destination": "G02",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1682,8 +3385,59 @@
         ],
         "snapshot_sha256": "063430448b100bdab4f879972f97645916f0a21214bf859b45e8f90fdd82a21a"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:25:47.317033+00:00",
+        "idem_key": "issue12-issue12-full-001-final-g02-m1-a",
+        "task_id": "img_a4af56e5e1a3a9ea902bca342e194609",
+        "submitted_at": "2026-08-22T23:25:50.089130+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M1:A",
+            "path": "artifacts/apertures/G02/M1/A.png",
+            "sha256": "b75de801512f49d95e06d98095c0e4c2e0a649e342658c09236a7328da094ff1"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "68480c750434c51c72f76b88dc3b3e665545ee4d5b82096917558ef9b9e82a15",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_a4af56e5e1a3a9ea902bca342e194609",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:25:51.878153Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G02:M1:A",
+            "destination": "G02",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/finals/G02/M1/A.png",
+            "sha256": "47653c07691485ea8461d2a1ffe866284b7b6de5e789590763efc612d402c7eb",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:26:22.540921+00:00"
+      }
     },
     "final:G02:M1:B": {
       "id": "final:G02:M1:B",
@@ -1692,7 +3446,7 @@
       "destination": "G02",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -1735,8 +3489,59 @@
         ],
         "snapshot_sha256": "48312da298c16b366fc4706d9f4f2ecb7c07c9c3c4519dd4d5e3edca26431897"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:26:22.591430+00:00",
+        "idem_key": "issue12-issue12-full-001-final-g02-m1-b",
+        "task_id": "img_d2dc44535d2ea66f37100981732b4aed",
+        "submitted_at": "2026-08-22T23:26:25.585282+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M1:B",
+            "path": "artifacts/apertures/G02/M1/B.png",
+            "sha256": "14c1c2961e7c5dabf918eba33116d1283347e33da0f055ea287ba433280fdf4b"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "101c451e18b6376d929ebe397883a3b616d455f00567f429fba337972bb9ae09",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_d2dc44535d2ea66f37100981732b4aed",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:26:27.37971Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G02:M1:B",
+            "destination": "G02",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/finals/G02/M1/B.png",
+            "sha256": "5680d82c54f70b1d81658665d3a162ff2f9a01cc7e3727c0c37a80bd967f854e",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:27:03.508199+00:00"
+      }
     },
     "final:G03:M0:A": {
       "id": "final:G03:M0:A",
@@ -1745,8 +3550,10 @@
       "destination": "G03",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G03:M0:A"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -1798,8 +3605,10 @@
       "destination": "G03",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G03:M0:B"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -1851,8 +3660,10 @@
       "destination": "G03",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G03:M1:A"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -1904,8 +3715,10 @@
       "destination": "G03",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G03:M1:B"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -1957,8 +3770,10 @@
       "destination": "G06",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G06:M0:A"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -2010,8 +3825,10 @@
       "destination": "G06",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G06:M0:B"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -2063,8 +3880,10 @@
       "destination": "G06",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G06:M1:A"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -2116,8 +3935,10 @@
       "destination": "G06",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
-      "blocked_by": [],
+      "status": "blocked",
+      "blocked_by": [
+        "locator:G06:M1:B"
+      ],
       "spec": {
         "prompt": {
           "layers": {
@@ -2169,7 +3990,7 @@
       "destination": "G08",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -2212,8 +4033,59 @@
         ],
         "snapshot_sha256": "4939f9d486e7b82e06c416387d1451a7768c1590d22ba54ccbb3ff6aaa411e07"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:27:03.558485+00:00",
+        "idem_key": "issue12-issue12-full-001-final-g08-m0-a",
+        "task_id": "img_d1d7eae1fce04f64da64260b34406090",
+        "submitted_at": "2026-08-22T23:27:06.365057+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M0:A",
+            "path": "artifacts/apertures/G08/M0/A.png",
+            "sha256": "993feaf317cec9a6fbb9ee2bcbc0922d2b249df72c4a0392f6dc63ca2dfb1cfa"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "b5c76ef993437495a9e05c32a8b4b78453fb35d511fba0624c2d1578860d6854",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_d1d7eae1fce04f64da64260b34406090",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:27:08.168472Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G08:M0:A",
+            "destination": "G08",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/finals/G08/M0/A.png",
+            "sha256": "9bbb1001f2b34b0d4633bf7ed9f529fda9b00be9a032faa0aada499c863f4b3c",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:27:38.700716+00:00"
+      }
     },
     "final:G08:M0:B": {
       "id": "final:G08:M0:B",
@@ -2222,7 +4094,7 @@
       "destination": "G08",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -2265,8 +4137,59 @@
         ],
         "snapshot_sha256": "363d541b3ae8754d52ca4512c917474ae1f05634b59b51293b13073a588508a2"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:27:38.750543+00:00",
+        "idem_key": "issue12-issue12-full-001-final-g08-m0-b",
+        "task_id": "img_d1f1a2b36b6ccbec3117f765f696782d",
+        "submitted_at": "2026-08-22T23:27:41.637149+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M0:B",
+            "path": "artifacts/apertures/G08/M0/B.png",
+            "sha256": "aef0fc27fd7af27dc8cdab3945b0fbf034281c56db344a994946d54817868b6b"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "2602b514f94d2de4159114c0129ddd9f45f2851fcd3eed9cf9ca596abf1fe2d5",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_d1f1a2b36b6ccbec3117f765f696782d",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:27:43.434827Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G08:M0:B",
+            "destination": "G08",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/finals/G08/M0/B.png",
+            "sha256": "29b46bf04bfcb503a69fa419fac93494c57b478034366c354c8e7ff8bb3e36a6",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:28:08.806950+00:00"
+      }
     },
     "final:G08:M1:A": {
       "id": "final:G08:M1:A",
@@ -2275,7 +4198,7 @@
       "destination": "G08",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -2318,8 +4241,59 @@
         ],
         "snapshot_sha256": "84992c0f6a9139b2726c15e38ed646c844cd1d2af9317b52c0e71897983f5db5"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:28:08.870944+00:00",
+        "idem_key": "issue12-issue12-full-001-final-g08-m1-a",
+        "task_id": "img_4814a416da74d824cd91bc6eb9513c89",
+        "submitted_at": "2026-08-22T23:28:11.741742+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M1:A",
+            "path": "artifacts/apertures/G08/M1/A.png",
+            "sha256": "e22f048d06f3762b679d68ad42c61de93463e64e7c32410ae58f0e73de2c7b26"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "702977ae131894af4b9ee91bad802b0d132b83b6063aa21b2f1232ea1ab44a86",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_4814a416da74d824cd91bc6eb9513c89",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:28:13.558262Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G08:M1:A",
+            "destination": "G08",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/finals/G08/M1/A.png",
+            "sha256": "f4701322b88159dc812dd23de7270320ae2cdbb1a82cec54f50402260977d686",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:28:44.005415+00:00"
+      }
     },
     "final:G08:M1:B": {
       "id": "final:G08:M1:B",
@@ -2328,7 +4302,7 @@
       "destination": "G08",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -2371,12 +4345,63 @@
         ],
         "snapshot_sha256": "13e545a591c79949b1e7bcb3a83d3775b44cf321d0121d976503b4f004598018"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-22T23:28:44.066832+00:00",
+        "idem_key": "issue12-issue12-full-001-final-g08-m1-b",
+        "task_id": "img_3bd631bc00c96376a55018e77dd8f576",
+        "submitted_at": "2026-08-22T23:28:46.806763+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M1:B",
+            "path": "artifacts/apertures/G08/M1/B.png",
+            "sha256": "67db866a3af8dc5d446e59f0f375759dbba7ac3ade08103c71ce1a2665bcf56c"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "980421a2d99d600465abc0cf7c93e7e4011fd18836f73be710bf3f1889dd662a",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_3bd631bc00c96376a55018e77dd8f576",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-22T23:28:48.639957Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G08:M1:B",
+            "destination": "G08",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/finals/G08/M1/B.png",
+            "sha256": "25edc64de9e7dde54b72d8bdf18556debb69e028e10df20d950a032dd411dc0c",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-22T23:29:13.237657+00:00"
+      }
     }
   },
   "final_review": {
-    "status": "pending",
+    "status": "waiting_for_review",
     "decision": null,
     "note": null,
     "reviewed_at": null
