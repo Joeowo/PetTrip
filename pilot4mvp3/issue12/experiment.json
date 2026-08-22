@@ -1,0 +1,76 @@
+{
+  "schema_version": "issue12-experiment/0.1",
+  "issue": 12,
+  "sources": {
+    "style_workbook": "../../docs/画风素材库_42条.xlsx",
+    "style_sheet": "画风素材库",
+    "composition_workbook": "../../docs/构图提示词整理.xlsx",
+    "composition_sheet": "构图提示词",
+    "character_sheet": "../../docs/旅屋背景+三视图/chongwu.jpg"
+  },
+  "api": {
+    "provider": "65535",
+    "model": "gpt-image-2",
+    "size": "16:9",
+    "resolution": "2k",
+    "quality": "high",
+    "n": 1,
+    "timeout": 900
+  },
+  "aperture": {
+    "shape": "circle",
+    "fill": "#000000",
+    "short_edge_ratio": 0.14,
+    "diameter_rounding": "nearest_even"
+  },
+  "destinations": [
+    {
+      "id": "G02",
+      "name": "阿尔卑斯山谷小屋",
+      "style_cell": "E42",
+      "composition_row": 10,
+      "scene_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+      "scenes": [
+        {"id": "A", "anchor": "木屋前道路内侧平地", "action": "停下并抬头望向山口"},
+        {"id": "B", "anchor": "右侧山脚安全草坡", "action": "侧身抵挡山风并观察山谷"}
+      ]
+    },
+    {
+      "id": "G03",
+      "name": "湿润森林瀑布",
+      "style_cell": "E3",
+      "composition_row": 10,
+      "scene_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+      "scenes": [
+        {"id": "A", "anchor": "瀑布侧方干石岸", "action": "前倾伸手感受水雾"},
+        {"id": "B", "anchor": "倒木前湿石地面", "action": "轻蹲观察或触碰苔藓"}
+      ]
+    },
+    {
+      "id": "G06",
+      "name": "托斯卡纳孤树坡地",
+      "style_cell": "E12",
+      "composition_row": 9,
+      "scene_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+      "base_variants": [
+        {"id": "M0", "include_character_reference": false},
+        {"id": "M1", "include_character_reference": true}
+      ],
+      "scenes": [
+        {"id": "A", "anchor": "孤树下方道路侧平地", "action": "沿道路方向回望孤树"},
+        {"id": "B", "anchor": "前景 S 形道路宽缓弯道", "action": "沿道路远望并抬手示意"}
+      ]
+    },
+    {
+      "id": "G08",
+      "name": "彩色岩柱荒原",
+      "style_cell": "E15",
+      "composition_row": 19,
+      "scene_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+      "scenes": [
+        {"id": "A", "anchor": "左侧高岩柱前砂砾地", "action": "仰头观察彩色条带"},
+        {"id": "B", "anchor": "右侧小岩柱前砂砾地", "action": "轻蹲指向低处条带"}
+      ]
+    }
+  ]
+}

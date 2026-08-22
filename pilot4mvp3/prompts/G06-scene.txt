@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Image 1 and Image 2 are Neva official screenshots used only as visual-style references; inherit their silhouettes, gouache/pastel blocks, paper-brush texture and horizontal staging, but do not copy their specific trees, characters, layout or events
+Primary request: a warm healing Q-version fantasy Tuscan hillside; foreground is softly rolling gold-green grass with an S-shaped dirt road, midground has one solitary tree on a ridge and low shrubs, background is gray-blue distant hills, thin mist and a quiet sky; preserve two usable landmarks: the safe ground below the solitary tree and the broad front segment of the S-shaped road; no character, no person, no UI, no text, no watermark
+Style/medium: Neva-inspired hand-painted 2D storybook landscape; simplified expressive shapes, clear silhouettes, muted gouache and pastel color blocks, restrained paper-and-brush texture, cinematic horizontal staging; no photorealism, no 3D render, no generic anime background
+Composition/framing: minimal horizontal composition, fixed lens, large negative space, tree and road clearly separated
+Lighting/mood: gentle late-afternoon light, calm wind, one consistent key-light direction
+Color palette: NEVA Windblown Grass Sea, #EFE2BE #D7BC78 #A98E53 #6E6247 with #C86B55 limited to small accents
+Constraints: no pet, no human, no extra tree cluster, no text, no logo, no camera movement

@@ -1,0 +1,662 @@
+{
+  "schema_version": "issue12-run/0.1",
+  "run_id": "issue12-preflight-001",
+  "created_at": "2026-08-22T17:19:00.881136+00:00",
+  "updated_at": "2026-08-22T17:19:01.583376+00:00",
+  "config": {
+    "schema_version": "issue12-experiment/0.1",
+    "issue": 12,
+    "sources": {
+      "style_workbook": "../../docs/画风素材库_42条.xlsx",
+      "style_sheet": "画风素材库",
+      "composition_workbook": "../../docs/构图提示词整理.xlsx",
+      "composition_sheet": "构图提示词",
+      "character_sheet": "../../docs/旅屋背景+三视图/chongwu.jpg"
+    },
+    "api": {
+      "provider": "65535",
+      "model": "gpt-image-2",
+      "size": "16:9",
+      "resolution": "2k",
+      "quality": "high",
+      "n": 1,
+      "timeout": 900
+    },
+    "aperture": {
+      "shape": "circle",
+      "fill": "#000000",
+      "short_edge_ratio": 0.14,
+      "diameter_rounding": "nearest_even"
+    },
+    "destinations": [
+      {
+        "id": "G02",
+        "name": "阿尔卑斯山谷小屋",
+        "style_cell": "E42",
+        "composition_row": 10,
+        "scene_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "木屋前道路内侧平地",
+            "action": "停下并抬头望向山口"
+          },
+          {
+            "id": "B",
+            "anchor": "右侧山脚安全草坡",
+            "action": "侧身抵挡山风并观察山谷"
+          }
+        ]
+      },
+      {
+        "id": "G03",
+        "name": "湿润森林瀑布",
+        "style_cell": "E3",
+        "composition_row": 10,
+        "scene_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "瀑布侧方干石岸",
+            "action": "前倾伸手感受水雾"
+          },
+          {
+            "id": "B",
+            "anchor": "倒木前湿石地面",
+            "action": "轻蹲观察或触碰苔藓"
+          }
+        ]
+      },
+      {
+        "id": "G06",
+        "name": "托斯卡纳孤树坡地",
+        "style_cell": "E12",
+        "composition_row": 9,
+        "scene_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+        "base_variants": [
+          {
+            "id": "M0",
+            "include_character_reference": false
+          },
+          {
+            "id": "M1",
+            "include_character_reference": true
+          }
+        ],
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "孤树下方道路侧平地",
+            "action": "沿道路方向回望孤树"
+          },
+          {
+            "id": "B",
+            "anchor": "前景 S 形道路宽缓弯道",
+            "action": "沿道路远望并抬手示意"
+          }
+        ]
+      },
+      {
+        "id": "G08",
+        "name": "彩色岩柱荒原",
+        "style_cell": "E15",
+        "composition_row": 19,
+        "scene_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "左侧高岩柱前砂砾地",
+            "action": "仰头观察彩色条带"
+          },
+          {
+            "id": "B",
+            "anchor": "右侧小岩柱前砂砾地",
+            "action": "轻蹲指向低处条带"
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "config": {
+      "path": "issue12/experiment.json",
+      "sha256": "a0f2cd85787f1d05bb9df7c8fd645829c43416346a1db8e5915a0d77c9c188a4"
+    },
+    "style_workbook": {
+      "path": "docs/画风素材库_42条.xlsx",
+      "sha256": "dec5f6cd0eb982dff0b2b0cc05c64bc4fb69e20338ce761e05009d93c7f1700d",
+      "sheet": "画风素材库"
+    },
+    "styles": [
+      {
+        "cell": "E42",
+        "row": 42,
+        "style_name": "清洁色块自然主义",
+        "game_name": "The Witness",
+        "keywords": "清洁材质、亮色岛屿、色块分区、极简自然",
+        "description": "参考《The Witness》的画风语言，强调极度干净的色块分离、明亮自然光、锐利边界、平滑材质与秩序化环境构成，整体清澈、理性、无杂讯，突出颜色关系与空间清晰度，而不是具体谜题面板或园林装置。",
+        "path": "assets/styles/E42.png",
+        "embedded_sha256": "fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61",
+        "output_sha256": "fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      },
+      {
+        "cell": "E3",
+        "row": 3,
+        "style_name": "诗意水彩",
+        "game_name": "GRIS",
+        "keywords": "诗意极简、水彩晕染、空气透视、低饱和、柔和漫射光、情绪色彩",
+        "description": "参考《GRIS》的画风语言，强调大面积水彩晕染、半透明色层、柔化边界、留白空气感与抒情情绪流动，整体轻盈、朦胧、低对比，突出色彩过渡和情感氛围，而不是具体场景物件。",
+        "path": "assets/styles/E3.png",
+        "embedded_sha256": "92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec",
+        "output_sha256": "92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      },
+      {
+        "cell": "E12",
+        "row": 12,
+        "style_name": "旅行手账水彩",
+        "game_name": "Dordogne",
+        "keywords": "手账、水彩、贴纸、回忆拼贴、彩铅感",
+        "description": "参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。",
+        "path": "assets/styles/E12.png",
+        "embedded_sha256": "fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749",
+        "output_sha256": "fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      },
+      {
+        "cell": "E15",
+        "row": 15,
+        "style_name": "法式漫画线稿",
+        "game_name": "Sable",
+        "keywords": "清稿线条、平面上色、法漫轮廓、沙漠留白",
+        "description": "参考《Sable》的画风语言，强调法式漫画式清晰线稿、低阴影大色面、轻科幻与轻民俗并置的空旷感，整体轮廓干净、呼吸感强、配色节制，突出线面关系与图像留白，而不是具体载具或建筑零件。",
+        "path": "assets/styles/E15.png",
+        "embedded_sha256": "ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001",
+        "output_sha256": "ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      }
+    ],
+    "composition_workbook": {
+      "path": "docs/构图提示词整理.xlsx",
+      "sha256": "e0e145b095d938b0d1bddbe4b12995409ce08e5301e58b4b0a6f802b20880478",
+      "sheet": "构图提示词"
+    },
+    "compositions": [
+      {
+        "row": 9,
+        "number": "07",
+        "group": "空间引导型构图",
+        "name": "S 型动线纵深式",
+        "film": "魔戒：护戒使者",
+        "features": "一条蜿蜒路径从前景进入中景再抵达远景焦点，路线本身承担视线引导和空间展开，适合做旅途式构图。",
+        "fit": "适合场景：山路、河谷、栈道、峡谷入口、旅行镜头、探索段落。\n适合画风：旅行手账水彩、清洁色块自然主义、赛璐璐神话景观、诗意水彩、东方幻想自然",
+        "prompt": "参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。"
+      },
+      {
+        "row": 10,
+        "number": "08",
+        "group": "空间引导型构图",
+        "name": "前中后景三层递进",
+        "film": "公民凯恩",
+        "features": "前景负责建立观察点，中景承担角色活动，背景补足空间信息或情绪补叙，三层关系同时清楚时，画面会更像可行走的小型舞台。",
+        "fit": "适合场景：室外探索、室内窥视、街巷、庭院、林间空地、叙事性交互场景。\n适合画风：黑色侦探漫画、表现主义油画、哥特手绘涂鸦、赛博都市、自然主义写实",
+        "prompt": "参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。"
+      },
+      {
+        "row": 19,
+        "number": "17",
+        "group": "图形化型构图",
+        "name": "横向卷轴舞台式",
+        "film": "狗镇",
+        "features": "动作和空间主要沿横向展开，前后景压缩成舞台布景，角色像在一块长画幅上连续移动，阅读节奏非常清楚。",
+        "fit": "适合场景：平台跳跃、街道横切、森林边缘、村落一条街、舞台式叙事场景。\n适合画风：横版剪影戏剧、哥特手绘涂鸦、铅笔手稿黑白、复古舞台纸偶、体素破坏写实",
+        "prompt": "参考《狗镇》的舞台式镜头组织，横版 16:9，小场景横向展开，角色主要在同一水平带活动，前后景简化成布景层，路径方向明确，避免纵深元素过强导致横向节奏被打断。"
+      }
+    ],
+    "character": {
+      "source": {
+        "path": "docs/旅屋背景+三视图/chongwu.jpg",
+        "sha256": "111ef884a37da8690d12962a6669359539b6da9ba20cfdeb616b7510bbee8a54",
+        "width": 1248,
+        "height": 705
+      },
+      "rule": "split_at_floor_half_extra_row_to_bottom",
+      "top": {
+        "path": "assets/character/chongwu-top.png",
+        "sha256": "5f2629f1e3033bf5305ee4a03a0ffaeeb1548875952b113334878701b033da8d",
+        "crop_box": [
+          0,
+          0,
+          1248,
+          352
+        ],
+        "width": 1248,
+        "height": 352
+      },
+      "bottom": {
+        "path": "assets/character/chongwu-bottom.png",
+        "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b",
+        "crop_box": [
+          0,
+          352,
+          1248,
+          705
+        ],
+        "width": 1248,
+        "height": 353
+      },
+      "uploaded_part": "bottom"
+    }
+  },
+  "base_candidates": {
+    "M0": {
+      "status": "pending",
+      "snapshot": {
+        "variant": "M0",
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。",
+            "composition_prompt": "参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。不输入宠物参考图；按场景语义预留两个小尺寸宠物可活动区域。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。\n\n[4] 参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。不输入宠物参考图；按场景语义预留两个小尺寸宠物可活动区域。",
+          "sha256": "05c1701c5d3b2a4d6c5b12b4e54a67115573ed7ca292d47d14eb8d21415001fd"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "cell": "E12",
+            "path": "assets/styles/E12.png",
+            "sha256": "fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749",
+            "width": 240,
+            "height": 135
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "idem_key": "issue12-issue12-preflight-001-g06-m0-environment-base",
+        "snapshot_sha256": "4e8c199e6757bfdbdc48a05bac95b32f6001f2e9b203cc263b857270b3262f3a"
+      },
+      "approval": null,
+      "attempts": []
+    },
+    "M1": {
+      "status": "pending",
+      "snapshot": {
+        "variant": "M1",
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。",
+            "composition_prompt": "参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；不得在环境中生成任何宠物内容。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。\n\n[4] 参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；不得在环境中生成任何宠物内容。",
+          "sha256": "cb44a121db5b3a8df3acca4ed0e2ccbd96c5b4a0b6371c11964636cbaab2f0ab"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "cell": "E12",
+            "path": "assets/styles/E12.png",
+            "sha256": "fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749",
+            "width": 240,
+            "height": 135
+          },
+          {
+            "order": 2,
+            "role": "character_scale_only",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b",
+            "crop_box": [
+              0,
+              352,
+              1248,
+              705
+            ],
+            "width": 1248,
+            "height": 353
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "idem_key": "issue12-issue12-preflight-001-g06-m1-environment-base",
+        "snapshot_sha256": "ef997e8cbaa719e6bd21a90e247207da516e54e632cc3ef15d0aa27de99fb214"
+      },
+      "approval": null,
+      "attempts": []
+    }
+  },
+  "workflows": {
+    "G02": {
+      "shared_environment": {
+        "path": null,
+        "sha256": null
+      },
+      "scenes": {
+        "A": {
+          "anchor": "木屋前道路内侧平地",
+          "action": "停下并抬头望向山口",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        },
+        "B": {
+          "anchor": "右侧山脚安全草坡",
+          "action": "侧身抵挡山风并观察山谷",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        }
+      }
+    },
+    "G03": {
+      "shared_environment": {
+        "path": null,
+        "sha256": null
+      },
+      "scenes": {
+        "A": {
+          "anchor": "瀑布侧方干石岸",
+          "action": "前倾伸手感受水雾",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        },
+        "B": {
+          "anchor": "倒木前湿石地面",
+          "action": "轻蹲观察或触碰苔藓",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        }
+      }
+    },
+    "G06": {
+      "shared_environment": {
+        "path": null,
+        "sha256": null
+      },
+      "scenes": {
+        "A": {
+          "anchor": "孤树下方道路侧平地",
+          "action": "沿道路方向回望孤树",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        },
+        "B": {
+          "anchor": "前景 S 形道路宽缓弯道",
+          "action": "沿道路远望并抬手示意",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        }
+      }
+    },
+    "G08": {
+      "shared_environment": {
+        "path": null,
+        "sha256": null
+      },
+      "scenes": {
+        "A": {
+          "anchor": "左侧高岩柱前砂砾地",
+          "action": "仰头观察彩色条带",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        },
+        "B": {
+          "anchor": "右侧小岩柱前砂砾地",
+          "action": "轻蹲指向低处条带",
+          "steps": {
+            "environment_base": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "semantic_locator": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "scan_planned_center": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "draw_deterministic_aperture": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            },
+            "final_pet_scene": {
+              "status": "pending",
+              "attempts": [],
+              "review": null
+            }
+          }
+        }
+      }
+    }
+  },
+  "events": [
+    {
+      "at": "2026-08-22T17:19:01.237821+00:00",
+      "variant": "M0",
+      "event": "preflight"
+    },
+    {
+      "at": "2026-08-22T17:19:01.583376+00:00",
+      "variant": "M1",
+      "event": "preflight"
+    }
+  ],
+  "warnings": [
+    "No automatic quality score or redraw.",
+    "Planned locator center and deterministic aperture are not final click truth."
+  ]
+}

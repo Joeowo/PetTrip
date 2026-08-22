@@ -1,0 +1,72 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Issue 12 Evidence</title>
+<style>
+:root { color-scheme: light dark; --bg:#f5f1e8; --panel:#fffdf8; --ink:#25231f; --muted:#6d675d; --line:#d6cebf; --accent:#215a54; }
+@media(prefers-color-scheme:dark) { :root { --bg:#171918;--panel:#222522;--ink:#f3eee5;--muted:#bbb3a5;--line:#454a45;--accent:#82c6bb; } }
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,sans-serif} main{max-width:1120px;margin:auto;padding:2rem 1rem 5rem} h1{font-size:clamp(2rem,6vw,4rem);margin:.2em 0} .notice,.candidate,.assets{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin:1rem 0} .notice{border-left:6px solid var(--accent)} header{display:flex;justify-content:space-between;gap:1rem;align-items:center} .status{padding:.25rem .7rem;border:1px solid var(--accent);border-radius:999px;color:var(--accent)} dl{display:grid;grid-template-columns:minmax(9rem,14rem) 1fr;gap:.5rem 1rem} dt{font-weight:700} dd{margin:0} pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:1rem;border-radius:10px} code{overflow-wrap:anywhere} .references{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem} .reference{border:1px solid var(--line);border-radius:12px;padding:.8rem;min-width:0} img{width:100%;max-height:240px;object-fit:contain;background:white;border-radius:8px} @media(max-width:600px){dl{grid-template-columns:1fr}}
+</style>
+<main>
+  <p>Issue 12 · run issue12-preflight-001</p><h1>Experiment evidence</h1>
+  <div class="notice"><b>Review boundary</b><p>No automatic quality score or redraw. The planned locator center and deterministic aperture are not final click truth.</p></div>
+  <section class="assets"><h2>Prepared assets</h2><div class="references"><article class="reference"><img src="assets/styles/E42.png" alt="reference"><h4>#E42 style asset</h4><p>assets/styles/E42.png</p><code>fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61</code><p>240 × 135</p></article><article class="reference"><img src="assets/styles/E3.png" alt="reference"><h4>#E3 style asset</h4><p>assets/styles/E3.png</p><code>92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec</code><p>240 × 135</p></article><article class="reference"><img src="assets/styles/E12.png" alt="reference"><h4>#E12 style asset</h4><p>assets/styles/E12.png</p><code>fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749</code><p>240 × 135</p></article><article class="reference"><img src="assets/styles/E15.png" alt="reference"><h4>#E15 style asset</h4><p>assets/styles/E15.png</p><code>ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001</code><p>240 × 135</p></article><article class="reference"><img src="assets/character/chongwu-top.png" alt="reference"><h4>#top character top</h4><p>assets/character/chongwu-top.png</p><code>5f2629f1e3033bf5305ee4a03a0ffaeeb1548875952b113334878701b033da8d</code><p>1248 × 352</p></article><article class="reference"><img src="assets/character/chongwu-bottom.png" alt="reference"><h4>#bottom character bottom</h4><p>assets/character/chongwu-bottom.png</p><code>51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b</code><p>1248 × 353</p></article></div></section>
+
+    <section class="candidate">
+      <header><h2>G06 M0</h2><span class="status">pending</span></header>
+      <p><b>Snapshot:</b> <code>4e8c199e6757bfdbdc48a05bac95b32f6001f2e9b203cc263b857270b3262f3a</code></p>
+      <h3>Five prompt layers</h3><dl><dt>fixed_boundaries</dt><dd>生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。</dd><dt>destination_requirement</dt><dd>前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。</dd><dt>style_description</dt><dd>参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。</dd><dt>composition_prompt</dt><dd>参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。</dd><dt>current_anchor_action</dt><dd>预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。不输入宠物参考图；按场景语义预留两个小尺寸宠物可活动区域。</dd></dl>
+      <h3>Rendered prompt</h3><pre>[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。
+
+[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。
+
+[3] 参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。
+
+[4] 参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。
+
+[5] 预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。不输入宠物参考图；按场景语义预留两个小尺寸宠物可活动区域。</pre>
+      <h3>Ordered references</h3><div class="references"><article class="reference"><img src="assets/styles/E12.png" alt="reference"><h4>#1 style</h4><p>assets/styles/E12.png</p><code>fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749</code><p>240 × 135</p></article></div>
+      <h3>Redacted request</h3><pre>{
+  &quot;provider&quot;: &quot;65535&quot;,
+  &quot;model&quot;: &quot;gpt-image-2&quot;,
+  &quot;size&quot;: &quot;16:9&quot;,
+  &quot;resolution&quot;: &quot;2k&quot;,
+  &quot;quality&quot;: &quot;high&quot;,
+  &quot;n&quot;: 1,
+  &quot;timeout&quot;: 900,
+  &quot;base_url&quot;: &quot;https://task-api-1-cn.65535.space&quot;
+}</pre>
+      <p><b>Idempotency key:</b> issue12-issue12-preflight-001-g06-m0-environment-base</p>
+      <h3>Attempts</h3><ul><li>No remote attempt.</li></ul>
+      <h3>Human review</h3><p>pending — </p>
+    </section>
+    <section class="candidate">
+      <header><h2>G06 M1</h2><span class="status">pending</span></header>
+      <p><b>Snapshot:</b> <code>ef997e8cbaa719e6bd21a90e247207da516e54e632cc3ef15d0aa27de99fb214</code></p>
+      <h3>Five prompt layers</h3><dl><dt>fixed_boundaries</dt><dd>生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。</dd><dt>destination_requirement</dt><dd>前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。</dd><dt>style_description</dt><dd>参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。</dd><dt>composition_prompt</dt><dd>参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。</dd><dt>current_anchor_action</dt><dd>预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；不得在环境中生成任何宠物内容。</dd></dl>
+      <h3>Rendered prompt</h3><pre>[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影。固定镜头和单一主光方向；不含宠物、人物、宠物局部、剪影、雕塑、玩偶、壁画、黑圈、UI、文字、Logo或水印；不得复刻参考作品的具体角色、建筑、道具或剧情。
+
+[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。
+
+[3] 参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。
+
+[4] 参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。
+
+[5] 预留两个空间分离、可站立、避开边缘和主地标的视觉锚点：孤树下方道路侧平地；前景 S 形道路宽缓弯道。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；不得在环境中生成任何宠物内容。</pre>
+      <h3>Ordered references</h3><div class="references"><article class="reference"><img src="assets/styles/E12.png" alt="reference"><h4>#1 style</h4><p>assets/styles/E12.png</p><code>fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749</code><p>240 × 135</p></article><article class="reference"><img src="assets/character/chongwu-bottom.png" alt="reference"><h4>#2 character_scale_only</h4><p>assets/character/chongwu-bottom.png</p><code>51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b</code><p>1248 × 353</p></article></div>
+      <h3>Redacted request</h3><pre>{
+  &quot;provider&quot;: &quot;65535&quot;,
+  &quot;model&quot;: &quot;gpt-image-2&quot;,
+  &quot;size&quot;: &quot;16:9&quot;,
+  &quot;resolution&quot;: &quot;2k&quot;,
+  &quot;quality&quot;: &quot;high&quot;,
+  &quot;n&quot;: 1,
+  &quot;timeout&quot;: 900,
+  &quot;base_url&quot;: &quot;https://task-api-1-cn.65535.space&quot;
+}</pre>
+      <p><b>Idempotency key:</b> issue12-issue12-preflight-001-g06-m1-environment-base</p>
+      <h3>Attempts</h3><ul><li>No remote attempt.</li></ul>
+      <h3>Human review</h3><p>pending — </p>
+    </section>
+  <section class="assets"><h2>State events</h2><ol><li>2026-08-22T17:19:01.237821+00:00 — M0: preflight</li><li>2026-08-22T17:19:01.583376+00:00 — M1: preflight</li></ol></section>
+</main>
