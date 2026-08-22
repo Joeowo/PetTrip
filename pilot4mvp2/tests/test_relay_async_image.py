@@ -164,13 +164,117 @@ def test_download_uses_unauthenticated_session_for_signed_url(tmp_path):
     assert "Authorization" not in downloader.get_calls[0][1].get("headers", {})
 
 
-def test_network_and_conflict_are_structured():
-    network = FakeSession(posts=[requests.ConnectionError("secret url")])
-    result = relay.submit_task(network, "https://example.test", {}, "idem", retries=1)
-    assert result["error"]["code"] == "network_error"
-    assert "secret" not in str(result)
+@pytest.mark.parametrize(
+    ("data", "expected_task_id"),
+    [
+        ({"id": "task-id"}, "task-id"),
+        ({"task_id": "task-task-id"}, "task-task-id"),
+        ({"task": {"id": "nested-task-id"}}, "nested-task-id"),
+    ],
+)
+def test_conflict_recovers_task_id_and_calls_on_created(data, expected_task_id):
+    session = FakeSession(posts=[FakeResponse(status_code=409, data=data)])
+    created = []
 
-    conflict = FakeSession(posts=[FakeResponse(status_code=409)])
-    result = relay.submit_task(conflict, "https://example.test", {}, "idem")
-    assert result["error"]["code"] == "conflict"
-    assert result["error"]["http_status"] == 409
+    result = relay.submit_task(
+        session,
+        "https://example.test",
+        {"prompt": "SECRET_BODY"},
+        "SECRET_KEY",
+        on_created=lambda task_id, task: created.append((task_id, task)),
+    )
+
+    assert result == {
+        "ok": True,
+        "stage": "submit",
+        "task": data,
+        "task_id": expected_task_id,
+    }
+    assert created == [(expected_task_id, data)]
+
+
+@pytest.mark.parametrize(
+    "response",
+    [
+        FakeResponse(status_code=409, data={"error": "SECRET_BODY"}),
+        FakeResponse(data=ValueError("SECRET_BODY")),
+        FakeResponse(data={"status": "queued", "detail": "SECRET_BODY"}),
+    ],
+    ids=["conflict-without-id", "success-invalid-json", "success-missing-id"],
+)
+def test_ambiguous_submission_response_is_unknown_and_safe(response):
+    session = FakeSession(posts=[response])
+
+    result = relay.submit_task(
+        session,
+        "https://SECRET_URL.test",
+        {"prompt": "SECRET_BODY"},
+        "SECRET_KEY",
+    )
+
+    assert result == {
+        "ok": False,
+        "error": {
+            "stage": "submit",
+            "code": "submission_unknown",
+            "message": "无法确认任务是否已创建，请人工核对幂等键对应的任务",
+            "retryable": False,
+        },
+    }
+    assert "SECRET" not in str(result)
+
+
+def test_exhausted_submission_network_error_is_unknown_not_retryable():
+    session = FakeSession(
+        posts=[
+            requests.ConnectionError("SECRET_URL"),
+            requests.Timeout("SECRET_KEY"),
+        ]
+    )
+    sleeps = []
+
+    result = relay.submit_task(
+        session,
+        "https://SECRET_URL.test",
+        {"prompt": "SECRET_BODY"},
+        "SECRET_KEY",
+        retries=2,
+        sleep_fn=sleeps.append,
+    )
+
+    assert result == {
+        "ok": False,
+        "error": {
+            "stage": "submit",
+            "code": "submission_unknown",
+            "message": "无法确认任务是否已创建，请人工核对幂等键对应的任务",
+            "retryable": False,
+        },
+    }
+    assert sleeps == [2]
+    assert "SECRET" not in str(result)
+
+
+def test_non_conflict_client_error_remains_http_error_and_safe():
+    session = FakeSession(
+        posts=[FakeResponse(status_code=422, data={"detail": "SECRET_BODY"})]
+    )
+
+    result = relay.submit_task(
+        session,
+        "https://SECRET_URL.test",
+        {"prompt": "SECRET_BODY"},
+        "SECRET_KEY",
+    )
+
+    assert result == {
+        "ok": False,
+        "error": {
+            "stage": "submit",
+            "code": "http_error",
+            "message": "任务提交被服务端拒绝",
+            "retryable": False,
+            "http_status": 422,
+        },
+    }
+    assert "SECRET" not in str(result)

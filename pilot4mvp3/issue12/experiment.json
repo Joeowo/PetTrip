@@ -1,5 +1,5 @@
 {
-  "schema_version": "issue12-experiment/0.1",
+  "schema_version": "issue12-experiment/0.2",
   "issue": 12,
   "sources": {
     "style_workbook": "../../docs/画风素材库_42条.xlsx",
@@ -22,6 +22,25 @@
     "fill": "#000000",
     "short_edge_ratio": 0.14,
     "diameter_rounding": "nearest_even"
+  },
+  "routes": {
+    "M0": {
+      "references": ["style"]
+    },
+    "M1": {
+      "references": ["style", "character_bottom"]
+    }
+  },
+  "execution_policy": {
+    "on_technical_success": "auto_continue",
+    "review": "final_only",
+    "scoring": false,
+    "redraw": false,
+    "on_branch_failure": "fail_branch"
+  },
+  "reference_policies": {
+    "locator": ["route_environment"],
+    "final": ["deterministic_aperture", "character_bottom"]
   },
   "destinations": [
     {
@@ -52,10 +71,17 @@
       "style_cell": "E12",
       "composition_row": 9,
       "scene_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
-      "base_variants": [
-        {"id": "M0", "include_character_reference": false},
-        {"id": "M1", "include_character_reference": true}
-      ],
+      "environment_import": {
+        "source_run_id": "issue12-preflight-001",
+        "routes": {
+          "M0": {
+            "sha256": "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1"
+          },
+          "M1": {
+            "sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb"
+          }
+        }
+      },
       "scenes": [
         {"id": "A", "anchor": "孤树下方道路侧平地", "action": "沿道路方向回望孤树"},
         {"id": "B", "anchor": "前景 S 形道路宽缓弯道", "action": "沿道路远望并抬手示意"}

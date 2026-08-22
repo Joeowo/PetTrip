@@ -1,0 +1,2395 @@
+{
+  "schema_version": "issue12-run/0.2",
+  "run_id": "issue12-full-001",
+  "created_at": "2026-08-22T22:36:55.907847+00:00",
+  "updated_at": "2026-08-22T22:38:01.009185+00:00",
+  "config": {
+    "schema_version": "issue12-experiment/0.2",
+    "issue": 12,
+    "sources": {
+      "style_workbook": "../../docs/画风素材库_42条.xlsx",
+      "style_sheet": "画风素材库",
+      "composition_workbook": "../../docs/构图提示词整理.xlsx",
+      "composition_sheet": "构图提示词",
+      "character_sheet": "../../docs/旅屋背景+三视图/chongwu.jpg"
+    },
+    "api": {
+      "provider": "65535",
+      "model": "gpt-image-2",
+      "size": "16:9",
+      "resolution": "2k",
+      "quality": "high",
+      "n": 1,
+      "timeout": 900
+    },
+    "aperture": {
+      "shape": "circle",
+      "fill": "#000000",
+      "short_edge_ratio": 0.14,
+      "diameter_rounding": "nearest_even"
+    },
+    "routes": {
+      "M0": {
+        "references": [
+          "style"
+        ]
+      },
+      "M1": {
+        "references": [
+          "style",
+          "character_bottom"
+        ]
+      }
+    },
+    "execution_policy": {
+      "on_technical_success": "auto_continue",
+      "review": "final_only",
+      "scoring": false,
+      "redraw": false,
+      "on_branch_failure": "fail_branch"
+    },
+    "reference_policies": {
+      "locator": [
+        "route_environment"
+      ],
+      "final": [
+        "deterministic_aperture",
+        "character_bottom"
+      ]
+    },
+    "destinations": [
+      {
+        "id": "G02",
+        "name": "阿尔卑斯山谷小屋",
+        "style_cell": "E42",
+        "composition_row": 10,
+        "scene_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "木屋前道路内侧平地",
+            "action": "停下并抬头望向山口"
+          },
+          {
+            "id": "B",
+            "anchor": "右侧山脚安全草坡",
+            "action": "侧身抵挡山风并观察山谷"
+          }
+        ]
+      },
+      {
+        "id": "G03",
+        "name": "湿润森林瀑布",
+        "style_cell": "E3",
+        "composition_row": 10,
+        "scene_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "瀑布侧方干石岸",
+            "action": "前倾伸手感受水雾"
+          },
+          {
+            "id": "B",
+            "anchor": "倒木前湿石地面",
+            "action": "轻蹲观察或触碰苔藓"
+          }
+        ]
+      },
+      {
+        "id": "G06",
+        "name": "托斯卡纳孤树坡地",
+        "style_cell": "E12",
+        "composition_row": 9,
+        "scene_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+        "environment_import": {
+          "source_run_id": "issue12-preflight-001",
+          "routes": {
+            "M0": {
+              "sha256": "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1"
+            },
+            "M1": {
+              "sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb"
+            }
+          }
+        },
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "孤树下方道路侧平地",
+            "action": "沿道路方向回望孤树"
+          },
+          {
+            "id": "B",
+            "anchor": "前景 S 形道路宽缓弯道",
+            "action": "沿道路远望并抬手示意"
+          }
+        ]
+      },
+      {
+        "id": "G08",
+        "name": "彩色岩柱荒原",
+        "style_cell": "E15",
+        "composition_row": 19,
+        "scene_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+        "scenes": [
+          {
+            "id": "A",
+            "anchor": "左侧高岩柱前砂砾地",
+            "action": "仰头观察彩色条带"
+          },
+          {
+            "id": "B",
+            "anchor": "右侧小岩柱前砂砾地",
+            "action": "轻蹲指向低处条带"
+          }
+        ]
+      }
+    ]
+  },
+  "assets": {
+    "config": {
+      "path": "issue12/experiment.json",
+      "sha256": "13767f9c67a82bb9dfc910535c789967c77755b08468752355463007d9ff2950"
+    },
+    "style_workbook": {
+      "path": "docs/画风素材库_42条.xlsx",
+      "sha256": "dec5f6cd0eb982dff0b2b0cc05c64bc4fb69e20338ce761e05009d93c7f1700d",
+      "sheet": "画风素材库"
+    },
+    "styles": [
+      {
+        "cell": "E42",
+        "row": 42,
+        "style_name": "清洁色块自然主义",
+        "game_name": "The Witness",
+        "keywords": "清洁材质、亮色岛屿、色块分区、极简自然",
+        "description": "参考《The Witness》的画风语言，强调极度干净的色块分离、明亮自然光、锐利边界、平滑材质与秩序化环境构成，整体清澈、理性、无杂讯，突出颜色关系与空间清晰度，而不是具体谜题面板或园林装置。",
+        "path": "assets/styles/E42.png",
+        "embedded_sha256": "fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61",
+        "output_sha256": "fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      },
+      {
+        "cell": "E3",
+        "row": 3,
+        "style_name": "诗意水彩",
+        "game_name": "GRIS",
+        "keywords": "诗意极简、水彩晕染、空气透视、低饱和、柔和漫射光、情绪色彩",
+        "description": "参考《GRIS》的画风语言，强调大面积水彩晕染、半透明色层、柔化边界、留白空气感与抒情情绪流动，整体轻盈、朦胧、低对比，突出色彩过渡和情感氛围，而不是具体场景物件。",
+        "path": "assets/styles/E3.png",
+        "embedded_sha256": "92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec",
+        "output_sha256": "92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      },
+      {
+        "cell": "E12",
+        "row": 12,
+        "style_name": "旅行手账水彩",
+        "game_name": "Dordogne",
+        "keywords": "手账、水彩、贴纸、回忆拼贴、彩铅感",
+        "description": "参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。",
+        "path": "assets/styles/E12.png",
+        "embedded_sha256": "fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749",
+        "output_sha256": "fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      },
+      {
+        "cell": "E15",
+        "row": 15,
+        "style_name": "法式漫画线稿",
+        "game_name": "Sable",
+        "keywords": "清稿线条、平面上色、法漫轮廓、沙漠留白",
+        "description": "参考《Sable》的画风语言，强调法式漫画式清晰线稿、低阴影大色面、轻科幻与轻民俗并置的空旷感，整体轮廓干净、呼吸感强、配色节制，突出线面关系与图像留白，而不是具体载具或建筑零件。",
+        "path": "assets/styles/E15.png",
+        "embedded_sha256": "ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001",
+        "output_sha256": "ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001",
+        "format": "PNG",
+        "mode": "RGB",
+        "width": 240,
+        "height": 135
+      }
+    ],
+    "composition_workbook": {
+      "path": "docs/构图提示词整理.xlsx",
+      "sha256": "e0e145b095d938b0d1bddbe4b12995409ce08e5301e58b4b0a6f802b20880478",
+      "sheet": "构图提示词"
+    },
+    "compositions": [
+      {
+        "row": 9,
+        "number": "07",
+        "group": "空间引导型构图",
+        "name": "S 型动线纵深式",
+        "film": "魔戒：护戒使者",
+        "features": "一条蜿蜒路径从前景进入中景再抵达远景焦点，路线本身承担视线引导和空间展开，适合做旅途式构图。",
+        "fit": "适合场景：山路、河谷、栈道、峡谷入口、旅行镜头、探索段落。\n适合画风：旅行手账水彩、清洁色块自然主义、赛璐璐神话景观、诗意水彩、东方幻想自然",
+        "prompt": "参考《魔戒：护戒使者》的旅途镜头组织，横版 16:9，小场景中景，以 S 型道路、河道或栈道串联前景到远景焦点，路径必须清楚可读，角色活动区落在中段，避免路线被障碍切断或弯折过碎。"
+      },
+      {
+        "row": 10,
+        "number": "08",
+        "group": "空间引导型构图",
+        "name": "前中后景三层递进",
+        "film": "公民凯恩",
+        "features": "前景负责建立观察点，中景承担角色活动，背景补足空间信息或情绪补叙，三层关系同时清楚时，画面会更像可行走的小型舞台。",
+        "fit": "适合场景：室外探索、室内窥视、街巷、庭院、林间空地、叙事性交互场景。\n适合画风：黑色侦探漫画、表现主义油画、哥特手绘涂鸦、赛博都市、自然主义写实",
+        "prompt": "参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。"
+      },
+      {
+        "row": 19,
+        "number": "17",
+        "group": "图形化型构图",
+        "name": "横向卷轴舞台式",
+        "film": "狗镇",
+        "features": "动作和空间主要沿横向展开，前后景压缩成舞台布景，角色像在一块长画幅上连续移动，阅读节奏非常清楚。",
+        "fit": "适合场景：平台跳跃、街道横切、森林边缘、村落一条街、舞台式叙事场景。\n适合画风：横版剪影戏剧、哥特手绘涂鸦、铅笔手稿黑白、复古舞台纸偶、体素破坏写实",
+        "prompt": "参考《狗镇》的舞台式镜头组织，横版 16:9，小场景横向展开，角色主要在同一水平带活动，前后景简化成布景层，路径方向明确，避免纵深元素过强导致横向节奏被打断。"
+      }
+    ],
+    "character": {
+      "source": {
+        "path": "docs/旅屋背景+三视图/chongwu.jpg",
+        "sha256": "111ef884a37da8690d12962a6669359539b6da9ba20cfdeb616b7510bbee8a54",
+        "width": 1248,
+        "height": 705
+      },
+      "rule": "split_at_floor_half_extra_row_to_bottom",
+      "top": {
+        "path": "assets/character/chongwu-top.png",
+        "sha256": "5f2629f1e3033bf5305ee4a03a0ffaeeb1548875952b113334878701b033da8d",
+        "crop_box": [
+          0,
+          0,
+          1248,
+          352
+        ],
+        "width": 1248,
+        "height": 352
+      },
+      "bottom": {
+        "path": "assets/character/chongwu-bottom.png",
+        "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b",
+        "crop_box": [
+          0,
+          352,
+          1248,
+          705
+        ],
+        "width": 1248,
+        "height": 353
+      },
+      "uploaded_part": "bottom"
+    }
+  },
+  "plan": {
+    "expected_remote_call_count": 38,
+    "ordered_call_ids": [
+      "environment:G02:M0",
+      "environment:G02:M1",
+      "environment:G03:M0",
+      "environment:G03:M1",
+      "environment:G08:M0",
+      "environment:G08:M1",
+      "locator:G02:M0:A",
+      "locator:G02:M0:B",
+      "locator:G02:M1:A",
+      "locator:G02:M1:B",
+      "locator:G03:M0:A",
+      "locator:G03:M0:B",
+      "locator:G03:M1:A",
+      "locator:G03:M1:B",
+      "locator:G06:M0:A",
+      "locator:G06:M0:B",
+      "locator:G06:M1:A",
+      "locator:G06:M1:B",
+      "locator:G08:M0:A",
+      "locator:G08:M0:B",
+      "locator:G08:M1:A",
+      "locator:G08:M1:B",
+      "final:G02:M0:A",
+      "final:G02:M0:B",
+      "final:G02:M1:A",
+      "final:G02:M1:B",
+      "final:G03:M0:A",
+      "final:G03:M0:B",
+      "final:G03:M1:A",
+      "final:G03:M1:B",
+      "final:G06:M0:A",
+      "final:G06:M0:B",
+      "final:G06:M1:A",
+      "final:G06:M1:B",
+      "final:G08:M0:A",
+      "final:G08:M0:B",
+      "final:G08:M1:A",
+      "final:G08:M1:B"
+    ],
+    "snapshot_sha256s": [
+      "e844c5bf415e83a4594351005868a0e7dbf54477c74afd5bbcdbe45625e7885e",
+      "742e2c5c98b529830e2dd25eaaecf383d96385424a4ebbb720e280af7ec8e188",
+      "c6fc00ee15e5ba6886743322d00454f20d03a403d2e010ebfe73e803f5a2fbcb",
+      "dbc3cd6ee25b8fac7e673af66bc641930d81ad07a08dbfcb65c31b41424e3c41",
+      "99c36dfe27313345ec1f5ac5d5595c017b4186af84939bc24eb24dc7e92f315f",
+      "02637a15285d0f591a3498a43a605d1352328034836c10aa9ea2809404a26dc6",
+      "1669a8650202e750ab1bb0701c0d65b36b60c9234aed7a78dfb3f26b1bae10b2",
+      "978560140f3bccae2d2eb426cd162aadf74bfe6ca7569a57e586e5ee6128dadd",
+      "aeb3d61b3b39bcf5fb058a0ca096187c5b8e58474720ea4573c3f2974210fff7",
+      "0b7639b095d0d022473a15204ea0191343bbfa8274ae0566d7c97af93eb68571",
+      "815d3a4cd358820b6ccc5839cce2b5354156a76a6c54c9abb4374500f07b8dd3",
+      "8e5fa66eb206b1a8888b66716bb21e0014a20e55b2f42da9af79c59cf84f37c9",
+      "53998de1f9bd739f4d72c954229473a0b01b0356beadaee9842ae4124da46d92",
+      "7c1c6a6e39a5c538b730120d961c52c282e8cfad4dfd238469f471fc10589dcb",
+      "e7cc1e721f8a4586668e1014292a3d7e420586188537f7c0f0edc855fa057446",
+      "54385a62da5914b15aae09dc544f056238eebca4db1f05b15d3cba4332c487fe",
+      "80dd15f8df44a8a2529668fc7ce066d3a5ce327a49b5d607581413e33f5626b8",
+      "525c413b77d72878a0aaa128d11dfdf383900d1c733919aac82cce8e7190fcfd",
+      "8c171746d4d818615d332d8279721807cc1bd8a3c0c694b56c1afb60c1103125",
+      "82689515177513ef9f21203a5913f8d1f72f5c0b0e36b7c0b165474f102f5696",
+      "d9dcc08c1f3053e8bbf7733096ebe70ea18cfd80958d505004ed721201cff15e",
+      "78d3ce6bbfaecffd1c7a6316e1cd7ff06cabb84d4ef173887776ea41d66c77bd",
+      "abeacb9fbf32ce7280e121d3c63770a05ccf1466f3ce99df89d17bc9cf52e920",
+      "47ab2e021d6c98f7a7dbc732353f133f5ba16c8e8ae1ed38c85aaeb273efa72a",
+      "063430448b100bdab4f879972f97645916f0a21214bf859b45e8f90fdd82a21a",
+      "48312da298c16b366fc4706d9f4f2ecb7c07c9c3c4519dd4d5e3edca26431897",
+      "280f7fa08b39c6129db71c7a2e9b40176729f5be705687ab8f1ac25ea55ebd0d",
+      "c6a9a8da78429c62d7516c22663a603e6f7724fc4ec44b772f3cbcb09a4f16ad",
+      "452d7bcc68e90817af90700f41633fccbc361036b6f33659bd62fa8f9df814a9",
+      "782f8204bda08dd7a3417869418343d8b04ee9a1fe6e7915e83265f1fd5805ff",
+      "87418729b4c3ae1b6a278c8327c6a77dc5e1594852a83a49debe6d8a1fb802e7",
+      "7c04223838eb17a659eb4b0a515e2fdeec6d81bcdc4afc5c55ddff2024dbf79b",
+      "c53c304554cf47fb164ebde2e6c6b7aa202e9eaad32487dacd637cf1d9892ce3",
+      "d4669c9cdb932901fdcb7b87d1eca19360f53ef1ba720b68943afe683e497f2c",
+      "4939f9d486e7b82e06c416387d1451a7768c1590d22ba54ccbb3ff6aaa411e07",
+      "363d541b3ae8754d52ca4512c917474ae1f05634b59b51293b13073a588508a2",
+      "84992c0f6a9139b2726c15e38ed646c844cd1d2af9317b52c0e71897983f5db5",
+      "13e545a591c79949b1e7bcb3a83d3775b44cf321d0121d976503b4f004598018"
+    ],
+    "imported_environment_sha256s": [
+      "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1",
+      "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb"
+    ],
+    "plan_sha256": "1367f6d3123783b40514064ce36f90727c3abdc4ed0740074e9aa49cf63a33b8",
+    "approval": {
+      "plan_sha256": "1367f6d3123783b40514064ce36f90727c3abdc4ed0740074e9aa49cf63a33b8",
+      "approved_at": "2026-08-22T22:38:01.009185+00:00"
+    }
+  },
+  "artifacts": {
+    "style:E42": {
+      "kind": "style",
+      "path": "assets/styles/E42.png",
+      "sha256": "fa49f9353548b43d2744fef58198684861b700c28bfeadbf2e94a1a6d2ecba61",
+      "size": [
+        240,
+        135
+      ]
+    },
+    "style:E3": {
+      "kind": "style",
+      "path": "assets/styles/E3.png",
+      "sha256": "92623ba0932971b17a9040631cb97edce167032b2498ce35ab71555f85784bec",
+      "size": [
+        240,
+        135
+      ]
+    },
+    "style:E12": {
+      "kind": "style",
+      "path": "assets/styles/E12.png",
+      "sha256": "fa96da92a927d558f801dff8d261488b5a0d60afe425eb4b47c1e584ad595749",
+      "size": [
+        240,
+        135
+      ]
+    },
+    "style:E15": {
+      "kind": "style",
+      "path": "assets/styles/E15.png",
+      "sha256": "ed01060a7ba5bf34051cab024d0655880e2a596858dc6483e1f10bef6a7a7001",
+      "size": [
+        240,
+        135
+      ]
+    },
+    "character:bottom": {
+      "kind": "character_bottom",
+      "path": "assets/character/chongwu-bottom.png",
+      "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b",
+      "size": [
+        1248,
+        353
+      ]
+    },
+    "environment:G06:M0": {
+      "kind": "environment",
+      "destination": "G06",
+      "route": "M0",
+      "path": "artifacts/environments/G06/M0.png",
+      "sha256": "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1",
+      "size": [
+        2048,
+        1152
+      ],
+      "origin": {
+        "type": "imported_run_artifact",
+        "run_id": "issue12-preflight-001",
+        "source_task_id": "img_26cd821fc4ca52590f670ddce83a1de7",
+        "source_path": "base_candidates/M0/environment-base.png",
+        "source_sha256": "feead18fff14a1f19f845f3f76172dfd50ec516b08cd036df2e174c6e1a7c4f1"
+      }
+    },
+    "environment:G06:M1": {
+      "kind": "environment",
+      "destination": "G06",
+      "route": "M1",
+      "path": "artifacts/environments/G06/M1.png",
+      "sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb",
+      "size": [
+        2048,
+        1152
+      ],
+      "origin": {
+        "type": "imported_run_artifact",
+        "run_id": "issue12-preflight-001",
+        "source_task_id": "img_b99659e8770dd83643688442b6a0fdd6",
+        "source_path": "base_candidates/M1/environment-base.png",
+        "source_sha256": "95367c91120eb026ab76244e6c7d4ed33d1788fbb14177a0f1679fa98aa7d1cb"
+      }
+    }
+  },
+  "calls": {
+    "environment:G02:M0": {
+      "id": "environment:G02:M0",
+      "ordinal": 1,
+      "phase": "environment",
+      "destination": "G02",
+      "route": "M0",
+      "scene": null,
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "参考《The Witness》的画风语言，强调极度干净的色块分离、明亮自然光、锐利边界、平滑材质与秩序化环境构成，整体清澈、理性、无杂讯，突出颜色关系与空间清晰度，而不是具体谜题面板或园林装置。",
+            "composition_prompt": "参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的锚点：木屋前道路内侧平地；右侧山脚安全草坡。不输入宠物参考图；按两个锚点预留小尺寸宠物活动空间。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 参考《The Witness》的画风语言，强调极度干净的色块分离、明亮自然光、锐利边界、平滑材质与秩序化环境构成，整体清澈、理性、无杂讯，突出颜色关系与空间清晰度，而不是具体谜题面板或园林装置。\n\n[4] 参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的锚点：木屋前道路内侧平地；右侧山脚安全草坡。不输入宠物参考图；按两个锚点预留小尺寸宠物活动空间。",
+          "sha256": "23c73b6dbd8fc633851fee38e373574b177f028326bf46b2899a6bc1a4a64504"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E42"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/environments/G02/M0.png",
+        "idem_key": "issue12-issue12-full-001-environment-g02-m0",
+        "depends_on": [],
+        "snapshot_sha256": "e844c5bf415e83a4594351005868a0e7dbf54477c74afd5bbcdbe45625e7885e"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "environment:G02:M1": {
+      "id": "environment:G02:M1",
+      "ordinal": 2,
+      "phase": "environment",
+      "destination": "G02",
+      "route": "M1",
+      "scene": null,
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "参考《The Witness》的画风语言，强调极度干净的色块分离、明亮自然光、锐利边界、平滑材质与秩序化环境构成，整体清澈、理性、无杂讯，突出颜色关系与空间清晰度，而不是具体谜题面板或园林装置。",
+            "composition_prompt": "参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的锚点：木屋前道路内侧平地；右侧山脚安全草坡。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；输出不得出现宠物、局部、剪影、雕塑、玩偶、白底分栏或文字。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 参考《The Witness》的画风语言，强调极度干净的色块分离、明亮自然光、锐利边界、平滑材质与秩序化环境构成，整体清澈、理性、无杂讯，突出颜色关系与空间清晰度，而不是具体谜题面板或园林装置。\n\n[4] 参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的锚点：木屋前道路内侧平地；右侧山脚安全草坡。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；输出不得出现宠物、局部、剪影、雕塑、玩偶、白底分栏或文字。",
+          "sha256": "9189de4b04a3ee1fcb838b518d6099a1cbdd7e684b38d08023d0189aa61c0970"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E42"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/environments/G02/M1.png",
+        "idem_key": "issue12-issue12-full-001-environment-g02-m1",
+        "depends_on": [],
+        "snapshot_sha256": "742e2c5c98b529830e2dd25eaaecf383d96385424a4ebbb720e280af7ec8e188"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "environment:G03:M0": {
+      "id": "environment:G03:M0",
+      "ordinal": 3,
+      "phase": "environment",
+      "destination": "G03",
+      "route": "M0",
+      "scene": null,
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "参考《GRIS》的画风语言，强调大面积水彩晕染、半透明色层、柔化边界、留白空气感与抒情情绪流动，整体轻盈、朦胧、低对比，突出色彩过渡和情感氛围，而不是具体场景物件。",
+            "composition_prompt": "参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的锚点：瀑布侧方干石岸；倒木前湿石地面。不输入宠物参考图；按两个锚点预留小尺寸宠物活动空间。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 参考《GRIS》的画风语言，强调大面积水彩晕染、半透明色层、柔化边界、留白空气感与抒情情绪流动，整体轻盈、朦胧、低对比，突出色彩过渡和情感氛围，而不是具体场景物件。\n\n[4] 参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的锚点：瀑布侧方干石岸；倒木前湿石地面。不输入宠物参考图；按两个锚点预留小尺寸宠物活动空间。",
+          "sha256": "716831d2358bb85377110177e5d97ebc5987401e1f37191f0970d432000e85fd"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E3"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/environments/G03/M0.png",
+        "idem_key": "issue12-issue12-full-001-environment-g03-m0",
+        "depends_on": [],
+        "snapshot_sha256": "c6fc00ee15e5ba6886743322d00454f20d03a403d2e010ebfe73e803f5a2fbcb"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "environment:G03:M1": {
+      "id": "environment:G03:M1",
+      "ordinal": 4,
+      "phase": "environment",
+      "destination": "G03",
+      "route": "M1",
+      "scene": null,
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "参考《GRIS》的画风语言，强调大面积水彩晕染、半透明色层、柔化边界、留白空气感与抒情情绪流动，整体轻盈、朦胧、低对比，突出色彩过渡和情感氛围，而不是具体场景物件。",
+            "composition_prompt": "参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的锚点：瀑布侧方干石岸；倒木前湿石地面。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；输出不得出现宠物、局部、剪影、雕塑、玩偶、白底分栏或文字。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 参考《GRIS》的画风语言，强调大面积水彩晕染、半透明色层、柔化边界、留白空气感与抒情情绪流动，整体轻盈、朦胧、低对比，突出色彩过渡和情感氛围，而不是具体场景物件。\n\n[4] 参考《公民凯恩》的深焦层次组织，横版 16:9，小场景中景，前景设置轻遮挡或观察点，中景保持角色活动区，背景补足空间层级和情绪信息，三层都要清楚但不抢焦，避免层次互相压扁。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的锚点：瀑布侧方干石岸；倒木前湿石地面。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；输出不得出现宠物、局部、剪影、雕塑、玩偶、白底分栏或文字。",
+          "sha256": "395dd9aae32ddf0c0c579d180a0f86467e427138c696d09b8ca235c49997a7e4"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E3"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/environments/G03/M1.png",
+        "idem_key": "issue12-issue12-full-001-environment-g03-m1",
+        "depends_on": [],
+        "snapshot_sha256": "dbc3cd6ee25b8fac7e673af66bc641930d81ad07a08dbfcb65c31b41424e3c41"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "environment:G08:M0": {
+      "id": "environment:G08:M0",
+      "ordinal": 5,
+      "phase": "environment",
+      "destination": "G08",
+      "route": "M0",
+      "scene": null,
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "参考《Sable》的画风语言，强调法式漫画式清晰线稿、低阴影大色面、轻科幻与轻民俗并置的空旷感，整体轮廓干净、呼吸感强、配色节制，突出线面关系与图像留白，而不是具体载具或建筑零件。",
+            "composition_prompt": "参考《狗镇》的舞台式镜头组织，横版 16:9，小场景横向展开，角色主要在同一水平带活动，前后景简化成布景层，路径方向明确，避免纵深元素过强导致横向节奏被打断。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的锚点：左侧高岩柱前砂砾地；右侧小岩柱前砂砾地。不输入宠物参考图；按两个锚点预留小尺寸宠物活动空间。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 参考《Sable》的画风语言，强调法式漫画式清晰线稿、低阴影大色面、轻科幻与轻民俗并置的空旷感，整体轮廓干净、呼吸感强、配色节制，突出线面关系与图像留白，而不是具体载具或建筑零件。\n\n[4] 参考《狗镇》的舞台式镜头组织，横版 16:9，小场景横向展开，角色主要在同一水平带活动，前后景简化成布景层，路径方向明确，避免纵深元素过强导致横向节奏被打断。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的锚点：左侧高岩柱前砂砾地；右侧小岩柱前砂砾地。不输入宠物参考图；按两个锚点预留小尺寸宠物活动空间。",
+          "sha256": "c1d2ceaf939fc54eda838bf6b26713fcbca9e5613cb14062581941d69f8a35cb"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E15"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/environments/G08/M0.png",
+        "idem_key": "issue12-issue12-full-001-environment-g08-m0",
+        "depends_on": [],
+        "snapshot_sha256": "99c36dfe27313345ec1f5ac5d5595c017b4186af84939bc24eb24dc7e92f315f"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "environment:G08:M1": {
+      "id": "environment:G08:M1",
+      "ordinal": 6,
+      "phase": "environment",
+      "destination": "G08",
+      "route": "M1",
+      "scene": null,
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "参考《Sable》的画风语言，强调法式漫画式清晰线稿、低阴影大色面、轻科幻与轻民俗并置的空旷感，整体轮廓干净、呼吸感强、配色节制，突出线面关系与图像留白，而不是具体载具或建筑零件。",
+            "composition_prompt": "参考《狗镇》的舞台式镜头组织，横版 16:9，小场景横向展开，角色主要在同一水平带活动，前后景简化成布景层，路径方向明确，避免纵深元素过强导致横向节奏被打断。",
+            "current_anchor_action": "预留两个空间分离、可站立、避开边缘和主地标的锚点：左侧高岩柱前砂砾地；右侧小岩柱前砂砾地。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；输出不得出现宠物、局部、剪影、雕塑、玩偶、白底分栏或文字。"
+          },
+          "rendered": "[1] 生成16:9横版纯环境母图，手绘2D、自然克制、非摄影；固定镜头和单一主光；无人物、宠物、黑圈、UI、文字、Logo或水印。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 参考《Sable》的画风语言，强调法式漫画式清晰线稿、低阴影大色面、轻科幻与轻民俗并置的空旷感，整体轮廓干净、呼吸感强、配色节制，突出线面关系与图像留白，而不是具体载具或建筑零件。\n\n[4] 参考《狗镇》的舞台式镜头组织，横版 16:9，小场景横向展开，角色主要在同一水平带活动，前后景简化成布景层，路径方向明确，避免纵深元素过强导致横向节奏被打断。\n\n[5] 预留两个空间分离、可站立、避开边缘和主地标的锚点：左侧高岩柱前砂砾地；右侧小岩柱前砂砾地。参考图2仅用于理解固定宠物形象的小尺寸比例和活动空间；输出不得出现宠物、局部、剪影、雕塑、玩偶、白底分栏或文字。",
+          "sha256": "ba3acdf687265297f459a8d6e5a64bc89dd63b480b69a037a505a12a637d68f7"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "style",
+            "artifact_id": "style:E15"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/environments/G08/M1.png",
+        "idem_key": "issue12-issue12-full-001-environment-g08-m1",
+        "depends_on": [],
+        "snapshot_sha256": "02637a15285d0f591a3498a43a605d1352328034836c10aa9ea2809404a26dc6"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G02:M0:A": {
+      "id": "locator:G02:M0:A",
+      "ordinal": 7,
+      "phase": "locator",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“木屋前道路内侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“木屋前道路内侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "107bfededd6f751c27a236ba513cc0abe0531eb9d8370f2795be774ae142148d"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G02/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m0-a",
+        "depends_on": [
+          "environment:G02:M0"
+        ],
+        "snapshot_sha256": "1669a8650202e750ab1bb0701c0d65b36b60c9234aed7a78dfb3f26b1bae10b2"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G02:M0:B": {
+      "id": "locator:G02:M0:B",
+      "ordinal": 8,
+      "phase": "locator",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“右侧山脚安全草坡”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“右侧山脚安全草坡”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "050c335a53ae3f666856e4aa4f5c3d9a7433600f3bef7d7239d9ee7bd7136b14"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G02/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m0-b",
+        "depends_on": [
+          "environment:G02:M0"
+        ],
+        "snapshot_sha256": "978560140f3bccae2d2eb426cd162aadf74bfe6ca7569a57e586e5ee6128dadd"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G02:M1:A": {
+      "id": "locator:G02:M1:A",
+      "ordinal": 9,
+      "phase": "locator",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“木屋前道路内侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“木屋前道路内侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "107bfededd6f751c27a236ba513cc0abe0531eb9d8370f2795be774ae142148d"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G02/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m1-a",
+        "depends_on": [
+          "environment:G02:M1"
+        ],
+        "snapshot_sha256": "aeb3d61b3b39bcf5fb058a0ca096187c5b8e58474720ea4573c3f2974210fff7"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G02:M1:B": {
+      "id": "locator:G02:M1:B",
+      "ordinal": 10,
+      "phase": "locator",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“右侧山脚安全草坡”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“右侧山脚安全草坡”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "050c335a53ae3f666856e4aa4f5c3d9a7433600f3bef7d7239d9ee7bd7136b14"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G02:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G02/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g02-m1-b",
+        "depends_on": [
+          "environment:G02:M1"
+        ],
+        "snapshot_sha256": "0b7639b095d0d022473a15204ea0191343bbfa8274ae0566d7c97af93eb68571"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G03:M0:A": {
+      "id": "locator:G03:M0:A",
+      "ordinal": 11,
+      "phase": "locator",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“瀑布侧方干石岸”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“瀑布侧方干石岸”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "6ca08944ea6b397678538cfc4d20862be2c4765acad3c9fd71680b2f2a9641a7"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G03/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m0-a",
+        "depends_on": [
+          "environment:G03:M0"
+        ],
+        "snapshot_sha256": "815d3a4cd358820b6ccc5839cce2b5354156a76a6c54c9abb4374500f07b8dd3"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G03:M0:B": {
+      "id": "locator:G03:M0:B",
+      "ordinal": 12,
+      "phase": "locator",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“倒木前湿石地面”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“倒木前湿石地面”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "0245daadc7977388e41a338ab8b1a1d3e434683189cefcd8377ead1665f83c2a"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G03/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m0-b",
+        "depends_on": [
+          "environment:G03:M0"
+        ],
+        "snapshot_sha256": "8e5fa66eb206b1a8888b66716bb21e0014a20e55b2f42da9af79c59cf84f37c9"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G03:M1:A": {
+      "id": "locator:G03:M1:A",
+      "ordinal": 13,
+      "phase": "locator",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“瀑布侧方干石岸”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“瀑布侧方干石岸”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "6ca08944ea6b397678538cfc4d20862be2c4765acad3c9fd71680b2f2a9641a7"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G03/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m1-a",
+        "depends_on": [
+          "environment:G03:M1"
+        ],
+        "snapshot_sha256": "53998de1f9bd739f4d72c954229473a0b01b0356beadaee9842ae4124da46d92"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G03:M1:B": {
+      "id": "locator:G03:M1:B",
+      "ordinal": 14,
+      "phase": "locator",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“倒木前湿石地面”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“倒木前湿石地面”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "0245daadc7977388e41a338ab8b1a1d3e434683189cefcd8377ead1665f83c2a"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G03:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G03/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g03-m1-b",
+        "depends_on": [
+          "environment:G03:M1"
+        ],
+        "snapshot_sha256": "7c1c6a6e39a5c538b730120d961c52c282e8cfad4dfd238469f471fc10589dcb"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G06:M0:A": {
+      "id": "locator:G06:M0:A",
+      "ordinal": 15,
+      "phase": "locator",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“孤树下方道路侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“孤树下方道路侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "0e0c58ba1fe241dd3f88fe985dcfadea97ecafd08a0b751b387efee4bbdb991b"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G06/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m0-a",
+        "depends_on": [
+          "environment:G06:M0"
+        ],
+        "snapshot_sha256": "e7cc1e721f8a4586668e1014292a3d7e420586188537f7c0f0edc855fa057446"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G06:M0:B": {
+      "id": "locator:G06:M0:B",
+      "ordinal": 16,
+      "phase": "locator",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“前景 S 形道路宽缓弯道”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“前景 S 形道路宽缓弯道”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "5989c6bad23a6f9e9653b0f553542817c8a381bca82e9550b20e5005016d1cf7"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G06/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m0-b",
+        "depends_on": [
+          "environment:G06:M0"
+        ],
+        "snapshot_sha256": "54385a62da5914b15aae09dc544f056238eebca4db1f05b15d3cba4332c487fe"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G06:M1:A": {
+      "id": "locator:G06:M1:A",
+      "ordinal": 17,
+      "phase": "locator",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“孤树下方道路侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“孤树下方道路侧平地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "0e0c58ba1fe241dd3f88fe985dcfadea97ecafd08a0b751b387efee4bbdb991b"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G06/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m1-a",
+        "depends_on": [
+          "environment:G06:M1"
+        ],
+        "snapshot_sha256": "80dd15f8df44a8a2529668fc7ce066d3a5ce327a49b5d607581413e33f5626b8"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G06:M1:B": {
+      "id": "locator:G06:M1:B",
+      "ordinal": 18,
+      "phase": "locator",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“前景 S 形道路宽缓弯道”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“前景 S 形道路宽缓弯道”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "5989c6bad23a6f9e9653b0f553542817c8a381bca82e9550b20e5005016d1cf7"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G06:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G06/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g06-m1-b",
+        "depends_on": [
+          "environment:G06:M1"
+        ],
+        "snapshot_sha256": "525c413b77d72878a0aaa128d11dfdf383900d1c733919aac82cce8e7190fcfd"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G08:M0:A": {
+      "id": "locator:G08:M0:A",
+      "ordinal": 19,
+      "phase": "locator",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“左侧高岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“左侧高岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "5f498b874472ac3f869d7b05464350b28e693cafd281146ad84e55d022b57679"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G08/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m0-a",
+        "depends_on": [
+          "environment:G08:M0"
+        ],
+        "snapshot_sha256": "8c171746d4d818615d332d8279721807cc1bd8a3c0c694b56c1afb60c1103125"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G08:M0:B": {
+      "id": "locator:G08:M0:B",
+      "ordinal": 20,
+      "phase": "locator",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“右侧小岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“右侧小岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "6dd769b4f80e894a8af56f9727d90f563c04a142e2ddf4c90065fe9b37900709"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M0"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G08/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m0-b",
+        "depends_on": [
+          "environment:G08:M0"
+        ],
+        "snapshot_sha256": "82689515177513ef9f21203a5913f8d1f72f5c0b0e36b7c0b165474f102f5696"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G08:M1:A": {
+      "id": "locator:G08:M1:A",
+      "ordinal": 21,
+      "phase": "locator",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“左侧高岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“左侧高岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "5f498b874472ac3f869d7b05464350b28e693cafd281146ad84e55d022b57679"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G08/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m1-a",
+        "depends_on": [
+          "environment:G08:M1"
+        ],
+        "snapshot_sha256": "d9dcc08c1f3053e8bbf7733096ebe70ea18cfd80958d505004ed721201cff15e"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "locator:G08:M1:B": {
+      "id": "locator:G08:M1:B",
+      "ordinal": 22,
+      "phase": "locator",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。",
+            "composition_prompt": "保持全部构图和地标不变，黑圈外像素不得改变。",
+            "current_anchor_action": "只在“右侧小岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。"
+          },
+          "rendered": "[1] 参考图1是不可变环境母图。只允许新增一个纯黑实心圆；禁止宠物、人物、文字、UI和任何第二标记。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 完全保持参考图的画风、颜色、材质、光照和镜头，不重新绘制环境。\n\n[4] 保持全部构图和地标不变，黑圈外像素不得改变。\n\n[5] 只在“右侧小岩柱前砂砾地”的安全可站立承载面绘制一个黑色实心圆；避开天空、水面、悬崖和主体。该圆只是语义定位图，最终黑洞由程序重绘。",
+          "sha256": "6dd769b4f80e894a8af56f9727d90f563c04a142e2ddf4c90065fe9b37900709"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "route_environment",
+            "artifact_id": "environment:G08:M1"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/locators/G08/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-locator-g08-m1-b",
+        "depends_on": [
+          "environment:G08:M1"
+        ],
+        "snapshot_sha256": "78d3ce6bbfaecffd1c7a6316e1cd7ff06cabb84d4ef173887776ea41d66c77bd"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G02:M0:A": {
+      "id": "final:G02:M0:A",
+      "ordinal": 23,
+      "phase": "final",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：木屋前道路内侧平地。唯一动作：停下并抬头望向山口。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：木屋前道路内侧平地。唯一动作：停下并抬头望向山口。",
+          "sha256": "c7ec4bb82f8a67d2300b766f116dd5ecad659c23f125d9af74895be252f461e8"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M0:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G02/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g02-m0-a",
+        "depends_on": [
+          "locator:G02:M0:A"
+        ],
+        "snapshot_sha256": "abeacb9fbf32ce7280e121d3c63770a05ccf1466f3ce99df89d17bc9cf52e920"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G02:M0:B": {
+      "id": "final:G02:M0:B",
+      "ordinal": 24,
+      "phase": "final",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：右侧山脚安全草坡。唯一动作：侧身抵挡山风并观察山谷。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：右侧山脚安全草坡。唯一动作：侧身抵挡山风并观察山谷。",
+          "sha256": "7b571b29826ec2adc50948cc646647d75225f5ae0ce1c16ee828eb76cf634747"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M0:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G02/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g02-m0-b",
+        "depends_on": [
+          "locator:G02:M0:B"
+        ],
+        "snapshot_sha256": "47ab2e021d6c98f7a7dbc732353f133f5ba16c8e8ae1ed38c85aaeb273efa72a"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G02:M1:A": {
+      "id": "final:G02:M1:A",
+      "ordinal": 25,
+      "phase": "final",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：木屋前道路内侧平地。唯一动作：停下并抬头望向山口。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：木屋前道路内侧平地。唯一动作：停下并抬头望向山口。",
+          "sha256": "c7ec4bb82f8a67d2300b766f116dd5ecad659c23f125d9af74895be252f461e8"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M1:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G02/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g02-m1-a",
+        "depends_on": [
+          "locator:G02:M1:A"
+        ],
+        "snapshot_sha256": "063430448b100bdab4f879972f97645916f0a21214bf859b45e8f90fdd82a21a"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G02:M1:B": {
+      "id": "final:G02:M1:B",
+      "ordinal": 26,
+      "phase": "final",
+      "destination": "G02",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：右侧山脚安全草坡。唯一动作：侧身抵挡山风并观察山谷。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是带少量野草的山谷坡地，中景是左下几座小木屋和一条通向山口的小路，后景是占据右侧的大型灰色山峰、云层和远处蓝绿色山谷。保留木屋群和山脚岩坡两个视觉锚点，构图有明确前中远景和可站立地面。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：右侧山脚安全草坡。唯一动作：侧身抵挡山风并观察山谷。",
+          "sha256": "7b571b29826ec2adc50948cc646647d75225f5ae0ce1c16ee828eb76cf634747"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M1:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G02/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g02-m1-b",
+        "depends_on": [
+          "locator:G02:M1:B"
+        ],
+        "snapshot_sha256": "48312da298c16b366fc4706d9f4f2ecb7c07c9c3c4519dd4d5e3edca26431897"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G03:M0:A": {
+      "id": "final:G03:M0:A",
+      "ordinal": 27,
+      "phase": "final",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：瀑布侧方干石岸。唯一动作：前倾伸手感受水雾。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：瀑布侧方干石岸。唯一动作：前倾伸手感受水雾。",
+          "sha256": "d4d9969a16d5010cdb53425b3074d8ce17cfd0213da2a1e6253c1a7c2a77ad7e"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M0:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G03/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g03-m0-a",
+        "depends_on": [
+          "locator:G03:M0:A"
+        ],
+        "snapshot_sha256": "280f7fa08b39c6129db71c7a2e9b40176729f5be705687ab8f1ac25ea55ebd0d"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G03:M0:B": {
+      "id": "final:G03:M0:B",
+      "ordinal": 28,
+      "phase": "final",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：倒木前湿石地面。唯一动作：轻蹲观察或触碰苔藓。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：倒木前湿石地面。唯一动作：轻蹲观察或触碰苔藓。",
+          "sha256": "732c5e84f7fa45f631f1b44c646b005e0b95dda0210a4130ec1bddd3fbb1db60"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M0:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G03/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g03-m0-b",
+        "depends_on": [
+          "locator:G03:M0:B"
+        ],
+        "snapshot_sha256": "c6a9a8da78429c62d7516c22663a603e6f7724fc4ec44b772f3cbcb09a4f16ad"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G03:M1:A": {
+      "id": "final:G03:M1:A",
+      "ordinal": 29,
+      "phase": "final",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：瀑布侧方干石岸。唯一动作：前倾伸手感受水雾。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：瀑布侧方干石岸。唯一动作：前倾伸手感受水雾。",
+          "sha256": "d4d9969a16d5010cdb53425b3074d8ce17cfd0213da2a1e6253c1a7c2a77ad7e"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M1:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G03/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g03-m1-a",
+        "depends_on": [
+          "locator:G03:M1:A"
+        ],
+        "snapshot_sha256": "452d7bcc68e90817af90700f41633fccbc361036b6f33659bd62fa8f9df814a9"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G03:M1:B": {
+      "id": "final:G03:M1:B",
+      "ordinal": 30,
+      "phase": "final",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：倒木前湿石地面。唯一动作：轻蹲观察或触碰苔藓。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是低矮蕨类、湿石和一根横向倒木，中景是清晰的瀑布落入浅水潭，后景是浓密但有层次的绿色森林和柔和雾气。保留瀑布和倒木湿石两个互动地标并留出可站立区域。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：倒木前湿石地面。唯一动作：轻蹲观察或触碰苔藓。",
+          "sha256": "732c5e84f7fa45f631f1b44c646b005e0b95dda0210a4130ec1bddd3fbb1db60"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M1:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G03/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g03-m1-b",
+        "depends_on": [
+          "locator:G03:M1:B"
+        ],
+        "snapshot_sha256": "782f8204bda08dd7a3417869418343d8b04ee9a1fe6e7915e83265f1fd5805ff"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G06:M0:A": {
+      "id": "final:G06:M0:A",
+      "ordinal": 31,
+      "phase": "final",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：孤树下方道路侧平地。唯一动作：沿道路方向回望孤树。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：孤树下方道路侧平地。唯一动作：沿道路方向回望孤树。",
+          "sha256": "8eb6dac9b8b2cb3d3b5cc655883b009f6d2ebb2f75d1da3348c9371306b4e4de"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M0:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G06/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g06-m0-a",
+        "depends_on": [
+          "locator:G06:M0:A"
+        ],
+        "snapshot_sha256": "87418729b4c3ae1b6a278c8327c6a77dc5e1594852a83a49debe6d8a1fb802e7"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G06:M0:B": {
+      "id": "final:G06:M0:B",
+      "ordinal": 32,
+      "phase": "final",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：前景 S 形道路宽缓弯道。唯一动作：沿道路远望并抬手示意。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：前景 S 形道路宽缓弯道。唯一动作：沿道路远望并抬手示意。",
+          "sha256": "076f04030aa42c15f996c4f8704ee3415e24e8983a5b9ff3992eab1649d6cf46"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M0:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G06/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g06-m0-b",
+        "depends_on": [
+          "locator:G06:M0:B"
+        ],
+        "snapshot_sha256": "7c04223838eb17a659eb4b0a515e2fdeec6d81bcdc4afc5c55ddff2024dbf79b"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G06:M1:A": {
+      "id": "final:G06:M1:A",
+      "ordinal": 33,
+      "phase": "final",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：孤树下方道路侧平地。唯一动作：沿道路方向回望孤树。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：孤树下方道路侧平地。唯一动作：沿道路方向回望孤树。",
+          "sha256": "8eb6dac9b8b2cb3d3b5cc655883b009f6d2ebb2f75d1da3348c9371306b4e4de"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M1:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G06/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g06-m1-a",
+        "depends_on": [
+          "locator:G06:M1:A"
+        ],
+        "snapshot_sha256": "c53c304554cf47fb164ebde2e6c6b7aa202e9eaad32487dacd637cf1d9892ce3"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G06:M1:B": {
+      "id": "final:G06:M1:B",
+      "ordinal": 34,
+      "phase": "final",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：前景 S 形道路宽缓弯道。唯一动作：沿道路远望并抬手示意。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是柔和起伏的金绿色草坡和一条 S 形土路，中景是山脊上的一棵孤树和低矮灌木，后景是灰蓝远山、薄雾和安静天空。保留孤树和土路两个地标。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：前景 S 形道路宽缓弯道。唯一动作：沿道路远望并抬手示意。",
+          "sha256": "076f04030aa42c15f996c4f8704ee3415e24e8983a5b9ff3992eab1649d6cf46"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M1:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G06/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g06-m1-b",
+        "depends_on": [
+          "locator:G06:M1:B"
+        ],
+        "snapshot_sha256": "d4669c9cdb932901fdcb7b87d1eca19360f53ef1ba720b68943afe683e497f2c"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G08:M0:A": {
+      "id": "final:G08:M0:A",
+      "ordinal": 35,
+      "phase": "final",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：左侧高岩柱前砂砾地。唯一动作：仰头观察彩色条带。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：左侧高岩柱前砂砾地。唯一动作：仰头观察彩色条带。",
+          "sha256": "556e5e721768cab41d8eef7276caa2f911cbd1959dde5e229276a90f51adf5ee"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M0:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G08/M0/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g08-m0-a",
+        "depends_on": [
+          "locator:G08:M0:A"
+        ],
+        "snapshot_sha256": "4939f9d486e7b82e06c416387d1451a7768c1590d22ba54ccbb3ff6aaa411e07"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G08:M0:B": {
+      "id": "final:G08:M0:B",
+      "ordinal": 36,
+      "phase": "final",
+      "destination": "G08",
+      "route": "M0",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：右侧小岩柱前砂砾地。唯一动作：轻蹲指向低处条带。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：右侧小岩柱前砂砾地。唯一动作：轻蹲指向低处条带。",
+          "sha256": "a30883d8be41e5ee198010b49510ecd1dcda179465efe2999ebe47d5a16d0e38"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M0:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G08/M0/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g08-m0-b",
+        "depends_on": [
+          "locator:G08:M0:B"
+        ],
+        "snapshot_sha256": "363d541b3ae8754d52ca4512c917474ae1f05634b59b51293b13073a588508a2"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G08:M1:A": {
+      "id": "final:G08:M1:A",
+      "ordinal": 37,
+      "phase": "final",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "A",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：左侧高岩柱前砂砾地。唯一动作：仰头观察彩色条带。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：左侧高岩柱前砂砾地。唯一动作：仰头观察彩色条带。",
+          "sha256": "556e5e721768cab41d8eef7276caa2f911cbd1959dde5e229276a90f51adf5ee"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M1:A"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G08/M1/A.png",
+        "idem_key": "issue12-issue12-full-001-final-g08-m1-a",
+        "depends_on": [
+          "locator:G08:M1:A"
+        ],
+        "snapshot_sha256": "84992c0f6a9139b2726c15e38ed646c844cd1d2af9317b52c0e71897983f5db5"
+      },
+      "attempt": null,
+      "result": null
+    },
+    "final:G08:M1:B": {
+      "id": "final:G08:M1:B",
+      "ordinal": 38,
+      "phase": "final",
+      "destination": "G08",
+      "route": "M1",
+      "scene": "B",
+      "status": "pending",
+      "blocked_by": [],
+      "spec": {
+        "prompt": {
+          "layers": {
+            "fixed_boundaries": "参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。",
+            "destination_requirement": "前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。",
+            "style_description": "宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。",
+            "composition_prompt": "保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。",
+            "current_anchor_action": "位置锚点：右侧小岩柱前砂砾地。唯一动作：轻蹲指向低处条带。"
+          },
+          "rendered": "[1] 参考图1是带确定性黑洞的环境，参考图2是固定宠物室外三视图。只在黑洞区域生成一只宠物并完全移除黑色；无第二角色、文字、UI、Logo或水印。\n\n[2] 前景是平坦的灰红色砂砾地，中景是两个有彩色条带和清晰轮廓的荒原岩柱，后景是浅蓝天空与少量云层。保留左侧高岩柱和右侧较小岩柱，二者大小和距离清楚。\n\n[3] 宠物绘制必须融入参考图1的既有手绘2D画风、光照和色彩，同时保持参考图2的身份、配色和小尺寸比例。\n\n[4] 保持黑洞外环境、地标、镜头、构图和光照不变；宠物主体完整落在原黑洞区域，脚底接触承载面。\n\n[5] 位置锚点：右侧小岩柱前砂砾地。唯一动作：轻蹲指向低处条带。",
+          "sha256": "a30883d8be41e5ee198010b49510ecd1dcda179465efe2999ebe47d5a16d0e38"
+        },
+        "references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G08:M1:B"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom"
+          }
+        ],
+        "request": {
+          "provider": "65535",
+          "model": "gpt-image-2",
+          "size": "16:9",
+          "resolution": "2k",
+          "quality": "high",
+          "n": 1,
+          "timeout": 900,
+          "base_url": "https://task-api-1-cn.65535.space"
+        },
+        "output_path": "artifacts/finals/G08/M1/B.png",
+        "idem_key": "issue12-issue12-full-001-final-g08-m1-b",
+        "depends_on": [
+          "locator:G08:M1:B"
+        ],
+        "snapshot_sha256": "13e545a591c79949b1e7bcb3a83d3775b44cf321d0121d976503b4f004598018"
+      },
+      "attempt": null,
+      "result": null
+    }
+  },
+  "final_review": {
+    "status": "pending",
+    "decision": null,
+    "note": null,
+    "reviewed_at": null
+  },
+  "events": [
+    {
+      "at": "2026-08-22T22:38:01.009185+00:00",
+      "event": "plan_approved"
+    }
+  ],
+  "warnings": [
+    "No automatic quality score or redraw.",
+    "Technical success advances automatically.",
+    "Planned locator center and deterministic aperture are not final click truth."
+  ]
+}

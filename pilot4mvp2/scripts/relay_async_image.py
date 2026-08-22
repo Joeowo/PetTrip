@@ -98,6 +98,29 @@ def _error(stage: str, code: str, message: str, *, retryable: bool = False,
     return {"ok": False, "error": item}
 
 
+def _submission_unknown() -> dict:
+    return _error(
+        "submit",
+        "submission_unknown",
+        "无法确认任务是否已创建，请人工核对幂等键对应的任务",
+    )
+
+
+def _conflict_task_id(data: object):
+    if not isinstance(data, dict):
+        return None
+    nested_task = data.get("task")
+    candidates = (
+        data.get("id"),
+        data.get("task_id"),
+        nested_task.get("id") if isinstance(nested_task, dict) else None,
+    )
+    return next(
+        (value for value in candidates if isinstance(value, str) and value),
+        None,
+    )
+
+
 def submit_task(
     session: requests.Session,
     base: str,
@@ -115,8 +138,16 @@ def submit_task(
                 headers={"Idempotency-Key": idem_key}, timeout=60,
             )
             if response.status_code == 409:
-                return _error("submit", "conflict", "任务仍在处理中，请使用原 task_id 或幂等键恢复",
-                              retryable=True, status=409)
+                try:
+                    data = response.json()
+                except (ValueError, TypeError):
+                    return _submission_unknown()
+                task_id = _conflict_task_id(data)
+                if not task_id:
+                    return _submission_unknown()
+                if on_created is not None:
+                    on_created(task_id, data)
+                return {"ok": True, "stage": "submit", "task": data, "task_id": task_id}
             if response.status_code >= 400:
                 return _error("submit", "http_error", "任务提交被服务端拒绝",
                               retryable=response.status_code >= 500,
@@ -124,10 +155,10 @@ def submit_task(
             try:
                 data = response.json()
             except (ValueError, TypeError):
-                return _error("submit", "invalid_response", "服务端返回格式无效")
+                return _submission_unknown()
             task_id = data.get("id") if isinstance(data, dict) else None
             if not task_id:
-                return _error("submit", "missing_task_id", "创建响应缺少任务 id")
+                return _submission_unknown()
             if on_created is not None:
                 on_created(task_id, data)
             return {"ok": True, "stage": "submit", "task": data, "task_id": task_id}
@@ -135,9 +166,8 @@ def submit_task(
             if attempt < retries:
                 sleep_fn(2 * attempt)
                 continue
-            return _error("submit", "network_error", "提交网络异常，稍后可复用幂等键重试",
-                          retryable=True)
-    return _error("submit", "network_error", "提交网络异常，稍后可重试", retryable=True)
+            return _submission_unknown()
+    return _submission_unknown()
 
 
 def poll_task(session: requests.Session, base: str, task_id: str, timeout_s: float,

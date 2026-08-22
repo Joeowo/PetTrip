@@ -125,11 +125,16 @@ def detect_single_black_circle(
 
 
 def draw_deterministic_aperture(
-    environment_path: Path, output_path: Path, center: tuple[int, int]
+    environment_path: Path,
+    output_path: Path,
+    center: tuple[int, int],
+    short_edge_ratio: float = 0.14,
 ) -> dict[str, Any]:
     with Image.open(environment_path) as source:
         image = source.convert("RGB")
-    diameter = nearest_even(min(image.size) * 0.14)
+    if not 0 < short_edge_ratio < 1:
+        raise ValueError("short_edge_ratio must be between zero and one")
+    diameter = nearest_even(min(image.size) * short_edge_ratio)
     radius = diameter // 2
     x, y = center
     box = (x - radius, y - radius, x + radius - 1, y + radius - 1)
