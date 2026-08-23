@@ -102,15 +102,8 @@ class DestinationCoordinatorService:
         Returns:
             list[dict]: Destination 记录列表
         """
-        # 直接查询数据库获取所有 Destination
-        # 这里使用底层连接，因为 DestinationRepository 还没有提供列表方法
-        with self.repository._lock:
-            assert self.repository._conn is not None
-            rows = self.repository._conn.execute(
-                "SELECT * FROM destinations ORDER BY created_at ASC"
-            ).fetchall()
-
-        return [dict(row) for row in rows]
+        # 使用 Repository 公开方法
+        return self.repository.list_destinations()
 
     def _determine_resume_phase(
         self, destination_id: str, current_phase: str
@@ -186,14 +179,7 @@ class DestinationCoordinatorService:
         Returns:
             bool: 是否已冻结
         """
-        with self.repository._lock:
-            assert self.repository._conn is not None
-            row = self.repository._conn.execute(
-                "SELECT 1 FROM destination_requirements WHERE destination_id = ? LIMIT 1",
-                (destination_id,),
-            ).fetchone()
-
-        return row is not None
+        return self.repository.has_frozen_requirements(destination_id)
 
     def _has_locked_spec(self, destination_id: str) -> bool:
         """检查 Spec 是否已锁定。
@@ -204,14 +190,7 @@ class DestinationCoordinatorService:
         Returns:
             bool: 是否已锁定
         """
-        with self.repository._lock:
-            assert self.repository._conn is not None
-            row = self.repository._conn.execute(
-                "SELECT 1 FROM destination_specs WHERE destination_id = ? LIMIT 1",
-                (destination_id,),
-            ).fetchone()
-
-        return row is not None
+        return self.repository.has_locked_spec(destination_id)
 
     def _has_shared_environment(self, destination_id: str) -> bool:
         """检查 SharedEnvironment 是否已生成。
@@ -222,14 +201,7 @@ class DestinationCoordinatorService:
         Returns:
             bool: 是否已生成
         """
-        with self.repository._lock:
-            assert self.repository._conn is not None
-            row = self.repository._conn.execute(
-                "SELECT 1 FROM shared_environment_artifacts WHERE destination_id = ? LIMIT 1",
-                (destination_id,),
-            ).fetchone()
-
-        return row is not None
+        return self.repository.has_shared_environment(destination_id)
 
     def _get_scene_status(self, destination_id: str) -> dict[str, Any]:
         """获取场景状态。
@@ -245,48 +217,7 @@ class DestinationCoordinatorService:
                 - all_ready: 是否全部完成
                 - all_failed: 是否全部失败
         """
-        with self.repository._lock:
-            assert self.repository._conn is not None
-            # 获取所有场景计划
-            scene_plans = self.repository._conn.execute(
-                "SELECT scene_id FROM scene_plans WHERE destination_id = ? ORDER BY order_index ASC",
-                (destination_id,),
-            ).fetchall()
-
-            total_scenes = len(scene_plans)
-            ready_scenes = 0
-            failed_scenes = 0
-
-            # 检查每个场景的 artifact 状态
-            for plan in scene_plans:
-                scene_id = plan["scene_id"]
-                artifact = self.repository._conn.execute(
-                    "SELECT 1 FROM scene_artifacts WHERE scene_id = ? LIMIT 1",
-                    (scene_id,),
-                ).fetchone()
-
-                if artifact is not None:
-                    ready_scenes += 1
-                else:
-                    # 检查是否有失败的 attempt 记录
-                    failed_attempt = self.repository._conn.execute(
-                        "SELECT 1 FROM operation_attempts "
-                        "WHERE scene_id = ? AND status = 'failed' "
-                        "AND attempt_number >= 2 "  # 最多 3 次尝试（0, 1, 2）
-                        "LIMIT 1",
-                        (scene_id,),
-                    ).fetchone()
-
-                    if failed_attempt is not None:
-                        failed_scenes += 1
-
-        return {
-            "total_scenes": total_scenes,
-            "ready_scenes": ready_scenes,
-            "failed_scenes": failed_scenes,
-            "all_ready": total_scenes > 0 and ready_scenes == total_scenes,
-            "all_failed": total_scenes > 0 and failed_scenes == total_scenes,
-        }
+        return self.repository.get_scene_status(destination_id)
 
     def process_destination(self, destination_id: str) -> dict[str, Any]:
         """处理一个目的地的下一个阶段。

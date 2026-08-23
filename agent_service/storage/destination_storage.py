@@ -75,6 +75,22 @@ CREATE TABLE IF NOT EXISTS destination_requirement_items (
 );
 
 -- ============================================================================
+-- 模板设计（Issue #36 - 2.3）
+-- ============================================================================
+
+-- 环境模板设计：存储画风和构图模板选择结果
+CREATE TABLE IF NOT EXISTS environment_template_designs (
+    design_id             TEXT PRIMARY KEY,
+    destination_id        TEXT NOT NULL REFERENCES destinations(id),
+    requirements_id       TEXT NOT NULL REFERENCES destination_requirements(requirements_id),
+    style_template_id     TEXT NOT NULL,
+    composition_template_id TEXT NOT NULL,
+    rationale             TEXT NOT NULL,
+    created_at            TEXT NOT NULL,
+    UNIQUE (destination_id)  -- 每个目的地只有一个模板设计
+);
+
+-- ============================================================================
 -- 目的地规格（Specification）
 -- ============================================================================
 
@@ -197,9 +213,6 @@ CREATE TABLE IF NOT EXISTS operation_attempts (
 -- 索引优化
 -- ============================================================================
 
-CREATE INDEX IF NOT EXISTS idx_clarification_inputs_session
-    ON clarification_inputs(session_id);
-
 CREATE INDEX IF NOT EXISTS idx_destinations_session
     ON destinations(session_id);
 
@@ -208,6 +221,9 @@ CREATE INDEX IF NOT EXISTS idx_destination_requirements_destination
 
 CREATE INDEX IF NOT EXISTS idx_destination_requirement_items_requirements
     ON destination_requirement_items(requirements_id);
+
+CREATE INDEX IF NOT EXISTS idx_environment_template_designs_destination
+    ON environment_template_designs(destination_id);
 
 CREATE INDEX IF NOT EXISTS idx_scene_plans_destination
     ON scene_plans(destination_id);
@@ -299,15 +315,39 @@ class DestinationRepository:
             self._conn.execute("PRAGMA foreign_keys = ON")
 
     def _migrate(self) -> None:
-        """在事务中执行建表迁移，不破坏现有数据。"""
+        """在事务中执行建表迁移，不破坏现有数据。
+
+        Bug 1.2 修复：不使用 executescript()，因为它会自动 COMMIT 活动事务。
+        改为在显式事务中逐条执行 SQL 语句。
+        """
         with self._lock:
             assert self._conn is not None
-            # executescript() 会自动处理事务，不需要手动 BEGIN/COMMIT
-            # 它会在执行前先 COMMIT 任何活动事务，然后在执行完后自动 COMMIT
+            # 拆分 schema 为单独的语句
+            # 使用简单但可靠的方法：按分号分割，然后清理注释
+            raw_statements = DESTINATION_SCHEMA.split(";")
+            statements = []
+
+            for stmt in raw_statements:
+                # 移除注释行并清理空白
+                lines = []
+                for line in stmt.split("\n"):
+                    stripped = line.strip()
+                    # 跳过纯注释行
+                    if stripped and not stripped.startswith("--"):
+                        lines.append(line)
+
+                cleaned_stmt = "\n".join(lines).strip()
+                if cleaned_stmt:
+                    statements.append(cleaned_stmt)
+
+            # 在显式事务中逐条执行
             try:
-                self._conn.executescript(DESTINATION_SCHEMA)
+                self._conn.execute("BEGIN IMMEDIATE")
+                for stmt in statements:
+                    self._conn.execute(stmt)
+                self._conn.execute("COMMIT")
             except Exception:
-                # executescript 失败时已自动回滚
+                self._conn.execute("ROLLBACK")
                 raise
 
     def close(self) -> None:
@@ -743,6 +783,82 @@ class DestinationRepository:
         return [dict(row) for row in rows]
 
     # ========================================================================
+    # EnvironmentTemplateDesign CRUD（Issue #36 - 2.3）
+    # ========================================================================
+
+    def create_environment_template_design(
+        self,
+        *,
+        destination_id: str,
+        requirements_id: str,
+        style_template_id: str,
+        composition_template_id: str,
+        rationale: str,
+    ) -> dict[str, Any]:
+        """创建环境模板设计记录。
+
+        Args:
+            destination_id: 目的地 ID
+            requirements_id: 要求集 ID
+            style_template_id: 画风模板 ID
+            composition_template_id: 构图模板 ID
+            rationale: 选择推理
+
+        Returns:
+            dict: 新创建的模板设计记录
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        design_id = new_id("template_design")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO environment_template_designs(design_id, destination_id, "
+                "requirements_id, style_template_id, composition_template_id, rationale, "
+                "created_at) VALUES(?, ?, ?, ?, ?, ?, ?)",
+                (
+                    design_id,
+                    destination_id,
+                    requirements_id,
+                    style_template_id,
+                    composition_template_id,
+                    rationale,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM environment_template_designs WHERE design_id = ?",
+                (design_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def get_environment_template_design(
+        self, destination_id: str
+    ) -> dict[str, Any] | None:
+        """获取目的地的环境模板设计。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            dict | None: 模板设计记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM environment_template_designs WHERE destination_id = ?",
+                (destination_id,),
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+    # ========================================================================
     # DestinationSpec CRUD
     # ========================================================================
 
@@ -915,3 +1031,162 @@ class DestinationRepository:
             ).fetchall()
 
         return [dict(row) for row in rows]
+
+    # ========================================================================
+    # 协调器支持方法（Bug 1.1 修复 - ADR 0002 封装）
+    # ========================================================================
+
+    def list_destinations(self, status: str | None = None) -> list[dict[str, Any]]:
+        """列出所有目的地记录。
+
+        Args:
+            status: 可选过滤条件
+                - None: 返回所有目的地
+                - 'pending': 返回非终态目的地（done=0）
+                - 'done': 返回已完成目的地（done=1）
+
+        Returns:
+            list[dict]: 目的地记录列表（按创建时间排序）
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            if status == "pending":
+                rows = self._conn.execute(
+                    "SELECT * FROM destinations WHERE done = 0 ORDER BY created_at ASC"
+                ).fetchall()
+            elif status == "done":
+                rows = self._conn.execute(
+                    "SELECT * FROM destinations WHERE done = 1 ORDER BY created_at ASC"
+                ).fetchall()
+            else:
+                rows = self._conn.execute(
+                    "SELECT * FROM destinations ORDER BY created_at ASC"
+                ).fetchall()
+
+        return [dict(row) for row in rows]
+
+    def has_frozen_requirements(self, destination_id: str) -> bool:
+        """检查目的地是否有已冻结的 Requirements。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            bool: 是否存在已冻结的 Requirements 记录
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT 1 FROM destination_requirements WHERE destination_id = ? LIMIT 1",
+                (destination_id,),
+            ).fetchone()
+
+        return row is not None
+
+    def has_locked_spec(self, destination_id: str) -> bool:
+        """检查目的地是否有已锁定的 Spec。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            bool: 是否存在已锁定的 Spec 记录
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT 1 FROM destination_specs WHERE destination_id = ? LIMIT 1",
+                (destination_id,),
+            ).fetchone()
+
+        return row is not None
+
+    def has_shared_environment(self, destination_id: str) -> bool:
+        """检查目的地是否有已生成的 SharedEnvironment。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            bool: 是否存在 SharedEnvironment 制品记录
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT 1 FROM shared_environment_artifacts WHERE destination_id = ? LIMIT 1",
+                (destination_id,),
+            ).fetchone()
+
+        return row is not None
+
+    def get_scene_status(self, destination_id: str) -> dict[str, Any]:
+        """获取目的地的场景状态统计。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            dict: 场景状态统计
+                - total_scenes: 总场景数
+                - ready_scenes: 已完成场景数
+                - failed_scenes: 失败场景数
+                - all_ready: 是否全部完成
+                - all_failed: 是否全部失败
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            # 获取所有场景计划
+            scene_plans = self._conn.execute(
+                "SELECT scene_id FROM scene_plans WHERE destination_id = ? ORDER BY order_index ASC",
+                (destination_id,),
+            ).fetchall()
+
+            total_scenes = len(scene_plans)
+            ready_scenes = 0
+            failed_scenes = 0
+
+            # 检查每个场景的 artifact 状态
+            for plan in scene_plans:
+                scene_id = plan["scene_id"]
+                artifact = self._conn.execute(
+                    "SELECT 1 FROM scene_artifacts WHERE scene_id = ? LIMIT 1",
+                    (scene_id,),
+                ).fetchone()
+
+                if artifact is not None:
+                    ready_scenes += 1
+                else:
+                    # 检查是否有失败的 attempt 记录
+                    failed_attempt = self._conn.execute(
+                        "SELECT 1 FROM operation_attempts "
+                        "WHERE scene_id = ? AND status = 'failed' "
+                        "AND attempt_number >= 2 "  # 最多 3 次尝试（0, 1, 2）
+                        "LIMIT 1",
+                        (scene_id,),
+                    ).fetchone()
+
+                    if failed_attempt is not None:
+                        failed_scenes += 1
+
+        return {
+            "total_scenes": total_scenes,
+            "ready_scenes": ready_scenes,
+            "failed_scenes": failed_scenes,
+            "all_ready": total_scenes > 0 and ready_scenes == total_scenes,
+            "all_failed": total_scenes > 0 and failed_scenes == total_scenes,
+        }

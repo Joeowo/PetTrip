@@ -39,6 +39,11 @@ class ClarificationSpecState(TypedDict):
     requirements_sha256: str | None
     wish_items: list[dict[str, Any]] | None  # 提取的愿望条目
 
+    # 模板设计（Issue #36 - 2.2）
+    style_template_id: str | None
+    composition_template_id: str | None
+    template_design_rationale: str | None  # LLM 选择推理
+
     # Spec 生成
     spec_id: str | None
     spec_sha256: str | None
@@ -152,6 +157,29 @@ def mock_generate_destination_spec(
     }
 
 
+def mock_select_environment_template(
+    requirements: dict[str, Any],
+) -> dict[str, Any]:
+    """Mock 选择环境模板（真实实现会调用 LLM）。
+
+    Args:
+        requirements: Requirements 数据，包含 wish_items
+
+    Returns:
+        dict: 包含
+            - style_template_id: str
+            - composition_template_id: str
+            - rationale: str (选择推理)
+    """
+    # Mock 实现：选择默认模板
+    return {
+        "style_template_id": "style_001",  # 几何幻想
+        "composition_template_id": "composition_002",  # 单主体居中地标式
+        "rationale": "基于玩家愿望，选择几何幻想画风营造梦幻氛围，使用单主体居中构图突出宠物主体。",
+    }
+
+
+
 # ============================================================================
 # Workflow Nodes
 # ============================================================================
@@ -222,6 +250,10 @@ def freeze_requirements_node(
     ]
 
     # 计算 SHA-256（包含所有 source_inputs 和 wish_items）
+    # Bug 1.3 验证：SHA-256 用于内容寻址，只包含业务内容字段
+    # 不包含 requirements_id（生成的 ID）和 destination_id（上下文引用）
+    # 包含字段：source_inputs (input_id, raw_text, classification)
+    #          items (normalized_statement, polarity, fulfillment, source_type, source_input_ids, rationale)
     requirements_data = {
         "source_inputs": source_inputs,
         "items": wish_items,
@@ -264,19 +296,74 @@ def freeze_requirements_node(
     return state
 
 
+def design_environment_template_node(
+    state: ClarificationSpecState, repo: DestinationRepository
+) -> ClarificationSpecState:
+    """节点：设计环境模板（Issue #36 - 2.2）。
+
+    调用 LLM 结合 requirements 选择画风和构图模板。
+    """
+    destination_id = state["destination_id"]
+    requirements_id = state["requirements_id"]
+    wish_items = state["wish_items"]
+
+    if not requirements_id or not wish_items:
+        state["error"] = "Requirements 未冻结或愿望条目为空"
+        return state
+
+    # 准备 requirements 数据供 LLM 选择
+    requirements_data = {
+        "requirements_id": requirements_id,
+        "wish_items": wish_items,
+    }
+
+    # 调用 LLM 选择模板（Mock 实现）
+    template_selection = mock_select_environment_template(requirements_data)
+
+    # 保存模板选择结果到 State
+    state["style_template_id"] = template_selection["style_template_id"]
+    state["composition_template_id"] = template_selection["composition_template_id"]
+    state["template_design_rationale"] = template_selection["rationale"]
+
+    # 持久化到数据库（Issue #36 - 2.3）
+    repo.create_environment_template_design(
+        destination_id=destination_id,
+        requirements_id=requirements_id,
+        style_template_id=template_selection["style_template_id"],
+        composition_template_id=template_selection["composition_template_id"],
+        rationale=template_selection["rationale"],
+    )
+
+    return state
+
+
 def generate_destination_spec_node(
     state: ClarificationSpecState, repo: DestinationRepository
 ) -> ClarificationSpecState:
-    """节点：生成 DestinationSpec。"""
+    """节点：生成 DestinationSpec（Issue #36 - 2.4：包含 environment_design）。"""
     requirements_id = state["requirements_id"]
     requirements_sha256 = state["requirements_sha256"]
+    style_template_id = state.get("style_template_id")
+    composition_template_id = state.get("composition_template_id")
 
     if not requirements_id or not requirements_sha256:
         state["error"] = "Requirements 未冻结"
         return state
 
-    # 生成 Spec 内容
+    # 生成 Spec 内容（使用模板选择结果）
     spec_data = mock_generate_destination_spec(requirements_id, requirements_sha256)
+
+    # Issue #36 - 2.4: 添加 environment_design 字段
+    # 包含模板选择结果和渲染后的 prompt
+    environment_design = {
+        "style_template_id": style_template_id,
+        "composition_template_id": composition_template_id,
+        "rendered_prompt": f"使用 {style_template_id} 画风和 {composition_template_id} 构图创建温馨宠物环境",
+    }
+
+    # 将 environment_design 添加到 shared_environment_spec
+    shared_environment_spec = spec_data["shared_environment_spec"].copy()
+    shared_environment_spec["environment_design"] = environment_design
 
     destination_id = state["destination_id"]
 
@@ -287,7 +374,7 @@ def generate_destination_spec_node(
         "requirements_id": requirements_id,
         "requirements_sha256": requirements_sha256,
         "title": spec_data["title"],
-        "shared_environment_spec": spec_data["shared_environment_spec"],
+        "shared_environment_spec": shared_environment_spec,
         "scene_plans": spec_data["scene_plans"],
     }
     spec_json = json.dumps(spec_content, sort_keys=True, ensure_ascii=False)
@@ -302,7 +389,7 @@ def generate_destination_spec_node(
         requirements_id=requirements_id,
         requirements_sha256=requirements_sha256,
         title=spec_data["title"],
-        shared_environment_spec=spec_data["shared_environment_spec"],
+        shared_environment_spec=shared_environment_spec,  # Issue #36 - 2.4: 使用包含 environment_design 的版本
         sha256=spec_sha256,
     )
 
@@ -405,6 +492,11 @@ def build_clarification_spec_workflow(
         "freeze_requirements",
         lambda state: freeze_requirements_node(state, repo),
     )
+    # Issue #36 - 2.2: 新增模板设计节点
+    workflow.add_node(
+        "design_environment_template",
+        lambda state: design_environment_template_node(state, repo),
+    )
     workflow.add_node(
         "generate_destination_spec",
         lambda state: generate_destination_spec_node(state, repo),
@@ -421,7 +513,9 @@ def build_clarification_spec_workflow(
     workflow.add_edge("classify_input", "extract_wish_items")
     workflow.add_edge("extract_wish_items", "evaluate_close_condition")
     workflow.add_edge("evaluate_close_condition", "freeze_requirements")
-    workflow.add_edge("freeze_requirements", "generate_destination_spec")
+    # Issue #36 - 2.2: 插入模板设计节点
+    workflow.add_edge("freeze_requirements", "design_environment_template")
+    workflow.add_edge("design_environment_template", "generate_destination_spec")
     workflow.add_edge("generate_destination_spec", "validate_and_lock_spec")
     workflow.add_edge("validate_and_lock_spec", END)
 
