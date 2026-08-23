@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Images 1, 2, and 3 are visual-style references only. Derive their medium, mark-making, edge treatment, shape language, material treatment, color relationships, lighting logic, and level of detail. Do not copy their specific characters, objects, text, logos, UI, layout, or events.
+Primary request: Generate one pure environment scene of an alpine valley with small timber chalets. The foreground is a broad grassy sloped ground strip with a few wild grasses. The midground contains several small timber chalets on the lower left and a winding path leading toward a mountain pass. The background contains one huge gray alpine peak on the right, layered blue-green valleys, and soft clouds. Keep the chalet path and the safe grass slope before the mountain foot clearly readable as two separate landmarks.
+Target style name: 黑色侦探漫画
+Style source label: The Wolf Among Us
+Style keywords: 美漫 noir、霓虹夜色、都市童话、漫画阴影
+Style direction: 参考《The Wolf Among Us》的画风语言，强调黑色电影式强阴影、冷暖霓虹对照、图像小说分镜感与都市危险感，整体紧张、潮湿、成熟，突出暗部切块与叙事压迫感，而不是具体街巷招牌或侦探道具。
+Composition/framing: cinematic horizontal composition, fixed eye-level lens, clear foreground/midground/background, strong scale contrast between the tiny chalets and the large mountain, usable standing ground near both landmarks, no extreme perspective.
+Lighting/mood: calm, inviting alpine daylight with one coherent key-light direction; adapt the rendering of light to the target style while preserving scene readability.
+Constraints: apply the target style consistently to the entire scene; exactly one alpine valley scene; no character, no person, no animal, no pet, no UI, no text, no letters, no numbers, no logo, no watermark, no extra building cluster, no copied composition from the reference images.

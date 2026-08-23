@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Images 1, 2, and 3 are visual-style references only. Derive their medium, mark-making, edge treatment, shape language, material treatment, color relationships, lighting logic, and level of detail. Do not copy their specific characters, objects, text, logos, UI, layout, or events.
+Primary request: Generate one pure environment scene of an alpine valley with small timber chalets. The foreground is a broad grassy sloped ground strip with a few wild grasses. The midground contains several small timber chalets on the lower left and a winding path leading toward a mountain pass. The background contains one huge gray alpine peak on the right, layered blue-green valleys, and soft clouds. Keep the chalet path and the safe grass slope before the mountain foot clearly readable as two separate landmarks.
+Target style name: 铅笔手稿绘本
+Style source label: Split Fiction（Notebook 世界方向）
+Style keywords: 石墨线稿、纸面留白、轻排线、草图感
+Style direction: 参考《Split Fiction》的铅笔章节画风语言，强调铅笔线稿、交叉排线、留白纸面、未完成感与绘本式叙事节奏，整体像概念草图被直接作为成片风格使用，突出手稿感与页面气质，而不是具体角色姿态或地形道具。
+Composition/framing: cinematic horizontal composition, fixed eye-level lens, clear foreground/midground/background, strong scale contrast between the tiny chalets and the large mountain, usable standing ground near both landmarks, no extreme perspective.
+Lighting/mood: calm, inviting alpine daylight with one coherent key-light direction; adapt the rendering of light to the target style while preserving scene readability.
+Constraints: apply the target style consistently to the entire scene; exactly one alpine valley scene; no character, no person, no animal, no pet, no UI, no text, no letters, no numbers, no logo, no watermark, no extra building cluster, no copied composition from the reference images.

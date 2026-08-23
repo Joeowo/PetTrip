@@ -1,0 +1,10 @@
+Use case: identity-preserve compositing
+Asset type: character state image for a fixed 1376x768 game scene
+Input images: Image 1 is the scene containing one black circular Mask and is the edit target; Image 2 is the fixed Wakaba Mutsumi Q-version character identity reference.
+Primary request: replace only the pure black circular Mask in Image 1 with the single referenced Q-version Wakaba Mutsumi character. The character must be fully contained inside the former circle footprint, including hair, limbs, clothing and feet. Remove the black circle completely.
+Character identity: preserve Image 2's cool gray-blue short hair silhouette, teal-green eyes, calm expression, Q-version head/body ratio, outfit shapes and cool gray-blue colors.
+Visual style: preserve the scene's Neva-inspired hand-painted 2D storybook language, simplified expressive shapes, muted gouache/pastel blocks and restrained paper-and-brush texture; do not introduce generic anime rendering, photorealism or 3D materials.
+Interaction: 站在平地上抬头观察红色岩柱纹理. This is the only action.
+Placement: feet must contact the usable ground at 左侧红色岩柱前平地; character scale must fit the 108-pixel Mask diameter; no part may extend beyond the former Mask area.
+Invariants: preserve all scene pixels, camera, composition, landmark shape, lighting, weather and NEVA palette outside the former Mask; match the scene's key-light direction and contact shadow.
+Constraints: exactly one character; no second action; no duplicate character; no text, UI, logo or watermark; do not move or repaint the landmark; do not leave black pixels.

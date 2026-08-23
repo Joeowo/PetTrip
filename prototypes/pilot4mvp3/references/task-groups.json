@@ -1,0 +1,87 @@
+{
+  "experiment_version": "mask-stability-0.1",
+  "scene_ratio": "16:9",
+  "mask_diameter_short_edge_ratio": 0.14,
+  "selected_groups": [
+    {
+      "id": "G01",
+      "reference_id": "C08",
+      "scene_name": "十二门徒海岸",
+      "palette": "墨蓝风暴",
+      "elements": [
+        {"id": "E1", "name": "右侧主海蚀柱下方岩岸", "risk": "海岸边缘与垂直地标", "action": "站在岩岸安全位置，轻轻探头观察主海蚀柱和海面"},
+        {"id": "E2", "name": "左侧海蚀柱群旁海岸步道", "risk": "相似地标与斜向承载面", "action": "站在步道上扶住低矮岩缘，朝海蚀柱群远望"}
+      ]
+    },
+    {
+      "id": "G02",
+      "reference_id": "C04",
+      "scene_name": "阿尔卑斯山谷小屋",
+      "palette": "冰川峡口",
+      "elements": [
+        {"id": "E1", "name": "左下木屋群前小路", "risk": "建筑邻接与坡地脚底", "action": "站在小路上抬头看向木屋门口"},
+        {"id": "E2", "name": "右侧主峰前山脚岩坡", "risk": "山体尺度与可站立坡面", "action": "站在草坡上抬手遮光，朝主峰山口远望"}
+      ]
+    },
+    {
+      "id": "G03",
+      "reference_id": "C14",
+      "scene_name": "湿润森林瀑布",
+      "palette": "青苔石径",
+      "elements": [
+        {"id": "E1", "name": "瀑布下方浅水潭旁石岸", "risk": "透明水体与湿石边界", "action": "蹲在石岸上伸手轻触瀑布溅起的水雾"},
+        {"id": "E2", "name": "横向倒木前湿石", "risk": "细碎纹理与遮挡", "action": "扶住倒木边缘，小心跨过湿石"}
+      ]
+    },
+    {
+      "id": "G04",
+      "reference_id": "C18",
+      "scene_name": "蓝湖雪山",
+      "palette": "冰川峡口",
+      "elements": [
+        {"id": "E1", "name": "前景浅水石滩", "risk": "水陆边界与小石纹理", "action": "蹲在干燥石滩上低头观察湖水中的倒影"},
+        {"id": "E2", "name": "湖岸靠雪山方向的岸草", "risk": "远近尺度与倒影干扰", "action": "站在岸草上双手背后看向雪山"}
+      ]
+    },
+    {
+      "id": "G05",
+      "reference_id": "C13",
+      "scene_name": "塔拉盐湖岩柱",
+      "palette": "风吹草海",
+      "elements": [
+        {"id": "E1", "name": "左侧红色岩柱前平地", "risk": "高对比轮廓与颜色边界", "action": "站在平地上抬头观察红色岩柱纹理"},
+        {"id": "E2", "name": "盐湖与前景草地交界", "risk": "水平边界与不可站立水面", "action": "站在陆地一侧举手遮挡强光并观察盐湖"}
+      ]
+    },
+    {
+      "id": "G06",
+      "reference_id": "C05",
+      "scene_name": "托斯卡纳孤树坡地",
+      "palette": "风吹草海",
+      "elements": [
+        {"id": "E1", "name": "山脊孤树下方平地", "risk": "大留白中的小目标", "action": "站在孤树旁轻轻扶住树干看向远山"},
+        {"id": "E2", "name": "前景 S 形土路", "risk": "固定尺寸与曲线路径", "action": "站在土路上回头望向山脊孤树"}
+      ]
+    },
+    {
+      "id": "G07",
+      "reference_id": "C17",
+      "scene_name": "雾林木阶",
+      "palette": "青苔石径",
+      "elements": [
+        {"id": "E1", "name": "木阶下方第一段宽台阶", "risk": "狭窄承载面与中心透视", "action": "站在宽台阶上扶住台阶边缘向上观察"},
+        {"id": "E2", "name": "右侧粗树干苔藓根部", "risk": "天然遮挡与树干边缘", "action": "站在苔藓根部前轻轻触碰树根"}
+      ]
+    },
+    {
+      "id": "G08",
+      "reference_id": "C10",
+      "scene_name": "彩色岩柱荒原",
+      "palette": "墨蓝风暴",
+      "elements": [
+        {"id": "E1", "name": "左侧高岩柱前砂砾地", "risk": "强轮廓目标与颜色泄漏", "action": "站在砂砾地上侧身观察高岩柱的彩色条带"},
+        {"id": "E2", "name": "右侧小岩柱前砂砾地", "risk": "相似目标与近距离分离", "action": "站在小岩柱前抬头观察岩柱顶部"}
+      ]
+    }
+  ]
+}

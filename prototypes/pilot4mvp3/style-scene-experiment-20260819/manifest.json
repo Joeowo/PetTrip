@@ -1,0 +1,803 @@
+{
+  "sourceWorkbook": "C:\\Users\\Mechrevo\\Documents\\ChatGPT\\PetTrip\\docs\\画风素材库_42条.xlsx",
+  "records": [
+    {
+      "id": "S01",
+      "sourceRow": 2,
+      "styleName": "几何幻想",
+      "gameName": "纪念碑谷",
+      "keywords": "几何建筑、错视空间、秩序化台阶、清晰剪影、梦境地标、扁平高明度色块",
+      "detail": "参考《Monument Valley》的画风语言，强调秩序化几何体块、错视空间、扁平高明度色块、清晰剪影与静谧梦境气质，整体低纹理、低材质噪声、构图克制，突出空间层级与视觉节奏，而不是具体机关或道具设计。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S01-ref-1.png",
+        "style-scene-experiment-20260819/references/S01-ref-2.png",
+        "style-scene-experiment-20260819/references/S01-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S01.txt",
+      "output": "style-scene-experiment-20260819/images/S01.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S02",
+      "sourceRow": 3,
+      "styleName": "诗意水彩",
+      "gameName": "GRIS",
+      "keywords": "诗意极简、水彩晕染、空气透视、低饱和、柔和漫射光、情绪色彩",
+      "detail": "参考《GRIS》的画风语言，强调大面积水彩晕染、半透明色层、柔化边界、留白空气感与抒情情绪流动，整体轻盈、朦胧、低对比，突出色彩过渡和情感氛围，而不是具体场景物件。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S02-ref-1.png",
+        "style-scene-experiment-20260819/references/S02-ref-2.png",
+        "style-scene-experiment-20260819/references/S02-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S02.txt",
+      "output": "style-scene-experiment-20260819/images/S02.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S03",
+      "sourceRow": 4,
+      "styleName": "铅笔手稿黑白",
+      "gameName": "Mundaun",
+      "keywords": "铅笔素描、纸面颗粒、黑白灰调、手工阴影、手稿感、乡野诡异",
+      "detail": "参考《Mundaun》的画风语言，强调石墨线条、纸面颗粒、黑白灰层次、手绘不规则感与压抑乡野氛围，整体像未完全上色的素描手稿，突出线性明暗与粗粝笔触，而不是具体建筑或器具。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S03-ref-1.png",
+        "style-scene-experiment-20260819/references/S03-ref-2.png",
+        "style-scene-experiment-20260819/references/S03-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S03.txt",
+      "output": "style-scene-experiment-20260819/images/S03.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S04",
+      "sourceRow": 5,
+      "styleName": "东方水墨",
+      "gameName": "大神 OKAMI HD",
+      "keywords": "和纸、水墨、书法线条、浮世绘色彩、日式神话、装饰化云纹",
+      "detail": "参考《Okami HD》的画风语言，强调书法式勾线、水墨晕染、装饰化留白、流动笔势与东方神话气韵，整体平面化、节奏鲜明、富有卷轴感，突出笔墨关系与文化装饰性，而不是具体角色招式或道具。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S04-ref-1.png",
+        "style-scene-experiment-20260819/references/S04-ref-2.png",
+        "style-scene-experiment-20260819/references/S04-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S04.txt",
+      "output": "style-scene-experiment-20260819/images/S04.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S05",
+      "sourceRow": 6,
+      "styleName": "复古赛璐璐动画",
+      "gameName": "Cuphead",
+      "keywords": "1930 动画、橡皮管四肢、胶片颗粒、老卡通背景、复古色偏",
+      "detail": "参考《Cuphead》的画风语言，强调早期赛璐璐动画的平涂色块、橡皮管式夸张线条、复古胶片颗粒与轻微老化色调，整体节奏欢快又诡谲，突出年代感动画表现，而不是具体角色动作或关卡元素。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S05-ref-1.png",
+        "style-scene-experiment-20260819/references/S05-ref-2.png",
+        "style-scene-experiment-20260819/references/S05-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S05.txt",
+      "output": "style-scene-experiment-20260819/images/S05.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S06",
+      "sourceRow": 7,
+      "styleName": "表现主义油画",
+      "gameName": "Disco Elysium",
+      "keywords": "油画厚涂、脏色、情绪光、文学感、城市废墟、主观色彩",
+      "detail": "参考《Disco Elysium》的画风语言，强调油画堆叠笔触、脏色碰撞、边缘涂抹、情绪化光影与带有心理投射的都市阴郁感，整体粗粝、浑浊、富有主观视角，突出情绪渲染而不是具体室内陈设。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S06-ref-1.png",
+        "style-scene-experiment-20260819/references/S06-ref-2.png",
+        "style-scene-experiment-20260819/references/S06-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S06.txt",
+      "output": "style-scene-experiment-20260819/images/S06.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S07",
+      "sourceRow": 8,
+      "styleName": "哥特手绘涂鸦",
+      "gameName": "Don't Starve",
+      "keywords": "尖线轮廓、交叉排线、怪诞童话、纸上涂鸦、哥特童趣、诡异可爱",
+      "detail": "参考《Don't Starve》的画风语言，强调歪斜墨线、干刷填色、旧纸质感、尖锐轮廓与轻微病态的哥特童话气质，整体像手绘涂鸦插画，突出不安、古怪、脆弱的视觉情绪，而不是具体生存道具。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S07-ref-1.png",
+        "style-scene-experiment-20260819/references/S07-ref-2.png",
+        "style-scene-experiment-20260819/references/S07-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S07.txt",
+      "output": "style-scene-experiment-20260819/images/S07.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S08",
+      "sourceRow": 9,
+      "styleName": "铅笔手稿绘本",
+      "gameName": "Split Fiction（Notebook 世界方向）",
+      "keywords": "石墨线稿、纸面留白、轻排线、草图感",
+      "detail": "参考《Split Fiction》的铅笔章节画风语言，强调铅笔线稿、交叉排线、留白纸面、未完成感与绘本式叙事节奏，整体像概念草图被直接作为成片风格使用，突出手稿感与页面气质，而不是具体角色姿态或地形道具。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S08-ref-1.png",
+        "style-scene-experiment-20260819/references/S08-ref-2.png",
+        "style-scene-experiment-20260819/references/S08-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S08.txt",
+      "output": "style-scene-experiment-20260819/images/S08.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S09",
+      "sourceRow": 10,
+      "styleName": "1-bit版画黑白",
+      "gameName": "Return of the Obra Dinn",
+      "keywords": "单色像素、版画感、终端显示、强轮廓",
+      "detail": "参考《Return of the Obra Dinn》的画风语言，强调 1-bit 黑白对比、抖动像素、版画式明暗切分、强轮廓识别与冷峻的历史记录感，整体极简却信息密度很高，突出黑白结构关系，而不是具体时代服饰或物件。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S09-ref-1.png",
+        "style-scene-experiment-20260819/references/S09-ref-2.png",
+        "style-scene-experiment-20260819/references/S09-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S09.txt",
+      "output": "style-scene-experiment-20260819/images/S09.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S10",
+      "sourceRow": 11,
+      "styleName": "中世纪手抄本木刻",
+      "gameName": "Pentiment",
+      "keywords": "木刻线条、手抄本、平面人物、古籍装帧",
+      "detail": "参考《Pentiment》的画风语言，强调中世纪手抄本平面性、木刻感轮廓、矿物颜料般的低饱和色层、边饰装饰与历史文献气质，整体朴拙、克制、具有时代图像学感，突出平面图形语言，而不是具体文本内容或器物。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S10-ref-1.png",
+        "style-scene-experiment-20260819/references/S10-ref-2.png",
+        "style-scene-experiment-20260819/references/S10-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S10.txt",
+      "output": "style-scene-experiment-20260819/images/S10.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S11",
+      "sourceRow": 12,
+      "styleName": "旅行手账水彩",
+      "gameName": "Dordogne",
+      "keywords": "手账、水彩、贴纸、回忆拼贴、彩铅感",
+      "detail": "参考《Dordogne》的画风语言，强调轻薄水彩、纸面渗色、手账式记录感、温暖日光色调与记忆滤镜般的柔软氛围，整体像私人绘本笔记，突出水彩边界与情绪残影，而不是具体纪念品或生活杂物。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S11-ref-1.png",
+        "style-scene-experiment-20260819/references/S11-ref-2.png",
+        "style-scene-experiment-20260819/references/S11-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S11.txt",
+      "output": "style-scene-experiment-20260819/images/S11.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S12",
+      "sourceRow": 13,
+      "styleName": "纸偶拼贴手作",
+      "gameName": "Tearaway Unfolded",
+      "keywords": "纸张折痕、拼贴层、手工边缘、纸偶感",
+      "detail": "参考《Tearaway Unfolded》的画风语言，强调剪纸边缘、层叠纸片、手工拼贴错位、轻巧折痕与鲜明的手作玩趣感，整体材质可读性强但不追求写实，突出纸质层次和手工痕迹，而不是具体卡片或包装造型。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S12-ref-1.png",
+        "style-scene-experiment-20260819/references/S12-ref-2.png",
+        "style-scene-experiment-20260819/references/S12-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S12.txt",
+      "output": "style-scene-experiment-20260819/images/S12.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S13",
+      "sourceRow": 14,
+      "styleName": "折纸舞台纸艺",
+      "gameName": "Paper Mario: The Origami King",
+      "keywords": "折纸结构、纸面切边、纸艺道具、舞台感",
+      "detail": "参考《Paper Mario: The Origami King》的画风语言，强调折纸折线、平面折叠体、舞台陈列感、装饰纸面纹理与轻戏剧化的层层展开效果，整体明快、整洁、玩具化，突出纸艺结构而不是具体角色或机关形态。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S13-ref-1.png",
+        "style-scene-experiment-20260819/references/S13-ref-2.png",
+        "style-scene-experiment-20260819/references/S13-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S13.txt",
+      "output": "style-scene-experiment-20260819/images/S13.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S14",
+      "sourceRow": 15,
+      "styleName": "法式漫画线稿",
+      "gameName": "Sable",
+      "keywords": "清稿线条、平面上色、法漫轮廓、沙漠留白",
+      "detail": "参考《Sable》的画风语言，强调法式漫画式清晰线稿、低阴影大色面、轻科幻与轻民俗并置的空旷感，整体轮廓干净、呼吸感强、配色节制，突出线面关系与图像留白，而不是具体载具或建筑零件。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S14-ref-1.png",
+        "style-scene-experiment-20260819/references/S14-ref-2.png",
+        "style-scene-experiment-20260819/references/S14-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S14.txt",
+      "output": "style-scene-experiment-20260819/images/S14.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S15",
+      "sourceRow": 16,
+      "styleName": "发光森林绘卷",
+      "gameName": "Ori and the Will of the Wisps",
+      "keywords": "高亮边光、发光植被、森林薄雾、梦幻层次",
+      "detail": "参考《Ori and the Will of the Wisps》的画风语言，强调发光渐层、柔焦光晕、层叠景深、流动曲线与梦幻自然能量感，整体空灵、精致、色彩通透，突出光色关系与幻想生命力，而不是具体树木或生物外形。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S15-ref-1.png",
+        "style-scene-experiment-20260819/references/S15-ref-2.png",
+        "style-scene-experiment-20260819/references/S15-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S15.txt",
+      "output": "style-scene-experiment-20260819/images/S15.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S16",
+      "sourceRow": 17,
+      "styleName": "童话插画水彩",
+      "gameName": "Child of Light",
+      "keywords": "童书插画、水彩边缘、柔光、诗意童话",
+      "detail": "参考《Child of Light》的画风语言，强调童话绘本式水彩笔触、半透明冷暖叠色、轻金属般微光点缀与柔和的舞台诗意，整体纤细、梦幻、少女感强，突出绘本气息和色彩层次，而不是具体宫殿或角色配饰。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S16-ref-1.png",
+        "style-scene-experiment-20260819/references/S16-ref-2.png",
+        "style-scene-experiment-20260819/references/S16-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S16.txt",
+      "output": "style-scene-experiment-20260819/images/S16.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S17",
+      "sourceRow": 18,
+      "styleName": "希腊陶瓶平面壁画",
+      "gameName": "Apotheon",
+      "keywords": "陶瓶画、平面壁画、古典装饰、神话剪影",
+      "detail": "参考《Apotheon》的画风语言，强调古希腊陶瓶画的侧面平面化、黑红陶色对比、装饰边框、剪影人物关系与壁画式构图，整体像古典图像学被直接转成游戏视觉，突出平面叙事感，而不是具体武器或神殿陈设。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S17-ref-1.png",
+        "style-scene-experiment-20260819/references/S17-ref-2.png",
+        "style-scene-experiment-20260819/references/S17-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S17.txt",
+      "output": "style-scene-experiment-20260819/images/S17.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S18",
+      "sourceRow": 19,
+      "styleName": "黏土定格模型",
+      "gameName": "Harold Halibut",
+      "keywords": "黏土、模型布景、定格动画、实体手作",
+      "detail": "参考《Harold Halibut》的画风语言，强调黏土塑形痕迹、手工模型微瑕疵、微缩摄影灯光与实体布景般的厚重触感，整体温吞、复古、真实中带奇异，突出材质手工性，而不是具体机械或家具细节。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S18-ref-1.png",
+        "style-scene-experiment-20260819/references/S18-ref-2.png",
+        "style-scene-experiment-20260819/references/S18-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S18.txt",
+      "output": "style-scene-experiment-20260819/images/S18.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S19",
+      "sourceRow": 20,
+      "styleName": "毛线编织世界",
+      "gameName": "Unravel Two",
+      "keywords": "毛线、纤维、软材质、线团连接",
+      "detail": "参考《Unravel Two》的画风语言，强调编织纹理、纤维蓬松感、柔软材质层次、温暖自然色调与细腻的手工温度，整体轻巧、亲密、触感明确，突出纺织材质和柔和情绪，而不是具体线团或生活用品。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S19-ref-1.png",
+        "style-scene-experiment-20260819/references/S19-ref-2.png",
+        "style-scene-experiment-20260819/references/S19-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S19.txt",
+      "output": "style-scene-experiment-20260819/images/S19.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S20",
+      "sourceRow": 21,
+      "styleName": "纸板模型手工",
+      "gameName": "Yoshi's Crafted World",
+      "keywords": "纸板、胶带、手工模型、玩具布景",
+      "detail": "参考《Yoshi's Crafted World》的画风语言，强调纸板切边、层压结构、可见拼接痕迹、轻松明快配色与儿童手工模型感，整体像手作场景被精心布置成成品世界，突出材质识别，而不是具体文具或玩偶。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S20-ref-1.png",
+        "style-scene-experiment-20260819/references/S20-ref-2.png",
+        "style-scene-experiment-20260819/references/S20-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S20.txt",
+      "output": "style-scene-experiment-20260819/images/S20.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S21",
+      "sourceRow": 22,
+      "styleName": "毛毡针织童话",
+      "gameName": "Kirby's Epic Yarn",
+      "keywords": "毛毡、纽扣、针织纹理、布料拼贴",
+      "detail": "参考《Kirby's Epic Yarn》的画风语言，强调毛毡绒面、缝线装饰、拼布层次、低对比柔和配色与温软童趣氛围，整体像针织布艺插画被立体化，突出软材质语言，而不是具体纽扣或拉链等饰件。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S21-ref-1.png",
+        "style-scene-experiment-20260819/references/S21-ref-2.png",
+        "style-scene-experiment-20260819/references/S21-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S21.txt",
+      "output": "style-scene-experiment-20260819/images/S21.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S22",
+      "sourceRow": 23,
+      "styleName": "禅意沙海极简",
+      "gameName": "Journey",
+      "keywords": "沙丘渐变、极简结构、远景孤旅、暖色大气",
+      "detail": "参考《Journey》的画风语言，强调大面积纯净色域、流线型地形层次、低细节留白、圣洁光晕与冥想式宁静感，整体极简、庄严、缓慢，突出色彩呼吸与空间空旷感，而不是具体遗迹、旗帜或角色动作。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S22-ref-1.png",
+        "style-scene-experiment-20260819/references/S22-ref-2.png",
+        "style-scene-experiment-20260819/references/S22-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S22.txt",
+      "output": "style-scene-experiment-20260819/images/S22.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S23",
+      "sourceRow": 24,
+      "styleName": "外星有机极简",
+      "gameName": "Cocoon",
+      "keywords": "有机几何、异星质感、封闭生态、极简机关",
+      "detail": "参考《Cocoon》的画风语言，强调有机曲面、异星色谱、低噪声表面、极简构成与冷静克制的超现实感，整体干净、疏离、带有生物科技气息，突出形体关系与材质纯度，而不是具体装置或机关结构。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S23-ref-1.png",
+        "style-scene-experiment-20260819/references/S23-ref-2.png",
+        "style-scene-experiment-20260819/references/S23-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S23.txt",
+      "output": "style-scene-experiment-20260819/images/S23.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S24",
+      "sourceRow": 25,
+      "styleName": "魔幻现实舞台灯光",
+      "gameName": "Kentucky Route Zero",
+      "keywords": "戏台灯光、超现实公路、低饱和、文学场景",
+      "detail": "参考《Kentucky Route Zero》的画风语言，强调剧场式灯光分区、深色留黑、缓慢的色块过渡、魔幻现实主义气氛与公路诗性，整体叙事感强、空间半抽象，突出光区和情绪张力，而不是具体房间摆设或交通元素。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S24-ref-1.png",
+        "style-scene-experiment-20260819/references/S24-ref-2.png",
+        "style-scene-experiment-20260819/references/S24-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S24.txt",
+      "output": "style-scene-experiment-20260819/images/S24.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S25",
+      "sourceRow": 26,
+      "styleName": "国家公园海报风",
+      "gameName": "Firewatch",
+      "keywords": "海报式平涂、强配色、森林剪影、日落层次",
+      "detail": "参考《Firewatch》的画风语言，强调国家公园海报式配色、层叠景深色块、复古丝网印刷感、清晰自然剪影与黄昏空气透视，整体图形化、干净、具有强烈宣传海报气质，突出色块景深而不是具体树木或营地用品。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S25-ref-1.png",
+        "style-scene-experiment-20260819/references/S25-ref-2.png",
+        "style-scene-experiment-20260819/references/S25-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S25.txt",
+      "output": "style-scene-experiment-20260819/images/S25.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S26",
+      "sourceRow": 27,
+      "styleName": "扁平秋日民谣",
+      "gameName": "Night in the Woods",
+      "keywords": "扁平秋色、小镇民谣、温吞阴郁、图形动物",
+      "detail": "参考《Night in the Woods》的画风语言，强调扁平块面、秋季低饱和暖冷对比、独立漫画感线条与轻微颓丧的青春情绪，整体亲切又有一点失落，突出配色气质与图形节奏，而不是具体街道店铺或角色服饰。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S26-ref-1.png",
+        "style-scene-experiment-20260819/references/S26-ref-2.png",
+        "style-scene-experiment-20260819/references/S26-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S26.txt",
+      "output": "style-scene-experiment-20260819/images/S26.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S27",
+      "sourceRow": 28,
+      "styleName": "赛璐璐神话景观",
+      "gameName": "The Pathless",
+      "keywords": "神话遗迹、平滑赛璐璐、速度感、空旷地景",
+      "detail": "参考《The Pathless》的画风语言，强调干净赛璐璐明暗、开阔神话景观、清晰英雄剪影、高饱和自然能量色与流畅运动感，整体轻史诗、轻仪式、节奏爽朗，突出远景层级与神话氛围，而不是具体神兽或遗迹部件。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S27-ref-1.png",
+        "style-scene-experiment-20260819/references/S27-ref-2.png",
+        "style-scene-experiment-20260819/references/S27-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S27.txt",
+      "output": "style-scene-experiment-20260819/images/S27.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S28",
+      "sourceRow": 29,
+      "styleName": "吉卜力动画幻想",
+      "gameName": "Ni no Kuni II",
+      "keywords": "吉卜力式色彩、圆润建筑、童话动画感",
+      "detail": "参考《Ni no Kuni II》的画风语言，强调吉卜力式温暖动画色彩、柔和赛璐璐光影、圆润友好的造型逻辑与童话冒险感，整体轻盈、亲和、带有日式手绘电影感，突出动画幻想气质，而不是具体建筑摆件或魔法道具。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S28-ref-1.png",
+        "style-scene-experiment-20260819/references/S28-ref-2.png",
+        "style-scene-experiment-20260819/references/S28-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S28.txt",
+      "output": "style-scene-experiment-20260819/images/S28.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S29",
+      "sourceRow": 30,
+      "styleName": "美式漫画描边",
+      "gameName": "Borderlands 3",
+      "keywords": "粗描边、硬光、漫画爆点、废土霓虹",
+      "detail": "参考《Borderlands 3》的画风语言，强调粗黑描边、赛璐璐体块、漫画网点感、夸张色彩对撞与强烈视觉噪点，整体张扬、躁动、带有印刷感爆发力，突出图像边界与节奏冲击，而不是具体枪械或载具造型。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S29-ref-1.png",
+        "style-scene-experiment-20260819/references/S29-ref-2.png",
+        "style-scene-experiment-20260819/references/S29-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S29.txt",
+      "output": "style-scene-experiment-20260819/images/S29.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S30",
+      "sourceRow": 31,
+      "styleName": "街头涂鸦喷绘",
+      "gameName": "Jet Set Radio",
+      "keywords": "喷漆、街头图形、夸张轮廓、滑板都会",
+      "detail": "参考《Jet Set Radio》的画风语言，强调喷绘痕迹、贴纸拼贴、街头符号、鲜艳高纯度配色与夸张动态轮廓，整体叛逆、轻快、视觉节奏强，突出都市亚文化图形语言，而不是具体滑板、地铁或品牌标识。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S30-ref-1.png",
+        "style-scene-experiment-20260819/references/S30-ref-2.png",
+        "style-scene-experiment-20260819/references/S30-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S30.txt",
+      "output": "style-scene-experiment-20260819/images/S30.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S31",
+      "sourceRow": 32,
+      "styleName": "霓虹硬边科幻",
+      "gameName": "Ghostrunner 2",
+      "keywords": "硬边霓虹、锋利体块、高速切线、冷色金属",
+      "detail": "参考《Ghostrunner 2》的画风语言，强调硬边高反差轮廓、冷色金属质感、锐利高光、霓虹点缀与高速压迫感，整体利落、锋利、机械感极强，突出边界切割与未来工业气质，而不是具体刀具、义体或平台机关。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S31-ref-1.png",
+        "style-scene-experiment-20260819/references/S31-ref-2.png",
+        "style-scene-experiment-20260819/references/S31-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S31.txt",
+      "output": "style-scene-experiment-20260819/images/S31.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S32",
+      "sourceRow": 33,
+      "styleName": "雨夜赛博街区",
+      "gameName": "Cloudpunk",
+      "keywords": "雨夜、霓虹雾、垂直城市、飞车灯海",
+      "detail": "参考《Cloudpunk》的画风语言，强调雨夜霓虹反射、垂直城市层级、低能见度雾气、湿润发亮的色面与忧郁赛博氛围，整体密集、朦胧、具有夜行都市感，突出光色反差与空间压缩，而不是具体招牌文本或交通工具。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S32-ref-1.png",
+        "style-scene-experiment-20260819/references/S32-ref-2.png",
+        "style-scene-experiment-20260819/references/S32-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S32.txt",
+      "output": "style-scene-experiment-20260819/images/S32.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S33",
+      "sourceRow": 34,
+      "styleName": "装饰艺术深海科幻",
+      "gameName": "BioShock",
+      "keywords": "Art Deco、黄铜、玻璃、深海乌托邦",
+      "detail": "参考《BioShock》的画风语言，强调装饰艺术几何、复古奢华材质、海底衰败感、黄铜与深青色对比以及压抑的乌托邦余晖，整体华丽又腐朽，突出时代装饰性与沉没感，而不是具体雕塑、武器或海报内容。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S33-ref-1.png",
+        "style-scene-experiment-20260819/references/S33-ref-2.png",
+        "style-scene-experiment-20260819/references/S33-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S33.txt",
+      "output": "style-scene-experiment-20260819/images/S33.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S34",
+      "sourceRow": 35,
+      "styleName": "铜锈蒸汽旧帝国",
+      "gameName": "Dishonored",
+      "keywords": "铜锈、煤烟、蒸汽机械、瘟疫感、旧帝国",
+      "detail": "参考《Dishonored》的画风语言，强调铜锈与煤烟色谱、工业巴洛克轮廓、脏旧金属质感、贵族衰败气息与压迫式雾感光影，整体冷峻、肮脏、带权力腐败感，突出材质年代感，而不是具体刀剑、鲸油或室内陈设。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S34-ref-1.png",
+        "style-scene-experiment-20260819/references/S34-ref-2.png",
+        "style-scene-experiment-20260819/references/S34-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S34.txt",
+      "output": "style-scene-experiment-20260819/images/S34.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S35",
+      "sourceRow": 36,
+      "styleName": "黑色侦探漫画",
+      "gameName": "The Wolf Among Us",
+      "keywords": "美漫 noir、霓虹夜色、都市童话、漫画阴影",
+      "detail": "参考《The Wolf Among Us》的画风语言，强调黑色电影式强阴影、冷暖霓虹对照、图像小说分镜感与都市危险感，整体紧张、潮湿、成熟，突出暗部切块与叙事压迫感，而不是具体街巷招牌或侦探道具。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S35-ref-1.png",
+        "style-scene-experiment-20260819/references/S35-ref-2.png",
+        "style-scene-experiment-20260819/references/S35-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S35.txt",
+      "output": "style-scene-experiment-20260819/images/S35.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S36",
+      "sourceRow": 37,
+      "styleName": "HD-2D立体像素",
+      "gameName": "Octopath Traveler II",
+      "keywords": "像素角色、景深虚化、舞台灯、微缩场景",
+      "detail": "参考《Octopath Traveler II》的画风语言，强调高精度像素角色、浅景深舞台感、体积光、复古与现代并置的层级呈现，整体精致、怀旧、具有微缩戏台质感，突出像素细节和空间景深，而不是具体技能特效或战斗界面。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S36-ref-1.png",
+        "style-scene-experiment-20260819/references/S36-ref-2.png",
+        "style-scene-experiment-20260819/references/S36-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S36.txt",
+      "output": "style-scene-experiment-20260819/images/S36.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S37",
+      "sourceRow": 38,
+      "styleName": "霓虹像素黑色电影",
+      "gameName": "Katana ZERO",
+      "keywords": "紫红霓虹、像素 noir、高速分镜、都市杀意",
+      "detail": "参考《Katana ZERO》的画风语言，强调高反差霓虹像素、黑色电影式留黑、强烈色温冲突与电子迷幻节奏，整体暴烈、冷酷、夜行动感强，突出色光切换和像素轮廓，而不是具体刀光、室内摆件或敌人形象。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S37-ref-1.png",
+        "style-scene-experiment-20260819/references/S37-ref-2.png",
+        "style-scene-experiment-20260819/references/S37-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S37.txt",
+      "output": "style-scene-experiment-20260819/images/S37.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S38",
+      "sourceRow": 39,
+      "styleName": "极简像素几何",
+      "gameName": "Fez",
+      "keywords": "马赛克、像素几何、等角错觉、纯净色块",
+      "detail": "参考《FEZ》的画风语言，强调低密度像素几何、模块化体块、清洁配色、轻抽象空间逻辑与安静的复古现代感，整体简单却精确，突出像素构成和秩序美感，而不是具体机关翻转或收集物。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S38-ref-1.png",
+        "style-scene-experiment-20260819/references/S38-ref-2.png",
+        "style-scene-experiment-20260819/references/S38-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S38.txt",
+      "output": "style-scene-experiment-20260819/images/S38.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S39",
+      "sourceRow": 40,
+      "styleName": "体素积木景观",
+      "gameName": "Minecraft",
+      "keywords": "方块、体素、低纹理、程序化地形",
+      "detail": "参考《Minecraft》的画风语言，强调体素方块节奏、模块化轮廓、清晰体量分割、明亮直白配色与开放建构感，整体规则、可读、具有高度拼搭逻辑，突出体素语言本身，而不是具体方块名称或生存功能。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S39-ref-1.png",
+        "style-scene-experiment-20260819/references/S39-ref-2.png",
+        "style-scene-experiment-20260819/references/S39-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S39.txt",
+      "output": "style-scene-experiment-20260819/images/S39.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S40",
+      "sourceRow": 41,
+      "styleName": "体素破坏写实",
+      "gameName": "Teardown",
+      "keywords": "体素、可摧毁、写实灯光、方块碎裂",
+      "detail": "参考《Teardown》的画风语言，强调高密度体素材质、可破坏结构逻辑、真实光照、粉尘颗粒感与块状写实并存的视觉特性，整体硬朗、工业、具物理冲击力，突出体素写实度，而不是具体车辆或爆破装置。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S40-ref-1.png",
+        "style-scene-experiment-20260819/references/S40-ref-2.png",
+        "style-scene-experiment-20260819/references/S40-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S40.txt",
+      "output": "style-scene-experiment-20260819/images/S40.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S41",
+      "sourceRow": 42,
+      "styleName": "清洁色块自然主义",
+      "gameName": "The Witness",
+      "keywords": "清洁材质、亮色岛屿、色块分区、极简自然",
+      "detail": "参考《The Witness》的画风语言，强调极度干净的色块分离、明亮自然光、锐利边界、平滑材质与秩序化环境构成，整体清澈、理性、无杂讯，突出颜色关系与空间清晰度，而不是具体谜题面板或园林装置。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S41-ref-1.png",
+        "style-scene-experiment-20260819/references/S41-ref-2.png",
+        "style-scene-experiment-20260819/references/S41-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S41.txt",
+      "output": "style-scene-experiment-20260819/images/S41.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    },
+    {
+      "id": "S42",
+      "sourceRow": 43,
+      "styleName": "箱庭玩具模型风",
+      "gameName": "Tunic",
+      "keywords": "等距微缩、玩具箱、说明书符号、可爱神秘",
+      "detail": "参考《TUNIC》的画风语言，强调等距箱庭视角、微缩模型质感、玩具化比例、干净材质语言与克制明亮的奇幻配色，整体像精修过的桌面立体模型，突出微缩世界感与模型完成度，而不是具体宝箱、道具或角色服装。",
+      "scene": "阿尔卑斯山谷小屋",
+      "references": [
+        "style-scene-experiment-20260819/references/S42-ref-1.png",
+        "style-scene-experiment-20260819/references/S42-ref-2.png",
+        "style-scene-experiment-20260819/references/S42-ref-3.png"
+      ],
+      "prompt": "style-scene-experiment-20260819/prompts/S42.txt",
+      "output": "style-scene-experiment-20260819/images/S42.png",
+      "model": "gpt-image-2",
+      "size": "1376x768",
+      "quality": "high"
+    }
+  ]
+}

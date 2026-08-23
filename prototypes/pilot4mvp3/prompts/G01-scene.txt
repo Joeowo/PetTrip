@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Image 1 and Image 2 are Neva official screenshots used only as visual-style references; inherit their silhouettes, gouache/pastel blocks, paper-brush texture and horizontal staging, but do not copy their specific trees, characters, layout or events
+Primary request: a warm healing Q-version fantasy travel painting inspired by the composition of the Twelve Apostles coast; foreground is a low coastal grass strip and safe rock ground, midground has several clear sea stacks with one dominant sea stack on the right and a coastal observation ledge on the left, background is a broad calm ocean, pale clouds and a distant horizon; preserve two usable landmarks: the right dominant sea stack and the left coastal ledge; no character, no person, no UI, no text, no watermark
+Style/medium: Neva-inspired hand-painted 2D storybook landscape; simplified expressive shapes, clear silhouettes, muted gouache and pastel color blocks, restrained paper-and-brush texture, cinematic horizontal staging; no photorealism, no 3D render, no generic anime background
+Composition/framing: clear foreground/midground/background, fixed lens, no extreme perspective, keep the two landmarks visually separated
+Lighting/mood: quiet late-afternoon ocean light, one consistent key-light direction, gentle atmospheric depth
+Color palette: NEVA Ink Blue Storm discipline; cool gray-blue and ink contours dominate, a small warm accent only on reflected light
+Constraints: no pet, no human, no extra landmark, no duplicated sea stack, no text, no logo, no camera movement
