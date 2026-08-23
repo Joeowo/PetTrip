@@ -18,7 +18,6 @@ import pytest
 from PIL import Image
 
 from agent_service.storage.destination_storage import DestinationRepository
-from agent_service.storage.files import LocalImageStorage
 from agent_service.storage import Storage
 from agent_service.workflows.scene_generation import (
     run_scene_generation_workflow,
@@ -26,6 +25,7 @@ from agent_service.workflows.scene_generation import (
     SceneGenerationState,
 )
 from agent_service.shared.ids import new_id
+from agent_service.tests.helpers.simple_file_storage import SimpleFileStorage
 
 
 # ============================================================================
@@ -39,12 +39,9 @@ def temp_storage():
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = Path(tmpdir) / "test.db"
         files_dir = Path(tmpdir) / "files"
-        files_dir.mkdir()
 
         # 初始化 pilot4mvp2 基座
         storage = Storage(db_path, recover=False)
-
-        # 创建测试 API client 和 session
         client_id = storage.upsert_api_client("test_hash", "test_client")
         session = storage.create_session(client_id)
 
@@ -52,8 +49,8 @@ def temp_storage():
         repo = DestinationRepository(db_path)
         repo.open()
 
-        # 初始化文件存储
-        file_storage = LocalImageStorage(str(files_dir))
+        # 初始化文件存储（使用简化版本）
+        file_storage = SimpleFileStorage(files_dir)
 
         yield {
             "repo": repo,
@@ -81,6 +78,7 @@ def setup_destination_with_environment(temp_storage, sample_environment_image):
     """设置带有共享环境的目的地。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
     session = temp_storage["session"]
     client_id = temp_storage["client_id"]
 
@@ -127,19 +125,34 @@ def setup_destination_with_environment(temp_storage, sample_environment_image):
     env_sha256 = hashlib.sha256(sample_environment_image).hexdigest()
     env_file_id = new_id("file")
 
-    # 使用 store_bytes 存储文件
-    rel_path = file_storage.store_bytes(env_file_id, sample_environment_image)
+    # 使用简化的 file_storage.write() 存储文件
+    file_storage.write(env_file_id, sample_environment_image, "image/png")
 
-    # 创建一个 run（用于关联 shared_environment_artifact）
+    # 在 Storage 中注册文件（满足外键约束）
+    temp_storage["storage"].create_file(
+        file_id=env_file_id,
+        api_client_id=client_id,
+        source="agent_generated",
+        purpose="generated_image",
+        mime_type="image/png",
+        size_bytes=len(sample_environment_image),
+        sha256=env_sha256,
+        width=2048,
+        height=1152,
+        rel_path=f"{env_file_id}.dat",
+    )
+
+    # 创建一个 run（满足 source_run_id 外键约束）
     run = temp_storage["storage"].create_run(
         session_id=session["id"],
         api_client_id=client_id,
-        request_input={"test": "input"},
+        request_input={},
         response_format={"type": "json_object"},
-        idempotency_key="test_run",
-        idempotency_body_hash="test_hash",
+        idempotency_key=new_id("idem"),
+        idempotency_body_hash=hashlib.sha256(b"test").hexdigest(),
     )
 
+    # 创建 shared_environment_artifact
     shared_env = repo.create_shared_environment_artifact(
         destination_id=destination["id"],
         source_run_id=run["id"],
@@ -168,6 +181,8 @@ def test_scene_generation_workflow_end_to_end(
     """测试：场景生成工作流可端到端执行。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -189,6 +204,7 @@ def test_scene_generation_workflow_end_to_end(
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=True,
+        storage=storage,
     )
 
     # 验证成功
@@ -209,6 +225,7 @@ def test_scene_artifact_atomic_commit(
     """测试：SceneArtifact 原子提交（render asset + InteractionZone + 哈希）。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -229,6 +246,7 @@ def test_scene_artifact_atomic_commit(
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=True,
+        storage=storage,
     )
 
     # 验证 SceneArtifact 存在
@@ -257,6 +275,7 @@ def test_scene_generation_retries_on_failure(temp_storage, setup_destination_wit
     """测试：最终场景生成失败时重试（最多 3 attempts）。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -278,6 +297,7 @@ def test_scene_generation_retries_on_failure(temp_storage, setup_destination_wit
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=False,  # 会触发 NotImplementedError
+        storage=storage,
     )
 
     # 验证失败
@@ -295,6 +315,7 @@ def test_internal_assets_not_exposed(temp_storage, setup_destination_with_enviro
     """测试：定位图、Mask、aperture 等内部资产不通过 SceneArtifact 暴露。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -315,6 +336,7 @@ def test_internal_assets_not_exposed(temp_storage, setup_destination_with_enviro
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=True,
+        storage=storage,
     )
 
     # 获取 SceneArtifact
@@ -339,6 +361,7 @@ def test_mask_and_interaction_zone_consistency(
     """测试：Mask 和 InteractionZone 使用相同的 center/radius。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -363,6 +386,7 @@ def test_mask_and_interaction_zone_consistency(
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=True,
+        storage=storage,
     )
 
     # 获取 InteractionZone
@@ -383,6 +407,7 @@ def test_circle_out_of_bounds_fails(temp_storage, setup_destination_with_environ
     """测试：圆超出画布边界时工作流失败。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -404,6 +429,7 @@ def test_circle_out_of_bounds_fails(temp_storage, setup_destination_with_environ
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=True,
+        storage=storage,
     )
 
     # 验证失败
@@ -422,6 +448,7 @@ def test_coordinate_space_is_pixel_top_left(
     """测试：InteractionZone 使用 pixel_top_left 坐标系统。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -442,6 +469,7 @@ def test_coordinate_space_is_pixel_top_left(
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=True,
+        storage=storage,
     )
 
     zone = repo.get_interaction_zone(final_state["interaction_zone_id"])
@@ -457,6 +485,7 @@ def test_scene_not_visible_until_ready(temp_storage, setup_destination_with_envi
     """测试：SceneArtifact ready 之前，Unity 不可见。"""
     repo = temp_storage["repo"]
     file_storage = temp_storage["file_storage"]
+    storage = temp_storage["storage"]
 
     destination = setup_destination_with_environment["destination"]
     spec = setup_destination_with_environment["spec"]
@@ -482,6 +511,7 @@ def test_scene_not_visible_until_ready(temp_storage, setup_destination_with_envi
         repo=repo,
         file_storage=file_storage,
         use_mock_final_scene=True,
+        storage=storage,
     )
 
     # 工作流完成后，SceneArtifact 才可见

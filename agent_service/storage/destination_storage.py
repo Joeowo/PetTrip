@@ -1345,6 +1345,31 @@ class DestinationRepository:
 
         return _row_to_dict(row)
 
+    def get_shared_environment_artifact_by_id(
+        self, shared_environment_id: str
+    ) -> dict[str, Any] | None:
+        """根据 ID 获取共享环境制品。
+
+        Args:
+            shared_environment_id: 共享环境 ID
+
+        Returns:
+            dict | None: SharedEnvironmentArtifact 记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM shared_environment_artifacts WHERE shared_environment_id = ?",
+                (shared_environment_id,),
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+        return _row_to_dict(row)
+
     # ========================================================================
     # OperationAttempt CRUD（T5）
     # ========================================================================

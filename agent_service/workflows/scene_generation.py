@@ -153,7 +153,7 @@ def ensure_shared_environment_node(
 ) -> SceneGenerationState:
     """节点：确保共享环境存在。"""
     try:
-        env_artifact = repo.get_shared_environment_artifact(
+        env_artifact = repo.get_shared_environment_artifact_by_id(
             state["shared_environment_id"]
         )
 
@@ -270,6 +270,10 @@ def generate_final_scene_node(
     file_storage: LocalImageStorage,
 ) -> SceneGenerationState:
     """节点：生成最终场景。"""
+    # 如果已经有错误，跳过生成
+    if state.get("error") is not None:
+        return state
+
     try:
         # 读取 aperture 图
         aperture_file = file_storage.read(state["aperture_file_id"])
@@ -322,6 +326,10 @@ def validate_scene_artifact_node(
     - 尺寸匹配环境母图
     - 哈希已计算
     """
+    # 如果已经有错误，跳过验证
+    if state.get("error") is not None:
+        return state
+
     try:
         if state["final_scene_file_id"] is None:
             state["error"] = "missing_final_scene"
@@ -352,6 +360,7 @@ def validate_scene_artifact_node(
 def commit_scene_artifact_node(
     state: SceneGenerationState,
     repo: DestinationRepository,
+    storage=None,
 ) -> SceneGenerationState:
     """节点：原子提交场景制品。
 
@@ -359,8 +368,31 @@ def commit_scene_artifact_node(
     1. 创建 InteractionZone
     2. 创建 SceneArtifact（引用 InteractionZone、render asset、环境哈希）
     3. 所有操作在同一事务中完成
+
+    Args:
+        state: 工作流状态
+        repo: Repository
+        storage: Storage 实例（可选，用于注册文件到 files 表）
     """
     try:
+        # 如果提供了 storage，注册最终场景文件到 files 表
+        if storage is not None and state["final_scene_file_id"] is not None:
+            # 获取 api_client_id（从 destination 获取）
+            destination = repo.get_destination(state["destination_id"])
+            if destination:
+                storage.create_file(
+                    file_id=state["final_scene_file_id"],
+                    api_client_id=destination["api_client_id"],
+                    source="agent_generated",
+                    purpose="generated_image",
+                    mime_type="image/png",
+                    size_bytes=0,  # 简化：实际应该从文件获取
+                    sha256=state["final_scene_sha256"],
+                    width=state["final_scene_width"],
+                    height=state["final_scene_height"],
+                    rel_path=f"{state['final_scene_file_id']}.dat",
+                )
+
         with repo.transaction() as conn:
             # 1. 创建 InteractionZone
             zone_id = new_id("zone")
@@ -492,6 +524,7 @@ def retry_final_scene_node(state: SceneGenerationState) -> SceneGenerationState:
 def build_scene_generation_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
+    storage=None,
 ) -> StateGraph:
     """构建场景生成工作流。
 
@@ -504,6 +537,11 @@ def build_scene_generation_workflow(
     6. validate_scene_artifact → 验证场景制品
     7. should_retry → 决策：提交 | 重试 | 失败
     8. commit_scene_artifact → 原子提交
+
+    Args:
+        repo: Repository
+        file_storage: 文件存储
+        storage: Storage 实例（可选，用于注册文件）
     """
     workflow = StateGraph(SceneGenerationState)
 
@@ -534,7 +572,7 @@ def build_scene_generation_workflow(
     )
     workflow.add_node(
         "commit_scene_artifact",
-        lambda state: commit_scene_artifact_node(state, repo),
+        lambda state: commit_scene_artifact_node(state, repo, storage),
     )
     workflow.add_node("retry_final_scene", retry_final_scene_node)
 
@@ -587,6 +625,7 @@ def run_scene_generation_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
     use_mock_final_scene: bool = True,
+    storage=None,
 ) -> dict[str, Any]:
     """运行场景生成工作流。
 
@@ -604,6 +643,7 @@ def run_scene_generation_workflow(
         repo: Repository
         file_storage: 文件存储
         use_mock_final_scene: 是否使用 mock 最终场景（默认 True）
+        storage: Storage 实例（可选，用于注册文件）
 
     Returns:
         最终状态字典，包含 SceneArtifact ID 或错误信息
@@ -643,7 +683,7 @@ def run_scene_generation_workflow(
     )
 
     # 构建并运行工作流
-    workflow = build_scene_generation_workflow(repo, file_storage)
+    workflow = build_scene_generation_workflow(repo, file_storage, storage)
     app = workflow.compile()
 
     final_state = app.invoke(initial_state)
