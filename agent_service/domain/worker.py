@@ -23,6 +23,7 @@ from ..shared.ids import new_id
 from ..shared.structured_output import StructuredOutputInvalid, StructuredOutputRegistry
 from ..storage.files import LocalFileIntegrityError, LocalImageStorage
 from ..storage import Storage
+from .destination_coordinator import DestinationCoordinatorService
 
 LOGGER = logging.getLogger("uvicorn.error")
 
@@ -41,6 +42,7 @@ class RunWorker:
         image_canvas_width: int = 1024,
         image_canvas_height: int = 1024,
         image_max_pixels: int = 20_000_000,
+        destination_coordinator: DestinationCoordinatorService | None = None,
     ) -> None:
         self._storage = storage
         self._file_storage = file_storage
@@ -53,10 +55,13 @@ class RunWorker:
         self._poll_interval = poll_interval
         self._task: asyncio.Task[None] | None = None
         self._stopping = asyncio.Event()
+        self._destination_coordinator = destination_coordinator
+        self._recovery_done = False
 
     def start(self) -> None:
         if self._task is None:
             self._stopping.clear()
+            self._recovery_done = False
             self._task = asyncio.create_task(self._run(), name="pettrip-run-worker")
 
     async def stop(self) -> None:
@@ -302,6 +307,17 @@ class RunWorker:
                 LOGGER.error("generated_file_cleanup_failed error_type=storage")
 
     async def _run(self) -> None:
+        # 启动恢复：在第一次轮询前执行
+        if not self._recovery_done and self._destination_coordinator is not None:
+            try:
+                await asyncio.to_thread(self._recover_on_startup)
+                self._recovery_done = True
+            except Exception as exc:
+                LOGGER.error(
+                    "startup_recovery_failed error_type=%s",
+                    type(exc).__name__,
+                )
+
         while not self._stopping.is_set():
             try:
                 processed = await self.process_one()
@@ -321,3 +337,29 @@ class RunWorker:
                     )
                 except TimeoutError:
                     continue
+
+    def _recover_on_startup(self) -> None:
+        """启动时执行恢复逻辑。
+
+        扫描非终态 Destination 与 Scene，根据 Repository 里程碑决定继续哪个阶段。
+        已提交对象不重做，清理未被引用的临时文件。
+        """
+        if self._destination_coordinator is None:
+            return
+
+        LOGGER.info("startup_recovery_started")
+
+        try:
+            # 恢复非终态 Destination
+            dest_counts = self._destination_coordinator.recover_pending_destinations()
+            LOGGER.info(
+                "destination_recovery_completed recovered=%d skipped_done=%d",
+                dest_counts["recovered_destinations"],
+                dest_counts["skipped_done"],
+            )
+        except Exception as exc:
+            LOGGER.error(
+                "destination_recovery_failed error_type=%s",
+                type(exc).__name__,
+            )
+            raise
