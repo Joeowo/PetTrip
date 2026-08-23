@@ -190,3 +190,148 @@ def test_select_base_binds_both_scenes_and_processes_locator(tmp_path):
     steps = processed["workflows"]["G06"]["scenes"]["A"]["steps"]
     assert steps["scan_planned_center"]["status"] == "waiting_for_review"
     assert steps["draw_deterministic_aperture"]["status"] == "waiting_for_review"
+
+
+def _write_locator_pair(tmp_path, *, marker=(0, 0, 0), environment=(255, 255, 255)):
+    """Write a small synthetic environment/locator pair."""
+    clean = tmp_path / "environment.png"
+    locator = tmp_path / "locator.png"
+    Image.new("RGB", (256, 192), environment).save(clean)
+    Image.new("RGB", (256, 192), "white").save(locator)
+    return clean, locator, marker
+
+
+def _add_ellipse(path, box, fill=(0, 0, 0)):
+    with Image.open(path) as image:
+        image = image.copy()
+    ImageDraw.Draw(image).ellipse(box, fill=fill)
+    image.save(path)
+
+
+def test_detect_black_locator_circle_with_multiple_noise_components(tmp_path):
+    clean, locator, _ = _write_locator_pair(tmp_path)
+    _add_ellipse(locator, (108, 78, 147, 117))
+    with Image.open(locator) as image:
+        draw = ImageDraw.Draw(image)
+        for box in ((5, 5, 7, 7), (200, 20, 204, 24), (30, 160, 34, 163)):
+            draw.rectangle(box, fill=(0, 0, 0))
+        image.save(locator)
+
+    result = controller.detect_black_locator(clean, locator)
+
+    assert result["qualified_candidate_count"] == 1
+    assert result["planned_locator_center"] == [128, 98]
+
+
+
+def test_detect_black_locator_ignores_larger_non_circle(tmp_path):
+    clean, locator, _ = _write_locator_pair(tmp_path)
+    with Image.open(locator) as image:
+        draw = ImageDraw.Draw(image)
+        draw.rectangle((10, 10, 220, 70), fill=(0, 0, 0))
+        draw.ellipse((108, 118, 147, 157), fill=(0, 0, 0))
+        image.save(locator)
+
+    result = controller.detect_black_locator(clean, locator)
+
+    assert result["qualified_candidate_count"] == 1
+    assert result["planned_locator_center"] == [128, 138]
+    assert result["rejection_counts"]["fill"] >= 1
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        "black_depth",
+        "chroma",
+        "black_coverage",
+        "darkening",
+        "canvas_edge",
+    ],
+)
+def test_detect_black_locator_rejects_each_invalid_candidate(tmp_path, case):
+    environment = (30, 30, 30) if case == "darkening" else (255, 255, 255)
+    clean, locator, _ = _write_locator_pair(tmp_path, environment=environment)
+    if case == "black_depth":
+        _add_ellipse(locator, (108, 78, 147, 117), fill=(30, 30, 30))
+    elif case == "chroma":
+        _add_ellipse(locator, (108, 78, 147, 117), fill=(0, 10, 20))
+    elif case == "black_coverage":
+        with Image.open(locator) as image:
+            draw = ImageDraw.Draw(image)
+            draw.ellipse((108, 78, 147, 117), outline=(0, 0, 0), width=2)
+            image.save(locator)
+    elif case == "darkening":
+        _add_ellipse(locator, (108, 78, 147, 117))
+    else:
+        _add_ellipse(locator, (0, 78, 39, 117))
+
+    with pytest.raises(ValueError, match="no_plausible_black_marker"):
+        controller.detect_black_locator(clean, locator)
+
+
+def test_detect_black_locator_accepts_flat_ellipse(tmp_path):
+    clean, locator, _ = _write_locator_pair(tmp_path)
+    _add_ellipse(locator, (88, 84, 167, 111))
+
+    result = controller.detect_black_locator(clean, locator)
+
+    assert result["qualified_candidate_count"] == 1
+    assert result["planned_locator_center"] == [128, 98]
+    assert result["selected_candidate"]["aspect_ratio"] > 2
+
+
+def test_detect_black_locator_stable_tie_break_prefers_top_left(tmp_path):
+    clean, locator, _ = _write_locator_pair(tmp_path)
+    with Image.open(locator) as image:
+        draw = ImageDraw.Draw(image)
+        draw.ellipse((38, 38, 77, 77), fill=(0, 0, 0))
+        draw.ellipse((158, 118, 197, 157), fill=(0, 0, 0))
+        image.save(locator)
+
+    first = controller.detect_black_locator(clean, locator)
+    second = controller.detect_black_locator(clean, locator)
+
+    assert first["qualified_candidate_count"] == 2
+    assert first["planned_locator_center"] == [58, 58]
+    assert second["planned_locator_center"] == first["planned_locator_center"]
+
+
+REAL_LOCATOR_CASES = [
+    (group, route, scene, center)
+    for group, centers in {
+        "G02": {
+            "M0": {"A": [714, 854], "B": [1671, 806]},
+            "M1": {"A": [646, 773], "B": [1628, 829]},
+        },
+        "G03": {
+            "M0": {"A": [456, 765], "B": [1098, 1061]},
+            "M1": {"A": [1398, 661], "B": [832, 1042]},
+        },
+        "G06": {
+            "M0": {"A": [809, 458], "B": [1485, 1009]},
+            "M1": {"A": [1356, 527], "B": [808, 969]},
+        },
+        "G08": {
+            "M0": {"A": [396, 940], "B": [1536, 879]},
+            "M1": {"A": [632, 917], "B": [1525, 861]},
+        },
+    }.items()
+    for route, scenes in centers.items()
+    for scene, center in scenes.items()
+]
+
+
+@pytest.mark.parametrize("group,route,scene,expected", REAL_LOCATOR_CASES)
+def test_detect_black_locator_issue12_full_regression(group, route, scene, expected):
+    run = Path(__file__).parents[1] / "issue12" / "runs" / "issue12-full-001"
+    environment = run / "artifacts" / "environments" / group / f"{route}.png"
+    locator = run / "artifacts" / "locators" / group / route / f"{scene}.png"
+
+    result = controller.detect_black_locator(environment, locator)
+    actual = result["planned_locator_center"]
+
+    assert result["qualified_candidate_count"] == 1
+    assert all(abs(observed - wanted) <= 1 for observed, wanted in zip(actual, expected))
+    if (group, route, scene) in (("G03", "M1", "B"), ("G08", "M1", "B")):
+        assert actual == expected

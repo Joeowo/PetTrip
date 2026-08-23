@@ -1,0 +1,619 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Issue 12 Evidence</title>
+<style>
+:root { color-scheme: light dark; --bg:#f5f1e8; --panel:#fffdf8; --ink:#25231f; --muted:#6d675d; --line:#d6cebf; --accent:#215a54; }
+@media(prefers-color-scheme:dark) { :root { --bg:#171918;--panel:#222522;--ink:#f3eee5;--muted:#bbb3a5;--line:#454a45;--accent:#82c6bb; } }
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,sans-serif} main{max-width:1120px;margin:auto;padding:2rem 1rem 5rem} h1{font-size:clamp(2rem,6vw,4rem);margin:.2em 0} .notice,.candidate,.assets,.destination,.scene{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:1.2rem;margin:1rem 0} .notice{border-left:6px solid var(--accent)} header{display:flex;justify-content:space-between;gap:1rem;align-items:center} .status{padding:.25rem .7rem;border:1px solid var(--accent);border-radius:999px;color:var(--accent)} dl{display:grid;grid-template-columns:minmax(9rem,14rem) 1fr;gap:.5rem 1rem} dt{font-weight:700} dd{margin:0} pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:1rem;border-radius:10px} code{overflow-wrap:anywhere} .references,.images,.counts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem} .reference,.image,.count{border:1px solid var(--line);border-radius:12px;padding:.8rem;min-width:0} img{width:100%;max-height:320px;object-fit:contain;background:white;border-radius:8px} @media(max-width:600px){dl{grid-template-columns:1fr}}
+</style>
+<main>
+  <p>Issue 12 · run issue12-recovery-001</p><h1>Experiment evidence</h1>
+  <div class="notice"><b>Review boundary</b><p>No automatic quality score or redraw. The planned locator center and deterministic aperture are not final click truth.</p></div>
+
+    <section class="assets"><h2>Recovery source and approval</h2>
+      <dl><dt>Source manifest hash</dt><dd><code></code></dd>
+      <dt>Plan approval</dt><dd><pre>null</pre></dd></dl>
+    </section>
+    <section class="assets"><h2>Recovery counts</h2>
+      <dl><dt>Old selected</dt><dd>16 / 16</dd><dt>New selected</dt><dd>16 / 16</dd>
+      <dt>Preserved final</dt><dd>6</dd><dt>New final calls</dt><dd>10</dd>
+      <dt>Negative rejected</dt><dd><pre>null</pre></dd></dl>
+    </section>
+    <section class="destination"><h2>16 measurements</h2>
+      <p>Score is used only to select a marker candidate; it is not a quality score.</p>
+      <div class="images"><article class="image"><h4>Measurement locator:G02:M0:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 3.0,
+  &quot;chroma_p90&quot;: 3.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 163.709
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    686,
+    831,
+    743,
+    878
+  ],
+  &quot;bbox_width&quot;: 57,
+  &quot;bbox_height&quot;: 47,
+  &quot;aspect_ratio&quot;: 1.212766,
+  &quot;fill_ratio&quot;: 0.787234,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      714.0,
+      854.0
+    ],
+    &quot;radii&quot;: [
+      28.0,
+      23.0
+    ],
+    &quot;coverage&quot;: 1.044577
+  }
+}</pre><p><b>Selection score (not quality)</b>: 0.98125</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;canvas_edge&quot;: 1,
+  &quot;fill&quot;: 137,
+  &quot;ellipse_coverage&quot;: 46,
+  &quot;aspect&quot;: 4,
+  &quot;black_depth&quot;: 146,
+  &quot;chroma&quot;: 146,
+  &quot;darkening&quot;: 88,
+  &quot;black_coverage&quot;: 54,
+  &quot;area&quot;: 144,
+  &quot;bbox_side&quot;: 141,
+  &quot;ellipse_empty&quot;: 15
+}</pre></article><article class="image"><h4>Measurement locator:G02:M0:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 3.0,
+  &quot;chroma_p90&quot;: 3.0,
+  &quot;fraction_max_channel_le_20&quot;: 0.998859,
+  &quot;delta_luminance_mean&quot;: 159.861
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1642,
+    777,
+    1701,
+    836
+  ],
+  &quot;bbox_width&quot;: 59,
+  &quot;bbox_height&quot;: 59,
+  &quot;aspect_ratio&quot;: 1.0,
+  &quot;fill_ratio&quot;: 0.787417,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1671.0,
+      806.0
+    ],
+    &quot;radii&quot;: [
+      29.0,
+      29.0
+    ],
+    &quot;coverage&quot;: 1.042602
+  }
+}</pre><p><b>Selection score (not quality)</b>: 0.98125</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;canvas_edge&quot;: 1,
+  &quot;fill&quot;: 46,
+  &quot;ellipse_coverage&quot;: 18,
+  &quot;aspect&quot;: 1,
+  &quot;black_depth&quot;: 51,
+  &quot;chroma&quot;: 52,
+  &quot;darkening&quot;: 45,
+  &quot;black_coverage&quot;: 18,
+  &quot;area&quot;: 49,
+  &quot;bbox_side&quot;: 46,
+  &quot;ellipse_empty&quot;: 7
+}</pre></article><article class="image"><h4>Measurement locator:G02:M1:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 4.0,
+  &quot;chroma_p90&quot;: 3.0,
+  &quot;fraction_max_channel_le_20&quot;: 0.997722,
+  &quot;delta_luminance_mean&quot;: 106.3165
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    629,
+    756,
+    664,
+    790
+  ],
+  &quot;bbox_width&quot;: 35,
+  &quot;bbox_height&quot;: 34,
+  &quot;aspect_ratio&quot;: 1.029412,
+  &quot;fill_ratio&quot;: 0.777311,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      646.0,
+      772.5
+    ],
+    &quot;radii&quot;: [
+      17.0,
+      16.5
+    ],
+    &quot;coverage&quot;: 1.053531
+  }
+}</pre><p><b>Selection score (not quality)</b>: 0.98125</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;ellipse_coverage&quot;: 19,
+  &quot;black_depth&quot;: 96,
+  &quot;area&quot;: 93,
+  &quot;chroma&quot;: 96,
+  &quot;darkening&quot;: 96,
+  &quot;bbox_side&quot;: 93,
+  &quot;black_coverage&quot;: 19,
+  &quot;canvas_edge&quot;: 9,
+  &quot;fill&quot;: 89,
+  &quot;ellipse_empty&quot;: 3
+}</pre></article><article class="image"><h4>Measurement locator:G02:M1:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 4.0,
+  &quot;chroma_p90&quot;: 2.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 200.0134
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1603,
+    804,
+    1653,
+    854
+  ],
+  &quot;bbox_width&quot;: 50,
+  &quot;bbox_height&quot;: 50,
+  &quot;aspect_ratio&quot;: 1.0,
+  &quot;fill_ratio&quot;: 0.7856,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1627.5,
+      828.5
+    ],
+    &quot;radii&quot;: [
+      24.5,
+      24.5
+    ],
+    &quot;coverage&quot;: 1.046908
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 1,
+  &quot;black_depth&quot;: 2,
+  &quot;area&quot;: 2,
+  &quot;chroma&quot;: 2,
+  &quot;bbox_side&quot;: 2,
+  &quot;ellipse_coverage&quot;: 1,
+  &quot;darkening&quot;: 1
+}</pre></article><article class="image"><h4>Measurement locator:G03:M0:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 4.0,
+  &quot;chroma_p90&quot;: 1.0,
+  &quot;fraction_max_channel_le_20&quot;: 0.99964,
+  &quot;delta_luminance_mean&quot;: 202.9361
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    426,
+    735,
+    486,
+    796
+  ],
+  &quot;bbox_width&quot;: 60,
+  &quot;bbox_height&quot;: 61,
+  &quot;aspect_ratio&quot;: 1.016667,
+  &quot;fill_ratio&quot;: 0.784153,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      455.5,
+      765.0
+    ],
+    &quot;radii&quot;: [
+      29.5,
+      30.0
+    ],
+    &quot;coverage&quot;: 1.033862
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;canvas_edge&quot;: 27,
+  &quot;fill&quot;: 304,
+  &quot;ellipse_coverage&quot;: 119,
+  &quot;aspect&quot;: 7,
+  &quot;black_depth&quot;: 355,
+  &quot;chroma&quot;: 328,
+  &quot;darkening&quot;: 345,
+  &quot;black_coverage&quot;: 139,
+  &quot;area&quot;: 345,
+  &quot;bbox_side&quot;: 339,
+  &quot;ellipse_empty&quot;: 35
+}</pre></article><article class="image"><h4>Measurement locator:G03:M0:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 1.0,
+  &quot;chroma_p90&quot;: 0.0,
+  &quot;fraction_max_channel_le_20&quot;: 0.999646,
+  &quot;delta_luminance_mean&quot;: 57.4508
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1068,
+    1031,
+    1129,
+    1092
+  ],
+  &quot;bbox_width&quot;: 61,
+  &quot;bbox_height&quot;: 61,
+  &quot;aspect_ratio&quot;: 1.0,
+  &quot;fill_ratio&quot;: 0.789841,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1098.0,
+      1061.0
+    ],
+    &quot;radii&quot;: [
+      30.0,
+      30.0
+    ],
+    &quot;coverage&quot;: 1.041829
+  }
+}</pre><p><b>Selection score (not quality)</b>: 0.96235239</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;canvas_edge&quot;: 23,
+  &quot;fill&quot;: 422,
+  &quot;ellipse_coverage&quot;: 165,
+  &quot;black_depth&quot;: 483,
+  &quot;chroma&quot;: 439,
+  &quot;darkening&quot;: 423,
+  &quot;black_coverage&quot;: 221,
+  &quot;area&quot;: 474,
+  &quot;bbox_side&quot;: 470,
+  &quot;aspect&quot;: 8,
+  &quot;ellipse_empty&quot;: 30
+}</pre></article><article class="image"><h4>Measurement locator:G03:M1:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 5.0,
+  &quot;chroma_p90&quot;: 1.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 217.7869
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1377,
+    640,
+    1420,
+    683
+  ],
+  &quot;bbox_width&quot;: 43,
+  &quot;bbox_height&quot;: 43,
+  &quot;aspect_ratio&quot;: 1.0,
+  &quot;fill_ratio&quot;: 0.798269,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1398.0,
+      661.0
+    ],
+    &quot;radii&quot;: [
+      21.0,
+      21.0
+    ],
+    &quot;coverage&quot;: 1.075018
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 2658,
+  &quot;ellipse_coverage&quot;: 1025,
+  &quot;black_depth&quot;: 2866,
+  &quot;chroma&quot;: 2851,
+  &quot;darkening&quot;: 1071,
+  &quot;black_coverage&quot;: 1178,
+  &quot;area&quot;: 2875,
+  &quot;bbox_side&quot;: 2836,
+  &quot;aspect&quot;: 78,
+  &quot;canvas_edge&quot;: 27,
+  &quot;ellipse_empty&quot;: 257
+}</pre></article><article class="image"><h4>Measurement locator:G03:M1:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 1.0,
+  &quot;chroma_p90&quot;: 0.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 86.1414
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    796,
+    1009,
+    868,
+    1075
+  ],
+  &quot;bbox_width&quot;: 72,
+  &quot;bbox_height&quot;: 66,
+  &quot;aspect_ratio&quot;: 1.090909,
+  &quot;fill_ratio&quot;: 0.799032,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      831.5,
+      1041.5
+    ],
+    &quot;radii&quot;: [
+      35.5,
+      32.5
+    ],
+    &quot;coverage&quot;: 1.048895
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 798,
+  &quot;ellipse_coverage&quot;: 409,
+  &quot;black_depth&quot;: 939,
+  &quot;chroma&quot;: 905,
+  &quot;darkening&quot;: 663,
+  &quot;black_coverage&quot;: 451,
+  &quot;area&quot;: 923,
+  &quot;bbox_side&quot;: 894,
+  &quot;canvas_edge&quot;: 16,
+  &quot;aspect&quot;: 17,
+  &quot;ellipse_empty&quot;: 85
+}</pre></article><article class="image"><h4>Measurement locator:G06:M0:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 5.0,
+  &quot;chroma_p90&quot;: 3.0,
+  &quot;fraction_max_channel_le_20&quot;: 0.998649,
+  &quot;delta_luminance_mean&quot;: 157.2289
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    793,
+    442,
+    825,
+    474
+  ],
+  &quot;bbox_width&quot;: 32,
+  &quot;bbox_height&quot;: 32,
+  &quot;aspect_ratio&quot;: 1.0,
+  &quot;fill_ratio&quot;: 0.763672,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      808.5,
+      457.5
+    ],
+    &quot;radii&quot;: [
+      15.5,
+      15.5
+    ],
+    &quot;coverage&quot;: 1.056757
+  }
+}</pre><p><b>Selection score (not quality)</b>: 0.96411358</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 63,
+  &quot;ellipse_coverage&quot;: 27,
+  &quot;black_depth&quot;: 73,
+  &quot;area&quot;: 72,
+  &quot;chroma&quot;: 73,
+  &quot;darkening&quot;: 42,
+  &quot;black_coverage&quot;: 31,
+  &quot;bbox_side&quot;: 70,
+  &quot;ellipse_empty&quot;: 6
+}</pre></article><article class="image"><h4>Measurement locator:G06:M0:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 3.0,
+  &quot;chroma_p90&quot;: 1.0,
+  &quot;fraction_max_channel_le_20&quot;: 0.999688,
+  &quot;delta_luminance_mean&quot;: 220.4245
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1453,
+    976,
+    1517,
+    1042
+  ],
+  &quot;bbox_width&quot;: 64,
+  &quot;bbox_height&quot;: 66,
+  &quot;aspect_ratio&quot;: 1.03125,
+  &quot;fill_ratio&quot;: 0.794744,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1484.5,
+      1008.5
+    ],
+    &quot;radii&quot;: [
+      31.5,
+      32.5
+    ],
+    &quot;coverage&quot;: 1.046446
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 36,
+  &quot;ellipse_coverage&quot;: 12,
+  &quot;black_depth&quot;: 39,
+  &quot;area&quot;: 39,
+  &quot;chroma&quot;: 39,
+  &quot;darkening&quot;: 26,
+  &quot;bbox_side&quot;: 38,
+  &quot;black_coverage&quot;: 19,
+  &quot;ellipse_empty&quot;: 2
+}</pre></article><article class="image"><h4>Measurement locator:G06:M1:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 6.0,
+  &quot;chroma_p90&quot;: 3.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 198.4202
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1340,
+    510,
+    1373,
+    544
+  ],
+  &quot;bbox_width&quot;: 33,
+  &quot;bbox_height&quot;: 34,
+  &quot;aspect_ratio&quot;: 1.030303,
+  &quot;fill_ratio&quot;: 0.795009,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1356.0,
+      526.5
+    ],
+    &quot;radii&quot;: [
+      16.0,
+      16.5
+    ],
+    &quot;coverage&quot;: 1.079903
+  }
+}</pre><p><b>Selection score (not quality)</b>: 0.96699</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 84,
+  &quot;black_depth&quot;: 92,
+  &quot;area&quot;: 92,
+  &quot;chroma&quot;: 92,
+  &quot;bbox_side&quot;: 91,
+  &quot;black_coverage&quot;: 32,
+  &quot;ellipse_coverage&quot;: 26,
+  &quot;darkening&quot;: 30,
+  &quot;ellipse_empty&quot;: 17
+}</pre></article><article class="image"><h4>Measurement locator:G06:M1:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 6.0,
+  &quot;chroma_p90&quot;: 2.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 221.9448
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    788,
+    950,
+    828,
+    989
+  ],
+  &quot;bbox_width&quot;: 40,
+  &quot;bbox_height&quot;: 39,
+  &quot;aspect_ratio&quot;: 1.025641,
+  &quot;fill_ratio&quot;: 0.810897,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      807.5,
+      969.0
+    ],
+    &quot;radii&quot;: [
+      19.5,
+      19.0
+    ],
+    &quot;coverage&quot;: 1.090517
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 3,
+  &quot;black_depth&quot;: 3,
+  &quot;area&quot;: 3,
+  &quot;chroma&quot;: 3,
+  &quot;darkening&quot;: 2,
+  &quot;bbox_side&quot;: 3,
+  &quot;black_coverage&quot;: 2
+}</pre></article><article class="image"><h4>Measurement locator:G08:M0:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 2.0,
+  &quot;chroma_p90&quot;: 1.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 160.7736
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    364,
+    907,
+    429,
+    973
+  ],
+  &quot;bbox_width&quot;: 65,
+  &quot;bbox_height&quot;: 66,
+  &quot;aspect_ratio&quot;: 1.015385,
+  &quot;fill_ratio&quot;: 0.78951,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      396.0,
+      939.5
+    ],
+    &quot;radii&quot;: [
+      32.0,
+      32.5
+    ],
+    &quot;coverage&quot;: 1.039595
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 1,
+  &quot;black_depth&quot;: 1,
+  &quot;area&quot;: 1,
+  &quot;chroma&quot;: 1,
+  &quot;bbox_side&quot;: 1,
+  &quot;black_coverage&quot;: 1
+}</pre></article><article class="image"><h4>Measurement locator:G08:M0:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 5.0,
+  &quot;chroma_p90&quot;: 2.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 166.6785
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1517,
+    860,
+    1556,
+    899
+  ],
+  &quot;bbox_width&quot;: 39,
+  &quot;bbox_height&quot;: 39,
+  &quot;aspect_ratio&quot;: 1.0,
+  &quot;fill_ratio&quot;: 0.809336,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1536.0,
+      879.0
+    ],
+    &quot;radii&quot;: [
+      19.0,
+      19.0
+    ],
+    &quot;coverage&quot;: 1.090345
+  }
+}</pre><p><b>Selection score (not quality)</b>: 0.99171</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;black_depth&quot;: 1,
+  &quot;fill&quot;: 1,
+  &quot;bbox_side&quot;: 1,
+  &quot;area&quot;: 1
+}</pre></article><article class="image"><h4>Measurement locator:G08:M1:A</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 3.0,
+  &quot;chroma_p90&quot;: 2.0,
+  &quot;fraction_max_channel_le_20&quot;: 0.999292,
+  &quot;delta_luminance_mean&quot;: 153.4646
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    610,
+    896,
+    654,
+    939
+  ],
+  &quot;bbox_width&quot;: 44,
+  &quot;bbox_height&quot;: 43,
+  &quot;aspect_ratio&quot;: 1.023256,
+  &quot;fill_ratio&quot;: 0.792812,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      631.5,
+      917.0
+    ],
+    &quot;radii&quot;: [
+      21.5,
+      21.0
+    ],
+    &quot;coverage&quot;: 1.062323
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{
+  &quot;fill&quot;: 5,
+  &quot;black_depth&quot;: 4,
+  &quot;area&quot;: 5,
+  &quot;chroma&quot;: 5,
+  &quot;bbox_side&quot;: 5
+}</pre></article><article class="image"><h4>Measurement locator:G08:M1:B</h4><p><b>Color diagnostics</b></p><pre>{
+  &quot;max_channel_p90&quot;: 4.0,
+  &quot;chroma_p90&quot;: 2.0,
+  &quot;fraction_max_channel_le_20&quot;: 1.0,
+  &quot;delta_luminance_mean&quot;: 151.08
+}</pre><p><b>Shape diagnostics</b></p><pre>{
+  &quot;bbox&quot;: [
+    1493,
+    849,
+    1558,
+    874
+  ],
+  &quot;bbox_width&quot;: 65,
+  &quot;bbox_height&quot;: 25,
+  &quot;aspect_ratio&quot;: 2.6,
+  &quot;fill_ratio&quot;: 0.811692,
+  &quot;ellipse&quot;: {
+    &quot;center&quot;: [
+      1525.0,
+      861.0
+    ],
+    &quot;radii&quot;: [
+      32.0,
+      12.0
+    ],
+    &quot;coverage&quot;: 1.105616
+  }
+}</pre><p><b>Selection score (not quality)</b>: 1.0</p><p><b>Selection</b>: True</p><p><b>Aperture</b></p><pre>null</pre><pre>{}</pre></article></div>
+    </section>
+    <section class="assets"><h2>Preserved final (0 calls / 6)</h2><pre>{
+  &quot;calls&quot;: [],
+  &quot;results&quot;: []
+}</pre></section>
+    <section class="assets"><h2>New final (0 calls / 10)</h2><pre>{
+  &quot;calls&quot;: [],
+  &quot;results&quot;: []
+}</pre></section>
+    <section class="assets"><h2>Provenance</h2><pre>{
+  &quot;run_id&quot;: &quot;issue12-full-001&quot;,
+  &quot;manifest_sha256&quot;: &quot;ae0a2f2296e41b4521be6040daffe41dafbbf63347168bfb743fc1420b8f71e4&quot;
+}</pre></section>
+
+</main>

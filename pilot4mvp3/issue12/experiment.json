@@ -23,6 +23,22 @@
     "short_edge_ratio": 0.14,
     "diameter_rounding": "nearest_even"
   },
+  "locator_detection": {
+    "algorithm": "black-filled-ellipse/v1",
+    "connectivity": 8,
+    "candidate_m_max": 20,
+    "minimum_area": 500,
+    "minimum_bbox_side": 20,
+    "aspect_min": 0.25,
+    "aspect_max": 4.0,
+    "fill_min": 0.70,
+    "fill_max": 0.90,
+    "reject_canvas_edge": true,
+    "ellipse_m_p90_max": 12,
+    "ellipse_chroma_p90_max": 6,
+    "ellipse_q20_min": 0.94,
+    "delta_y_mean_min": 40
+  },
   "routes": {
     "M0": {
       "references": ["style"]

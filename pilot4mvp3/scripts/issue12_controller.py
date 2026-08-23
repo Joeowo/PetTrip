@@ -68,6 +68,221 @@ def half_up(value: float) -> int:
     return math.floor(value + 0.5)
 
 
+DEFAULT_LOCATOR_POLICY = {
+    "algorithm": "black-filled-ellipse/v1",
+    "candidate_m_max": 20,
+    "minimum_area": 500,
+    "minimum_bbox_side": 20,
+    "aspect_min": 0.25,
+    "aspect_max": 4.0,
+    "fill_min": 0.70,
+    "fill_max": 0.90,
+    "reject_canvas_edge": True,
+    "ellipse_m_p90_max": 12,
+    "ellipse_chroma_p90_max": 6,
+    "ellipse_q20_min": 0.94,
+    "delta_y_mean_min": 40,
+}
+
+
+def _percentile(values: list[float], fraction: float) -> float:
+    if not values:
+        raise ValueError("percentile requires values")
+    ordered = sorted(values)
+    index = (len(ordered) - 1) * fraction
+    lower = math.floor(index)
+    upper = math.ceil(index)
+    if lower == upper:
+        return float(ordered[lower])
+    weight = index - lower
+    return float(ordered[lower] * (1 - weight) + ordered[upper] * weight)
+
+
+def detect_black_locator(
+    environment_path: Path,
+    locator_path: Path,
+    policy: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Select the strongest qualified black filled circle/ellipse marker."""
+    settings = {**DEFAULT_LOCATOR_POLICY, **(policy or {})}
+    with Image.open(environment_path) as source, Image.open(locator_path) as locator:
+        environment = source.convert("RGB")
+        marked = locator.convert("RGB")
+    if environment.size != marked.size:
+        raise ValueError("dimension_mismatch")
+    width, height = marked.size
+    pixels = marked.load()
+    remaining = {
+        (x, y)
+        for y in range(height)
+        for x in range(width)
+        if max(pixels[x, y]) <= settings["candidate_m_max"]
+    }
+    components = []
+    while remaining:
+        seed = remaining.pop()
+        component = {seed}
+        stack = [seed]
+        while stack:
+            x, y = stack.pop()
+            for ny in range(max(0, y - 1), min(height, y + 2)):
+                for nx in range(max(0, x - 1), min(width, x + 2)):
+                    point = (nx, ny)
+                    if point in remaining:
+                        remaining.remove(point)
+                        component.add(point)
+                        stack.append(point)
+        components.append(component)
+
+    candidates = []
+    rejection_counts: dict[str, int] = {}
+    environment_pixels = environment.load()
+    for index, component in enumerate(components):
+        xs = [point[0] for point in component]
+        ys = [point[1] for point in component]
+        area = len(component)
+        left, top, right, bottom = min(xs), min(ys), max(xs) + 1, max(ys) + 1
+        bbox_width, bbox_height = right - left, bottom - top
+        aspect = max(bbox_width, bbox_height) / min(bbox_width, bbox_height)
+        fill = area / (bbox_width * bbox_height)
+        touches_edge = left == 0 or top == 0 or right == width or bottom == height
+        reasons = []
+        if area < settings["minimum_area"]:
+            reasons.append("area")
+        if min(bbox_width, bbox_height) < settings["minimum_bbox_side"]:
+            reasons.append("bbox_side")
+        if not settings["aspect_min"] <= 1 / aspect <= settings["aspect_max"]:
+            reasons.append("aspect")
+        if not settings["fill_min"] <= fill <= settings["fill_max"]:
+            reasons.append("fill")
+        if settings["reject_canvas_edge"] and touches_edge:
+            reasons.append("canvas_edge")
+
+        ellipse_points = []
+        center_x = (left + right - 1) / 2
+        center_y = (top + bottom - 1) / 2
+        radius_x = max((bbox_width - 1) / 2, 0.5)
+        radius_y = max((bbox_height - 1) / 2, 0.5)
+        for y in range(top, bottom):
+            for x in range(left, right):
+                normalized = ((x - center_x) / radius_x) ** 2 + ((y - center_y) / radius_y) ** 2
+                if normalized <= 1:
+                    ellipse_points.append((x, y))
+        if not ellipse_points:
+            ellipse_points = list(component)
+            reasons.append("ellipse_empty")
+        marker_max = [max(pixels[point]) for point in ellipse_points]
+        chroma = [max(pixels[point]) - min(pixels[point]) for point in ellipse_points]
+        locator_luminance = [
+            0.2126 * pixels[point][0] + 0.7152 * pixels[point][1] + 0.0722 * pixels[point][2]
+            for point in ellipse_points
+        ]
+        environment_luminance = [
+            0.2126 * environment_pixels[point][0]
+            + 0.7152 * environment_pixels[point][1]
+            + 0.0722 * environment_pixels[point][2]
+            for point in ellipse_points
+        ]
+        m_p90 = _percentile(marker_max, 0.9)
+        chroma_p90 = _percentile(chroma, 0.9)
+        q20 = sum(value <= 20 for value in marker_max) / len(marker_max)
+        delta_y_mean = sum(
+            before - after
+            for before, after in zip(environment_luminance, locator_luminance)
+        ) / len(locator_luminance)
+        luminance_median = _percentile(locator_luminance, 0.5)
+        luminance_mad = _percentile(
+            [abs(value - luminance_median) for value in locator_luminance], 0.5
+        )
+        luminance_iqr = _percentile(locator_luminance, 0.75) - _percentile(
+            locator_luminance, 0.25
+        )
+        if m_p90 > settings["ellipse_m_p90_max"]:
+            reasons.append("black_depth")
+        if chroma_p90 > settings["ellipse_chroma_p90_max"]:
+            reasons.append("chroma")
+        if q20 < settings["ellipse_q20_min"]:
+            reasons.append("black_coverage")
+        if delta_y_mean < settings["delta_y_mean_min"]:
+            reasons.append("darkening")
+        ellipse_area = len(ellipse_points)
+        ellipse_coverage = area / ellipse_area if ellipse_area else 0
+        if not 0.70 <= ellipse_coverage <= 1.15:
+            reasons.append("ellipse_coverage")
+
+        score = (
+            0.25 * max(0, min(1, (20 - m_p90) / 12))
+            + 0.25 * max(0, min(1, (q20 - 0.80) / 0.18))
+            + 0.15 * max(0, min(1, (10 - chroma_p90) / 8))
+            + 0.10 * max(0, min(1, (8 - luminance_iqr) / 6))
+            + 0.15 * max(0, min(1, (delta_y_mean - 20) / 50))
+            + 0.10 * max(0, min(1, (fill - 0.55) / 0.22))
+        )
+        candidate = {
+            "component_index": index,
+            "area": area,
+            "bbox": [left, top, right, bottom],
+            "bbox_width": bbox_width,
+            "bbox_height": bbox_height,
+            "aspect_ratio": round(aspect, 6),
+            "fill_ratio": round(fill, 6),
+            "touches_canvas_edge": touches_edge,
+            "ellipse": {
+                "center": [center_x, center_y],
+                "radii": [radius_x, radius_y],
+                "coverage": round(ellipse_coverage, 6),
+            },
+            "max_channel_p90": round(m_p90, 4),
+            "chroma_p90": round(chroma_p90, 4),
+            "fraction_max_channel_le_20": round(q20, 6),
+            "delta_luminance_mean": round(delta_y_mean, 4),
+            "luminance_mad": round(luminance_mad, 4),
+            "luminance_iqr": round(luminance_iqr, 4),
+            "score": round(score, 8),
+            "accepted": not reasons,
+            "rejection_reasons": reasons,
+        }
+        candidates.append(candidate)
+        for reason in set(reasons):
+            rejection_counts[reason] = rejection_counts.get(reason, 0) + 1
+
+    accepted = [candidate for candidate in candidates if candidate["accepted"]]
+    if not accepted:
+        raise ValueError(
+            "no_plausible_black_marker: "
+            + json.dumps(rejection_counts, sort_keys=True)
+        )
+    selected = sorted(
+        accepted,
+        key=lambda item: (
+            -item["score"],
+            -item["fraction_max_channel_le_20"],
+            item["max_channel_p90"],
+            -item["area"],
+            item["bbox"][1],
+            item["bbox"][0],
+            item["bbox"][3],
+            item["bbox"][2],
+        ),
+    )[0]
+    center_float = selected["ellipse"]["center"]
+    return {
+        "algorithm": settings["algorithm"],
+        "policy": settings,
+        "raw_component_count": len(components),
+        "qualified_candidate_count": len(accepted),
+        "rejection_counts": rejection_counts,
+        "selected_candidate": selected,
+        "candidate_diagnostics": sorted(
+            candidates, key=lambda item: (-item["accepted"], -item["score"])
+        )[:20],
+        "planned_locator_center_float": center_float,
+        "planned_locator_center": [half_up(center_float[0]), half_up(center_float[1])],
+        "bbox": selected["bbox"],
+        "area": selected["area"],
+    }
+
+
 def detect_single_black_circle(
     clean_path: Path,
     locator_path: Path,

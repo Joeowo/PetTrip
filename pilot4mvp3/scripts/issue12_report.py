@@ -277,6 +277,127 @@ def _provenance(manifest: dict[str, Any]) -> Any:
     return None
 
 
+def _value(source: dict[str, Any], *keys: str) -> Any:
+    for key in keys:
+        value = source.get(key)
+        if value not in (None, "", [], {}):
+            return value
+    return None
+
+
+def _recovery_measurement(measurement: dict[str, Any], identifier: Any) -> str:
+    selected = measurement.get("selected_candidate") or {}
+    ellipse = selected.get("ellipse") or {}
+    colors = {
+        key: selected.get(key)
+        for key in (
+            "max_channel_p90",
+            "chroma_p90",
+            "fraction_max_channel_le_20",
+            "delta_luminance_mean",
+        )
+        if key in selected
+    }
+    shape = {
+        key: selected.get(key)
+        for key in ("bbox", "bbox_width", "bbox_height", "aspect_ratio", "fill_ratio")
+        if key in selected
+    }
+    if ellipse:
+        shape["ellipse"] = ellipse
+    aperture = measurement.get("aperture") or measurement.get("aperture_artifact")
+    return (
+        '<article class="image"><h4>Measurement '
+        f"{_text(identifier)}</h4>"
+        f"<p><b>Color diagnostics</b></p><pre>{_json(colors)}</pre>"
+        f"<p><b>Shape diagnostics</b></p><pre>{_json(shape)}</pre>"
+        f"<p><b>Selection score (not quality)</b>: "
+        f"{_text(selected.get('score'))}</p>"
+        f"<p><b>Selection</b>: {_text(selected.get('accepted'))}</p>"
+        f"<p><b>Aperture</b></p><pre>{_json(aperture)}</pre>"
+        f"<pre>{_json(measurement.get('rejection_counts') or {})}</pre></article>"
+    )
+
+
+def _recovery_calls(title: str, value: Any, expected: str) -> str:
+    if isinstance(value, dict):
+        calls = value.get("calls") or value.get("call_ids") or []
+        results = value.get("results") or value.get("outputs") or []
+    elif isinstance(value, list):
+        calls, results = value, []
+    else:
+        calls, results = [], []
+    return (
+        f'<section class="assets"><h2>{_text(title)} '
+        f"({len(calls)} calls / {expected})</h2>"
+        f"<pre>{_json({'calls': calls, 'results': results})}</pre></section>"
+    )
+
+
+def _render_recovery(manifest: dict[str, Any]) -> str:
+    recovery = manifest.get("recovery") or manifest
+    if not isinstance(recovery, dict):
+        recovery = {}
+    artifacts = recovery.get("artifacts") or {}
+    calls = _calls(recovery)
+    source = _value(
+        recovery,
+        "source_manifest_sha256",
+        "source_manifest_hash",
+    )
+    source_manifest = recovery.get("source_manifest")
+    if isinstance(source_manifest, dict):
+        source = source or _value(source_manifest, "sha256", "hash")
+    plan = recovery.get("plan") or manifest.get("plan") or {}
+    if not isinstance(plan, dict):
+        plan = {}
+    approval = _value(recovery, "plan_approval", "approval") or plan.get("approval")
+    baseline = recovery.get("baseline") or recovery.get("old") or {}
+    refreshed = recovery.get("new") or recovery.get("recovered") or {}
+    negative = _value(recovery, "negative_rejected", "negative_rejections")
+    measurements = recovery.get("measurements") or manifest.get("measurements") or []
+    if not measurements:
+        measurements = [
+            {"id": identifier, **artifact["recovery_detection"]}
+            for identifier, artifact in artifacts.items()
+            if isinstance(artifact, dict) and "recovery_detection" in artifact
+        ]
+    if isinstance(measurements, dict):
+        measurements = [{"id": key, **value} for key, value in measurements.items() if isinstance(value, dict)]
+    measurement_html = "".join(
+        _recovery_measurement(item, item.get("id", index + 1))
+        for index, item in enumerate(measurements)
+        if isinstance(item, dict)
+    )
+    provenance = recovery.get("provenance") or manifest.get("provenance") or recovery.get("source")
+    preserved = [
+        {"id": identifier, **artifact}
+        for identifier, artifact in artifacts.items()
+        if identifier.startswith("final:")
+    ]
+    new_finals = [call for call in calls if call.get("phase") == "final"]
+    old_failed = 16 - len([item for item in measurements if item.get("selected_candidate")])
+    body = f"""
+    <section class="assets"><h2>Recovery source and approval</h2>
+      <dl><dt>Source manifest hash</dt><dd><code>{_text(source)}</code></dd>
+      <dt>Plan approval</dt><dd><pre>{_json(approval)}</pre></dd></dl>
+    </section>
+    <section class="assets"><h2>Recovery counts</h2>
+      <dl><dt>Old selected</dt><dd>{16 - old_failed} / 16</dd><dt>New selected</dt><dd>{len(measurements)} / 16</dd>
+      <dt>Preserved final</dt><dd>{len(preserved)}</dd><dt>New final calls</dt><dd>{len(new_finals)}</dd>
+      <dt>Negative rejected</dt><dd><pre>{_json(negative)}</pre></dd></dl>
+    </section>
+    <section class="destination"><h2>{len(measurements)} measurements</h2>
+      <p>Score is used only to select a marker candidate; it is not a quality score.</p>
+      <div class="images">{measurement_html}</div>
+    </section>
+    {_recovery_calls("Preserved final", recovery.get("preserved_final") or recovery.get("preserved"), "6")}
+    {_recovery_calls("New final", recovery.get("new_final") or recovery.get("new_finals"), "10")}
+    <section class="assets"><h2>Provenance</h2><pre>{_json(provenance)}</pre></section>
+    """
+    return _document(manifest.get("run_id"), body)
+
+
 def _render_02(manifest: dict[str, Any]) -> str:
     plan = manifest.get("plan") or {}
     plan_hash = manifest.get("plan_hash")
@@ -337,7 +458,10 @@ def _render_02(manifest: dict[str, Any]) -> str:
 def render_evidence(manifest_path: Path, output_path: Path) -> None:
     before = manifest_path.read_bytes()
     manifest = json.loads(before.decode("utf-8"))
-    if manifest.get("schema_version") == "issue12-run/0.2":
+    schema_version = manifest.get("schema_version")
+    if schema_version == "issue12-recovery/0.1":
+        document = _render_recovery(manifest)
+    elif schema_version == "issue12-run/0.2":
         document = _render_02(manifest)
     else:
         document = _render_01(manifest)

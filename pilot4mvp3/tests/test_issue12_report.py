@@ -136,6 +136,95 @@ def test_report_renders_issue12_run_02_evidence(tmp_path):
     assert manifest_path.read_text(encoding="utf-8") == original
 
 
+def test_report_renders_issue12_recovery_01_real_schema(tmp_path):
+    measurements = {
+        f"locator:G06:M{index // 8}:scene-{index % 8}": {
+            "algorithm": "black-filled-ellipse/v1",
+            "raw_component_count": 3,
+            "qualified_candidate_count": 1,
+            "rejection_counts": {"canvas_edge": 2},
+            "planned_locator_center_float": [40.25, 30.5],
+            "planned_locator_center": [40, 31],
+            "bbox": [30, 20, 50, 40],
+            "area": 314,
+            "selected_candidate": {
+                "accepted": True,
+                "bbox": [30, 20, 50, 40],
+                "bbox_width": 20,
+                "bbox_height": 20,
+                "aspect_ratio": 1.0,
+                "fill_ratio": 0.785,
+                "ellipse": {"center": [39.5, 29.5], "radii": [9.5, 9.5]},
+                "max_channel_p90": 4.0,
+                "chroma_p90": 1.0,
+                "fraction_max_channel_le_20": 1.0,
+                "delta_luminance_mean": 82.0,
+                "score": 0.91,
+            },
+            "aperture": {
+                "path": f"artifacts/apertures/{index}.png",
+                "center": [40, 31],
+                "radius": 81,
+                "diameter": 162,
+                "truth_boundary": "planned aperture; not final click truth",
+            },
+        }
+        for index in range(16)
+    }
+    manifest = {
+        "schema_version": "issue12-recovery/0.1",
+        "run_id": "issue12-recovery-001",
+        "recovery": {
+            "source_manifest": {
+                "run_id": "issue12-full-001",
+                "sha256": "source-manifest-sha",
+            },
+            "plan": {
+                "approval": {
+                    "plan_sha256": "recovery-plan-sha",
+                    "approved_at": "2026-08-23T00:00:00Z",
+                }
+            },
+            "negative_rejected": {"count": 4, "by_reason": {"negative": 4}},
+            "measurements": measurements,
+            "preserved_final": {
+                "calls": [{"id": f"final-preserved-{i}"} for i in range(6)],
+                "results": [{"id": f"result-preserved-{i}", "status": "succeeded"} for i in range(6)],
+            },
+            "new_final": {
+                "calls": [{"id": f"final-new-{i}"} for i in range(10)],
+                "results": [{"id": f"result-new-{i}", "status": "succeeded"} for i in range(10)],
+            },
+            "provenance": {
+                "source_run_id": "issue12-full-001",
+                "source_manifest_sha256": "source-manifest-sha",
+            },
+        },
+    }
+    manifest_path = tmp_path / "manifest.json"
+    original = json.dumps(manifest, ensure_ascii=False)
+    manifest_path.write_text(original, encoding="utf-8")
+    output = tmp_path / "evidence.html"
+
+    report.render_evidence(manifest_path, output)
+
+    page = output.read_text(encoding="utf-8")
+    lowered = page.lower()
+    assert "issue12-recovery-001" in page
+    assert "source-manifest-sha" in page and "recovery-plan-sha" in page
+    assert "Old" in page and "6 / 16" in page and "16 / 16" in page
+    assert "negative rejected" in lowered and "count" in lowered
+    assert "16 measurements" in page
+    assert "max_channel_p90" in page and "aspect_ratio" in page and "score" in page
+    assert "selection score (not quality)" in lowered
+    assert "planned aperture" in page and "radius" in page
+    assert "final-preserved-0" in page and "result-preserved-0" in page
+    assert "final-new-0" in page and "result-new-0" in page
+    assert "Provenance" in page and "issue12-full-001" in page
+    assert "data:" not in lowered
+    assert manifest_path.read_text(encoding="utf-8") == original
+
+
 def test_report_02_rejects_paths_outside_run(tmp_path):
     manifest = {
         "schema_version": "issue12-run/0.2",
