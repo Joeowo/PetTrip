@@ -24,6 +24,18 @@ class ImageGenerationRequest:
 
 
 @dataclass(frozen=True)
+class ImageEditRequest:
+    """图像编辑请求（Inpainting）。
+
+    用于场景生成：将 aperture 图中的黑色圆替换为宠物。
+    """
+    image: bytes  # 原始图像（PNG）
+    mask: bytes   # Mask 图像（PNG，白色区域将被编辑）
+    prompt: str   # 编辑提示词
+    size: str = "1024x1024"  # 期望输出尺寸
+
+
+@dataclass(frozen=True)
 class ImageResult:
     data: bytes
     mime_type: str
@@ -35,6 +47,9 @@ class ImageGenerationProvider:
     """Protocol-shaped base class for dependency injection and fakes."""
 
     async def generate(self, request: ImageGenerationRequest) -> ImageResult:
+        raise NotImplementedError
+
+    async def edit(self, request: ImageEditRequest) -> ImageResult:
         raise NotImplementedError
 
 
@@ -136,3 +151,60 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
             width=width,
             height=height,
         )
+
+    async def edit(self, request: ImageEditRequest) -> ImageResult:
+        """调用图像编辑接口（Inpainting）。
+
+        Args:
+            request: 图像编辑请求，包含原图、Mask 和提示词
+
+        Returns:
+            ImageResult: 编辑后的图像
+
+        Raises:
+            ImageProviderError: 服务不可用或返回无效图片
+        """
+        # 构建 multipart/form-data 请求
+        files = {
+            "image": ("image.png", io.BytesIO(request.image), "image/png"),
+            "mask": ("mask.png", io.BytesIO(request.mask), "image/png"),
+        }
+
+        data = {
+            "model": self._model,
+            "prompt": request.prompt,
+            "n": 1,
+            "size": request.size,
+            "response_format": "b64_json",
+        }
+
+        try:
+            async with httpx.AsyncClient(
+                timeout=self._timeout_seconds,
+                transport=self._transport,
+            ) as client:
+                response = await client.post(
+                    f"{self._base_url}/images/edits",
+                    headers={"Authorization": f"Bearer {self._api_key}"},
+                    files=files,
+                    data=data,
+                )
+                response.raise_for_status()
+                body: Any = response.json()
+        except (httpx.HTTPError, ValueError, json.JSONDecodeError) as exc:
+            raise ImageProviderError("图片编辑服务暂时不可用。") from exc
+
+        try:
+            encoded = body["data"][0]["b64_json"]
+        except (KeyError, IndexError, TypeError) as exc:
+            raise ImageProviderError("图片编辑服务返回无效图片。") from exc
+        if not isinstance(encoded, str) or not encoded:
+            raise ImageProviderError("图片编辑服务返回无效图片。")
+
+        try:
+            decoded = await asyncio.to_thread(self._decode_and_validate, encoded)
+        except ImageProviderError:
+            raise
+        except Exception as exc:
+            raise ImageProviderError("图片编辑服务返回无效图片。") from exc
+        return decoded
