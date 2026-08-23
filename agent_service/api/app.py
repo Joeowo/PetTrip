@@ -193,8 +193,10 @@ def create_app(
     destination_repository = DestinationRepository(resolved_settings.db_path)
     destination_repository.open()
     from ..workflows.clarification_spec import run_clarification_spec_workflow
+    from ..domain.mask_generation import compute_interaction_diameter
     from ..workflows.generation_planning import run_generation_planning_workflow
     from ..workflows.scene_generation import run_scene_generation_workflow
+    from ..workflows.scene_locator import run_scene_locator_workflow
 
     def run_clarification(context: dict[str, Any]) -> dict[str, Any]:
         return run_clarification_spec_workflow(
@@ -219,14 +221,38 @@ def create_app(
             return {"error": "scene_dependencies_not_found"}
         plans = destination_repository.list_scene_plans(destination_id)
         failures: list[dict[str, str]] = []
+        interaction_diameter_px = compute_interaction_diameter(
+            environment["width_px"], environment["height_px"]
+        )
         for plan in plans:
-            if destination_repository.get_scene_status(destination_id)["ready_scenes"] > plan["order_index"]:
+            existing_artifact = destination_repository.get_scene_artifact_for_scene(
+                plan["scene_id"]
+            )
+            if existing_artifact is not None:
+                continue
+            locator_result = run_scene_locator_workflow(
+                destination_id=destination_id,
+                scene_id=plan["scene_id"],
+                shared_environment_id=environment["shared_environment_id"],
+                semantic_anchor=plan["semantic_anchor"],
+                interaction_diameter_px=interaction_diameter_px,
+                repo=destination_repository,
+                file_storage=file_storage,
+                image_provider=None if use_mock_generation else resolved_image_provider,
+            )
+            if locator_result.get("error"):
+                failures.append({
+                    "scene_id": plan["scene_id"],
+                    "error": locator_result["error"],
+                })
                 continue
             result = run_scene_generation_workflow(
                 destination_id, plan["scene_id"], spec["spec_id"],
                 environment["shared_environment_id"], plan["semantic_anchor"],
                 plan["pet_behavior"], plan["pet_emotion"],
-                environment["width_px"] // 2, environment["height_px"] // 2, 240,
+                locator_result["planned_center_x"],
+                locator_result["planned_center_y"],
+                interaction_diameter_px,
                 destination_repository,
                 file_storage,
                 use_mock_final_scene=use_mock_generation,

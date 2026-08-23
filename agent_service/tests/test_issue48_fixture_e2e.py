@@ -138,6 +138,72 @@ def test_fixture_http_e2e_closes_and_publishes_two_immutable_scenes(tmp_path: Pa
         assert unchanged["scene_artifacts"] == manifest["scene_artifacts"]
 
 
+def test_fixture_http_e2e_dispatches_locator_geometry_into_each_scene(
+    tmp_path: Path, monkeypatch
+) -> None:
+    from agent_service.workflows import scene_locator as locator_workflow
+    from agent_service.workflows import scene_generation as scene_workflow
+
+    locator_calls: list[dict] = []
+    scene_calls: list[dict] = []
+    original_locator = locator_workflow.run_scene_locator_workflow
+    original_scene = scene_workflow.run_scene_generation_workflow
+
+    def record_locator(*args, **kwargs):
+        result = original_locator(*args, **kwargs)
+        locator_calls.append(
+            {
+                "semantic_anchor": kwargs["semantic_anchor"],
+                "diameter": kwargs["interaction_diameter_px"],
+                "center": (result.get("planned_center_x"), result.get("planned_center_y")),
+            }
+        )
+        return result
+
+    def record_scene(*args, **kwargs):
+        scene_calls.append(
+            {
+                "center": (args[7], args[8]),
+                "diameter": args[9],
+            }
+        )
+        return original_scene(*args, **kwargs)
+
+    monkeypatch.setattr(locator_workflow, "run_scene_locator_workflow", record_locator)
+    monkeypatch.setattr(scene_workflow, "run_scene_generation_workflow", record_scene)
+    app = create_app(settings=_settings(tmp_path), start_worker=False)
+    with TestClient(app) as client:
+        session = client.post("/api/v1/sessions", headers=AUTH)
+        session_id = session.json()["session_id"]
+        _submit(
+            client, session_id, "geometry-wish-1",
+            {"type": "clarification.submit_input", "input_id": "input-1", "text": "海边散步"},
+        )
+        _submit(
+            client, session_id, "geometry-wish-2",
+            {"type": "clarification.submit_input", "input_id": "input-2", "text": "看灯塔"},
+        )
+        closed = _submit(
+            client, session_id, "geometry-close",
+            {"type": "clarification.close", "close_request_id": "geometry-close"},
+        )
+        manifest = _wait_destination(
+            client, closed["output"]["structured_data"]["destination_id"]
+        )
+
+    assert manifest["terminal_outcome"] == "succeeded"
+    assert len(locator_calls) == 2
+    assert len(scene_calls) == 2
+    assert {call["diameter"] for call in locator_calls} == {160}
+    assert {call["diameter"] for call in scene_calls} == {160}
+    assert len({call["semantic_anchor"] for call in locator_calls}) == 2
+    centers = [call["center"] for call in locator_calls]
+    assert all(center[0] is not None and center[1] is not None for center in centers)
+    assert len(set(centers)) == 2
+    assert all(center != (1024, 576) for center in centers)
+    assert [call["center"] for call in scene_calls] == centers
+
+
 def test_fixture_http_e2e_aggregates_partial_scene_failure(
     tmp_path: Path, monkeypatch
 ) -> None:

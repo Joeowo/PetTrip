@@ -10,7 +10,10 @@
 from __future__ import annotations
 
 import hashlib
+from io import BytesIO
 from typing import Any, TypedDict
+
+from PIL import Image
 
 from langgraph.graph import StateGraph, END
 
@@ -22,6 +25,7 @@ from ..domain.interaction_circle import (
     validate_circle_in_bounds,
     DetectionError,
 )
+from ..adapters.image import ImageGenerationProvider, ImageGenerationRequest, ImageReference
 
 
 # ============================================================================
@@ -94,10 +98,12 @@ def mock_generate_locator_image(
     # 实际生产中，这里会调用图片生成 Provider 根据 semantic_anchor 生成带黑圈的图
     draw = ImageDraw.Draw(env_image)
 
-    # 简单策略：根据 semantic_anchor 哈希值选择位置（确保可复现）
-    anchor_hash = hash(semantic_anchor)
-    offset_x = (anchor_hash % 400) - 200  # -200 to 200
-    offset_y = ((anchor_hash // 1000) % 200) - 100  # -100 to 100
+    # fixture 使用稳定摘要派生位置，确保跨进程重启仍可复现。
+    anchor_hash = int.from_bytes(
+        hashlib.sha256(semantic_anchor.encode("utf-8")).digest()[:8], "big"
+    )
+    offset_x = (anchor_hash % 400) - 200  # -200 to 199
+    offset_y = ((anchor_hash // 1000) % 200) - 100  # -100 to 99
 
     center_x = width // 2 + offset_x
     center_y = height // 2 + offset_y
@@ -121,10 +127,83 @@ def mock_generate_locator_image(
 # ============================================================================
 
 
+def _read_registered_bytes(
+    file_storage: LocalImageStorage,
+    repo: DestinationRepository,
+    file_id: str,
+    destination_id: str,
+) -> bytes:
+    if hasattr(file_storage, "read"):
+        return file_storage.read(file_id).content
+    destination = repo.get_destination(destination_id)
+    if destination is None:
+        raise FileNotFoundError(destination_id)
+    from ..storage.database import Database
+
+    db = Database(repo.db_path)
+    try:
+        file_row = db.get_file(file_id, destination["api_client_id"])
+    finally:
+        db.close()
+    if file_row is None:
+        raise FileNotFoundError(file_id)
+    return file_storage.read_verified(file_row)
+
+
+def _store_locator_bytes(
+    file_storage: LocalImageStorage,
+    repo: DestinationRepository,
+    destination_id: str,
+    file_id: str,
+    content: bytes,
+) -> dict[str, Any]:
+    with Image.open(BytesIO(content)) as image:
+        image.load()
+        width, height = image.size
+    if hasattr(file_storage, "write"):
+        file_storage.write(file_id, content, "image/png")
+        rel_path = f"{file_id}.dat"
+    else:
+        stored = file_storage.store_generated_png(
+            file_id=file_id,
+            data=content,
+            width=width,
+            height=height,
+        )
+        rel_path = stored.rel_path
+    from ..storage.database import Database
+
+    destination = repo.get_destination(destination_id)
+    if destination is None:
+        raise FileNotFoundError(destination_id)
+    db = Database(repo.db_path)
+    try:
+        db.create_file(
+            file_id=file_id,
+            api_client_id=destination["api_client_id"],
+            source="agent_generated",
+            purpose="generated_image",
+            mime_type="image/png",
+            size_bytes=len(content),
+            width=width,
+            height=height,
+            rel_path=rel_path,
+            sha256=hashlib.sha256(content).hexdigest(),
+        )
+    except Exception:
+        if not hasattr(file_storage, "write"):
+            file_storage.delete(rel_path)
+        raise
+    finally:
+        db.close()
+    return {"width": width, "height": height, "rel_path": rel_path}
+
+
 def generate_locator_node(
     state: SceneLocatorState,
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
+    image_provider: ImageGenerationProvider | None = None,
 ) -> SceneLocatorState:
     """节点：生成定位参考图。
 
@@ -132,29 +211,56 @@ def generate_locator_node(
     """
     try:
         # 读取环境母图
-        env_file = file_storage.read(state["environment_file_id"])
-        env_bytes = env_file.content
-
-        # 生成定位参考图（mock）
-        locator_bytes = mock_generate_locator_image(
-            env_bytes,
-            state["semantic_anchor"],
-            state["environment_width"],
-            state["environment_height"],
+        env_bytes = _read_registered_bytes(
+            file_storage,
+            repo,
+            state["environment_file_id"],
+            state["destination_id"],
         )
+
+        # 真实 Provider 路径必须把环境母图和语义锚点作为具名引用传入。
+        if image_provider is None:
+            locator_bytes = mock_generate_locator_image(
+                env_bytes,
+                state["semantic_anchor"],
+                state["environment_width"],
+                state["environment_height"],
+            )
+        else:
+            result = image_provider.generate
+            locator_result = __import__("asyncio").run(
+                result(
+                    ImageGenerationRequest(
+                        prompt=(
+                            "Generate a localization reference image with exactly one "
+                            f"black circle for semantic anchor: {state['semantic_anchor']}"
+                        ),
+                        references=(ImageReference(
+                            role="environment_reference",
+                            file_id=state["environment_file_id"],
+                            mime_type="image/png",
+                            width=state["environment_width"],
+                            height=state["environment_height"],
+                            sha256=state["environment_sha256"],
+                            data=env_bytes,
+                            order_index=0,
+                        ),),
+                    )
+                )
+            )
+            locator_bytes = locator_result.data
 
         # 存储定位参考图
         locator_sha256 = hashlib.sha256(locator_bytes).hexdigest()
         locator_file_id = new_id("locator")
 
-        file_storage.write(
-            file_id=locator_file_id,
-            content=locator_bytes,
-            mime_type="image/png",
+        _store_locator_bytes(
+            file_storage,
+            repo,
+            state["destination_id"],
+            locator_file_id,
+            locator_bytes,
         )
-
-        # 记录到 Repository（内部资产，不直接交付 Unity）
-        # TODO: 添加 locator_artifacts 表来追溯定位参考图
 
         state["locator_file_id"] = locator_file_id
         state["locator_sha256"] = locator_sha256
@@ -168,22 +274,44 @@ def generate_locator_node(
 
 def detect_circle_center_node(
     state: SceneLocatorState,
+    repo: DestinationRepository,
     file_storage: LocalImageStorage,
 ) -> SceneLocatorState:
     """节点：检测黑圈圆心坐标。"""
     try:
         # 读取环境母图和定位参考图
-        env_file = file_storage.read(state["environment_file_id"])
-        loc_file = file_storage.read(state["locator_file_id"])
-
-        env_bytes = env_file.content
-        loc_bytes = loc_file.content
+        env_bytes = _read_registered_bytes(
+            file_storage,
+            repo,
+            state["environment_file_id"],
+            state["destination_id"],
+        )
+        loc_bytes = _read_registered_bytes(
+            file_storage,
+            repo,
+            state["locator_file_id"],
+            state["destination_id"],
+        )
 
         # 调用黑圈检测算法
-        detection_result = detect_black_circle(env_bytes, loc_bytes)
+        detection_result = detect_black_circle(
+            env_bytes,
+            loc_bytes,
+            policy={"require_unique_candidate": True},
+        )
 
-        # 提取圆心坐标
+        # 提取圆心坐标，并要求定位圆直径与正式配置一致。
         center_x, center_y = detection_result["planned_locator_center"]
+        left, top, right, bottom = detection_result["bbox"]
+        detected_diameter = max(right - left, bottom - top)
+        if detected_diameter != state["interaction_diameter_px"]:
+            state["error"] = "circle_size_mismatch"
+            state["detection_diagnostics"] = {
+                **detection_result,
+                "detected_diameter": detected_diameter,
+                "expected_diameter": state["interaction_diameter_px"],
+            }
+            return state
 
         # 验证圆心 + 配置半径是否在画布内
         radius_px = state["interaction_diameter_px"] // 2
@@ -262,6 +390,7 @@ def retry_locator_node(state: SceneLocatorState) -> SceneLocatorState:
 def build_scene_locator_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
+    image_provider: ImageGenerationProvider | None = None,
 ) -> StateGraph:
     """构建场景定位工作流。
 
@@ -276,11 +405,13 @@ def build_scene_locator_workflow(
     # 添加节点
     workflow.add_node(
         "generate_locator",
-        lambda state: generate_locator_node(state, repo, file_storage),
+        lambda state: generate_locator_node(
+            state, repo, file_storage, image_provider
+        ),
     )
     workflow.add_node(
         "detect_circle_center",
-        lambda state: detect_circle_center_node(state, file_storage),
+        lambda state: detect_circle_center_node(state, repo, file_storage),
     )
     workflow.add_node("retry_locator", retry_locator_node)
 
@@ -319,6 +450,7 @@ def run_scene_locator_workflow(
     interaction_diameter_px: int,
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
+    image_provider: ImageGenerationProvider | None = None,
 ) -> dict[str, Any]:
     """运行场景定位工作流。
 
@@ -361,7 +493,9 @@ def run_scene_locator_workflow(
     )
 
     # 构建并运行工作流
-    workflow = build_scene_locator_workflow(repo, file_storage)
+    workflow = build_scene_locator_workflow(
+        repo, file_storage, image_provider=image_provider
+    )
     app = workflow.compile()
 
     final_state = app.invoke(initial_state)

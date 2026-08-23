@@ -419,6 +419,10 @@ class Database:
             ),
         )
 
+    def delete_file(self, file_id: str) -> None:
+        with self.transaction() as conn:
+            conn.execute("DELETE FROM files WHERE id = ?", (file_id,))
+
     def get_file(self, file_id: str, api_client_id: str) -> dict[str, Any] | None:
         with self._lock:
             row = self._conn.execute(

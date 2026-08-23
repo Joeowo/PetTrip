@@ -11,6 +11,7 @@ from PIL import Image
 from agent_service.adapters.image import (
     ImageGenerationRequest,
     ImageProviderError,
+    ImageReference,
     OpenAICompatibleImageProvider,
 )
 
@@ -54,6 +55,99 @@ async def test_image_provider_posts_generation_request_to_images_endpoint() -> N
         "n": 1,
         "response_format": "b64_json",
     }
+
+
+@pytest.mark.asyncio
+async def test_image_provider_posts_role_ordered_reference_metadata() -> None:
+    requests: list[httpx.Request] = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json={"data": [{"b64_json": _image_b64()}]})
+
+    provider = OpenAICompatibleImageProvider(
+        base_url="https://image.example/v1",
+        api_key="provider-secret",
+        model="gpt-image-2",
+        timeout_seconds=3,
+        request_size="1024x1024",
+        max_decoded_bytes=2_000_000,
+        max_image_pixels=5_000_000,
+        transport=httpx.MockTransport(handler),
+    )
+    references = [
+        ImageReference(
+            role="composition_reference",
+            file_id="file-composition",
+            mime_type="image/png",
+            width=2309,
+            height=1080,
+            sha256="c" * 64,
+            data=b"composition",
+            order_index=1,
+        ),
+        ImageReference(
+            role="style_reference",
+            file_id="file-style",
+            mime_type="image/png",
+            width=640,
+            height=480,
+            sha256="s" * 64,
+            data=b"style",
+            order_index=0,
+        ),
+    ]
+
+    await provider.generate(
+        ImageGenerationRequest(prompt="环境 Prompt", references=tuple(references))
+    )
+
+    payload = json.loads(requests[0].content)
+    assert payload["prompt"] == "环境 Prompt"
+    assert payload["references"] == [
+        {
+            "role": "style_reference",
+            "file_id": "file-style",
+            "mime_type": "image/png",
+            "width": 640,
+            "height": 480,
+            "sha256": "s" * 64,
+            "data": "c3R5bGU=",
+            "order_index": 0,
+        },
+        {
+            "role": "composition_reference",
+            "file_id": "file-composition",
+            "mime_type": "image/png",
+            "width": 2309,
+            "height": 1080,
+            "sha256": "c" * 64,
+            "data": "Y29tcG9zaXRpb24=",
+            "order_index": 1,
+        },
+    ]
+
+
+def test_image_requests_reject_duplicate_reference_order_indexes() -> None:
+    references = tuple(
+        ImageReference(
+            role=role,
+            file_id=file_id,
+            mime_type="image/png",
+            width=1,
+            height=1,
+            sha256=character * 64,
+            data=b"data",
+            order_index=0,
+        )
+        for role, file_id, character in (
+            ("style_reference", "style", "a"),
+            ("composition_reference", "composition", "b"),
+        )
+    )
+
+    with pytest.raises(ValueError, match="order_index 必须唯一"):
+        ImageGenerationRequest(prompt="test", references=references)
 
 
 @pytest.mark.asyncio
