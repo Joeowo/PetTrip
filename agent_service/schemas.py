@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -66,14 +66,62 @@ class TextResponseFormat(BaseModel):
         return self
 
 
+class ClarificationSubmitInputCommand(BaseModel):
+    """提交澄清输入命令。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: Literal["clarification.submit_input"]
+    input_id: str = Field(min_length=1)
+    text: str
+
+
+class ClarificationCloseCommand(BaseModel):
+    """独立关闭澄清命令。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: Literal["clarification.close"]
+    close_request_id: str = Field(min_length=1)
+
+
+RunCommand = Annotated[
+    Union[ClarificationSubmitInputCommand, ClarificationCloseCommand],
+    Field(discriminator="type"),
+]
+
+
 class CreateRunRequest(BaseModel):
     """创建纯文本异步 Run 的请求。"""
 
     model_config = ConfigDict(extra="forbid")
 
     session_id: str = Field(min_length=1)
-    input: TextInput
-    response_format: TextResponseFormat
+    input: TextInput | None = None
+    response_format: TextResponseFormat | None = None
+    command: RunCommand | None = None
+
+    @model_validator(mode="after")
+    def validate_command_or_input(self) -> "CreateRunRequest":
+        """命令模式和传统输入模式互斥。"""
+        has_command = self.command is not None
+        has_input = self.input is not None
+
+        if has_command and has_input:
+            raise ValueError("command 和 input 不能同时提供。")
+
+        if not has_command and not has_input:
+            raise ValueError("必须提供 command 或 input。")
+
+        # 传统模式必须提供 response_format
+        if has_input and self.response_format is None:
+            raise ValueError("使用 input 时必须提供 response_format。")
+
+        # 命令模式不应该提供 response_format
+        if has_command and self.response_format is not None:
+            raise ValueError("使用 command 时不应提供 response_format。")
+
+        return self
 
 
 class ErrorBody(BaseModel):

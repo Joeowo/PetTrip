@@ -40,6 +40,10 @@ def _is_expired(value: str | None) -> bool:
     return expires_at <= datetime.now(timezone.utc)
 
 
+class ClarificationAlreadyClosedError(ValueError):
+    """澄清已经关闭，不能再提交新输入。"""
+
+
 class IdempotencyKeyReusedError(ValueError):
     """同一客户端把幂等键用于不同请求体。"""
 
@@ -69,6 +73,28 @@ CREATE TABLE IF NOT EXISTS sessions (
     api_client_id TEXT NOT NULL REFERENCES api_clients(id),
     created_at    TEXT NOT NULL,
     updated_at    TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS clarification_sessions (
+    session_id           TEXT PRIMARY KEY REFERENCES sessions(id),
+    clarification_closed INTEGER NOT NULL DEFAULT 0 CHECK (clarification_closed IN (0, 1)),
+    close_reason         TEXT CHECK (close_reason IN ('accepted_wish_limit', 'non_accepted_limit', 'unity_requested') OR close_reason IS NULL),
+    accepted_wish_count  INTEGER NOT NULL DEFAULT 0 CHECK (accepted_wish_count >= 0 AND accepted_wish_count <= 3),
+    non_accepted_count   INTEGER NOT NULL DEFAULT 0 CHECK (non_accepted_count >= 0 AND non_accepted_count <= 5),
+    destination_id       TEXT,
+    closed_at            TEXT,
+    created_at           TEXT NOT NULL,
+    updated_at           TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS clarification_inputs (
+    input_id         TEXT PRIMARY KEY,
+    session_id       TEXT NOT NULL REFERENCES clarification_sessions(session_id),
+    run_id           TEXT NOT NULL,
+    raw_text         TEXT NOT NULL,
+    classification   TEXT NOT NULL CHECK (classification IN ('empty', 'accepted_wish_input', 'off_topic', 'unintelligible')),
+    normalized_text  TEXT,
+    created_at       TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS runs (
@@ -672,3 +698,248 @@ class Storage:
             )
             counts["recovered_running"] += 1
         return counts
+
+    # -- Clarification Session ---------------------------------------------
+    def get_or_create_clarification_session(
+        self, session_id: str
+    ) -> dict[str, Any]:
+        """获取或创建澄清会话。幂等操作。"""
+        now = utcnow_iso()
+        with self._transaction() as conn:
+            row = conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+            if row is not None:
+                return dict(row)
+
+            conn.execute(
+                "INSERT INTO clarification_sessions("
+                "session_id, clarification_closed, accepted_wish_count, "
+                "non_accepted_count, created_at, updated_at) "
+                "VALUES(?, 0, 0, 0, ?, ?)",
+                (session_id, now, now),
+            )
+            row = conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+        return dict(row)
+
+    def get_clarification_session(
+        self, session_id: str
+    ) -> dict[str, Any] | None:
+        """获取澄清会话。"""
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+        return _row_to_dict(row)
+
+    def submit_clarification_input(
+        self,
+        *,
+        input_id: str,
+        session_id: str,
+        run_id: str,
+        text: str,
+        classification: str = "accepted_wish_input",
+    ) -> dict[str, Any]:
+        """
+        提交澄清输入。
+
+        处理幂等性：
+        - 同一 input_id + 相同文本：返回现有记录
+        - 同一 input_id + 不同文本：抛出 IdempotencyKeyReusedError
+        - 澄清已关闭：抛出 ClarificationAlreadyClosedError
+
+        计数逻辑：
+        - accepted_wish_input 增加 accepted_wish_count
+        - off_topic 或 unintelligible 增加 non_accepted_count
+        - empty 不增加任何计数
+
+        封盘逻辑：
+        - 第 3 次 accepted 后封盘，创建 destination_id
+        - 第 5 次 non-accepted 后封盘，创建 destination_id
+        """
+        now = utcnow_iso()
+        with self._transaction() as conn:
+            # 检查幂等性
+            existing = conn.execute(
+                "SELECT * FROM clarification_inputs WHERE input_id = ?",
+                (input_id,),
+            ).fetchone()
+            if existing is not None:
+                if existing["raw_text"] != text:
+                    raise IdempotencyKeyReusedError(
+                        f"input_id {input_id} 已用于不同文本"
+                    )
+                # 返回现有记录和当前会话状态
+                session = conn.execute(
+                    "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                    (session_id,),
+                ).fetchone()
+                return {
+                    "input": dict(existing),
+                    "session": dict(session) if session else None,
+                }
+
+            # 获取或创建澄清会话
+            session = conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+            if session is None:
+                conn.execute(
+                    "INSERT INTO clarification_sessions("
+                    "session_id, clarification_closed, accepted_wish_count, "
+                    "non_accepted_count, created_at, updated_at) "
+                    "VALUES(?, 0, 0, 0, ?, ?)",
+                    (session_id, now, now),
+                )
+                session = conn.execute(
+                    "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                    (session_id,),
+                ).fetchone()
+
+            # 检查是否已关闭
+            if session["clarification_closed"]:
+                raise ClarificationAlreadyClosedError(
+                    f"澄清会话 {session_id} 已关闭"
+                )
+
+            # 插入输入记录
+            conn.execute(
+                "INSERT INTO clarification_inputs("
+                "input_id, session_id, run_id, raw_text, classification, "
+                "normalized_text, created_at) "
+                "VALUES(?, ?, ?, ?, ?, ?, ?)",
+                (input_id, session_id, run_id, text, classification, text, now),
+            )
+
+            # 更新计数
+            new_accepted = session["accepted_wish_count"]
+            new_non_accepted = session["non_accepted_count"]
+
+            if classification == "accepted_wish_input":
+                new_accepted += 1
+            elif classification in ("off_topic", "unintelligible"):
+                new_non_accepted += 1
+            # empty 不增加任何计数
+
+            # 检查是否需要封盘
+            should_close = False
+            close_reason = None
+            destination_id = None
+
+            if new_accepted >= 3:
+                should_close = True
+                close_reason = "accepted_wish_limit"
+                destination_id = new_id("destination")
+            elif new_non_accepted >= 5:
+                should_close = True
+                close_reason = "non_accepted_limit"
+                destination_id = new_id("destination")
+
+            if should_close:
+                conn.execute(
+                    "UPDATE clarification_sessions SET "
+                    "accepted_wish_count = ?, non_accepted_count = ?, "
+                    "clarification_closed = 1, close_reason = ?, "
+                    "destination_id = ?, closed_at = ?, updated_at = ? "
+                    "WHERE session_id = ?",
+                    (
+                        new_accepted,
+                        new_non_accepted,
+                        close_reason,
+                        destination_id,
+                        now,
+                        now,
+                        session_id,
+                    ),
+                )
+            else:
+                conn.execute(
+                    "UPDATE clarification_sessions SET "
+                    "accepted_wish_count = ?, non_accepted_count = ?, updated_at = ? "
+                    "WHERE session_id = ?",
+                    (new_accepted, new_non_accepted, now, session_id),
+                )
+
+            # 重新读取更新后的会话
+            session = conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+            input_row = conn.execute(
+                "SELECT * FROM clarification_inputs WHERE input_id = ?",
+                (input_id,),
+            ).fetchone()
+
+        return {
+            "input": dict(input_row),
+            "session": dict(session),
+        }
+
+    def close_clarification(
+        self, session_id: str, close_request_id: str
+    ) -> dict[str, Any]:
+        """
+        独立关闭澄清会话。
+
+        幂等性：重复关闭请求返回当前终态。
+        在单一事务中创建 destination_id。
+        """
+        now = utcnow_iso()
+        with self._transaction() as conn:
+            # 获取或创建澄清会话
+            session = conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+            if session is None:
+                conn.execute(
+                    "INSERT INTO clarification_sessions("
+                    "session_id, clarification_closed, accepted_wish_count, "
+                    "non_accepted_count, created_at, updated_at) "
+                    "VALUES(?, 0, 0, 0, ?, ?)",
+                    (session_id, now, now),
+                )
+                session = conn.execute(
+                    "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                    (session_id,),
+                ).fetchone()
+
+            # 如果已经关闭，幂等返回
+            if session["clarification_closed"]:
+                return dict(session)
+
+            # 关闭并创建 destination_id
+            destination_id = new_id("destination")
+            conn.execute(
+                "UPDATE clarification_sessions SET "
+                "clarification_closed = 1, close_reason = 'unity_requested', "
+                "destination_id = ?, closed_at = ?, updated_at = ? "
+                "WHERE session_id = ?",
+                (destination_id, now, now, session_id),
+            )
+
+            session = conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+
+        return dict(session)
+
+    def list_clarification_inputs(
+        self, session_id: str
+    ) -> list[dict[str, Any]]:
+        """列出某会话的所有澄清输入。"""
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT * FROM clarification_inputs WHERE session_id = ? "
+                "ORDER BY created_at ASC",
+                (session_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]

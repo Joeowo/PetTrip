@@ -20,6 +20,7 @@ from .config import Settings, load_settings
 from .image_provider import ImageGenerationProvider, OpenAICompatibleImageProvider
 from .errors import (
     AUTHENTICATION_FAILED,
+    CLARIFICATION_ALREADY_CLOSED,
     FILE_TOO_LARGE,
     IDEMPOTENCY_KEY_REUSED,
     RESOURCE_NOT_FOUND,
@@ -34,6 +35,7 @@ from .ids import new_id
 from .schemas import CreateRunRequest
 from .storage import (
     AttachmentTooLargeError,
+    ClarificationAlreadyClosedError,
     FileReferenceError,
     IdempotencyKeyReusedError,
     Storage,
@@ -414,17 +416,31 @@ def create_app(
     ) -> dict[str, Any]:
         if not idempotency_key or not idempotency_key.strip():
             raise ApiError(VALIDATION_ERROR, "缺少 Idempotency-Key。", status=400)
+
+        if storage.get_session(body.session_id, api_client_id) is None:
+            raise ApiError(RESOURCE_NOT_FOUND, "会话不存在。", status=404)
+
+        key = idempotency_key.strip()
+
+        # 处理 command 模式
+        if body.command is not None:
+            return await _handle_command(
+                body, api_client_id, key, request.state.request_id
+            )
+
+        # 传统 input 模式
+        if body.input is None or body.response_format is None:
+            raise ApiError(VALIDATION_ERROR, "传统模式需要 input 和 response_format。", status=400)
+
         if len(body.input.text) > resolved_settings.max_text_chars:
             raise ApiError(VALIDATION_ERROR, "输入文本过长。", status=400)
         modalities = body.response_format.modalities
         if len(set(modalities)) != len(modalities):
             raise ApiError(VALIDATION_ERROR, "输出模态不能重复。", status=400)
-        if storage.get_session(body.session_id, api_client_id) is None:
-            raise ApiError(RESOURCE_NOT_FOUND, "会话不存在。", status=404)
         attachment_ids = [item.file_id for item in body.input.attachments]
         if len(attachment_ids) != len(set(attachment_ids)):
             raise ApiError(VALIDATION_ERROR, "附件不能重复。", status=400)
-        key = idempotency_key.strip()
+
         body_hash = _canonical_body_hash(body)
         try:
             run = storage.create_run(
@@ -452,6 +468,87 @@ def create_app(
             else []
         )
         return _run_response(run, request.state.request_id, output_files)
+
+    async def _handle_command(
+        body: CreateRunRequest,
+        api_client_id: str,
+        idempotency_key: str,
+        request_id: str,
+    ) -> dict[str, Any]:
+        """处理 command 模式的 Run 请求。"""
+        command = body.command
+        if command is None:
+            raise ApiError(VALIDATION_ERROR, "command 不能为空。", status=400)
+
+        body_hash = _canonical_body_hash(body)
+
+        if command.type == "clarification.submit_input":
+            try:
+                result = storage.submit_clarification_input(
+                    input_id=command.input_id,
+                    session_id=body.session_id,
+                    run_id=new_id("run"),  # 临时 run_id，实际应该在创建 run 后再关联
+                    text=command.text,
+                    classification="accepted_wish_input",  # 暂时硬编码，实际应该由 LLM 分类
+                )
+
+                # 返回 Run 响应
+                session_state = result["session"]
+                response: dict[str, Any] = {
+                    "run_id": result["input"]["run_id"],
+                    "session_id": body.session_id,
+                    "status": "succeeded",
+                    "request_id": request_id,
+                    "output": {
+                        "clarification_state": {
+                            "clarification_closed": bool(session_state["clarification_closed"]),
+                            "accepted_wish_count": session_state["accepted_wish_count"],
+                            "non_accepted_count": session_state["non_accepted_count"],
+                            "close_reason": session_state["close_reason"],
+                            "destination_id": session_state["destination_id"],
+                        }
+                    },
+                }
+                return response
+
+            except IdempotencyKeyReusedError as exc:
+                raise ApiError(
+                    IDEMPOTENCY_KEY_REUSED,
+                    "input_id 已用于不同文本。",
+                    status=409,
+                ) from exc
+            except ClarificationAlreadyClosedError as exc:
+                raise ApiError(
+                    CLARIFICATION_ALREADY_CLOSED,
+                    "澄清会话已关闭，不能提交新输入。",
+                    status=409,
+                ) from exc
+
+        elif command.type == "clarification.close":
+            session_state = storage.close_clarification(
+                session_id=body.session_id,
+                close_request_id=command.close_request_id,
+            )
+
+            response = {
+                "run_id": new_id("run"),  # 临时 run_id
+                "session_id": body.session_id,
+                "status": "succeeded",
+                "request_id": request_id,
+                "output": {
+                    "clarification_state": {
+                        "clarification_closed": bool(session_state["clarification_closed"]),
+                        "accepted_wish_count": session_state["accepted_wish_count"],
+                        "non_accepted_count": session_state["non_accepted_count"],
+                        "close_reason": session_state["close_reason"],
+                        "destination_id": session_state["destination_id"],
+                    }
+                },
+            }
+            return response
+
+        else:
+            raise ApiError(VALIDATION_ERROR, f"未知的 command 类型: {command.type}", status=400)
 
     @app.get("/api/v1/runs/{run_id}")
     async def get_run(
