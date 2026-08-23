@@ -1190,3 +1190,285 @@ class DestinationRepository:
             "all_ready": total_scenes > 0 and ready_scenes == total_scenes,
             "all_failed": total_scenes > 0 and failed_scenes == total_scenes,
         }
+
+    # ========================================================================
+    # PromptSnapshot CRUD（T5）
+    # ========================================================================
+
+    def create_prompt_snapshot(
+        self,
+        *,
+        destination_id: str,
+        operation_type: str,
+        prompt_text: str,
+        model_params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """创建 Prompt 快照。
+
+        Args:
+            destination_id: 目的地 ID
+            operation_type: 操作类型（shared_environment/scene_render/locator）
+            prompt_text: Prompt 文本
+            model_params: 模型参数（JSON 对象）
+
+        Returns:
+            dict: 新创建的 PromptSnapshot 记录
+        """
+        import json
+
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        snapshot_id = new_id("prompt_snapshot")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO prompt_snapshots(snapshot_id, destination_id, operation_type, "
+                "prompt_text, model_params, created_at) VALUES(?, ?, ?, ?, ?, ?)",
+                (
+                    snapshot_id,
+                    destination_id,
+                    operation_type,
+                    prompt_text,
+                    json.dumps(model_params) if model_params else None,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM prompt_snapshots WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def get_prompt_snapshot(self, snapshot_id: str) -> dict[str, Any] | None:
+        """获取 Prompt 快照。
+
+        Args:
+            snapshot_id: 快照 ID
+
+        Returns:
+            dict | None: PromptSnapshot 记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM prompt_snapshots WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+    # ========================================================================
+    # SharedEnvironmentArtifact CRUD（T5）
+    # ========================================================================
+
+    def create_shared_environment_artifact(
+        self,
+        *,
+        destination_id: str,
+        source_run_id: str,
+        image_file_id: str,
+        image_sha256: str,
+        width_px: int,
+        height_px: int,
+        prompt_snapshot_id: str | None = None,
+    ) -> dict[str, Any]:
+        """创建共享环境制品（不可变）。
+
+        Args:
+            destination_id: 目的地 ID
+            source_run_id: 源 Run ID
+            image_file_id: 图片文件 ID（引用 files 表）
+            image_sha256: 图片 SHA-256
+            width_px: 宽度（像素）
+            height_px: 高度（像素）
+            prompt_snapshot_id: Prompt 快照 ID
+
+        Returns:
+            dict: 新创建的 SharedEnvironmentArtifact 记录
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        shared_environment_id = new_id("shared_env")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO shared_environment_artifacts(shared_environment_id, destination_id, "
+                "source_run_id, image_file_id, image_sha256, width_px, height_px, "
+                "prompt_snapshot_id, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    shared_environment_id,
+                    destination_id,
+                    source_run_id,
+                    image_file_id,
+                    image_sha256,
+                    width_px,
+                    height_px,
+                    prompt_snapshot_id,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM shared_environment_artifacts WHERE shared_environment_id = ?",
+                (shared_environment_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def get_shared_environment_artifact(
+        self, destination_id: str
+    ) -> dict[str, Any] | None:
+        """获取目的地的共享环境制品。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            dict | None: SharedEnvironmentArtifact 记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM shared_environment_artifacts WHERE destination_id = ? LIMIT 1",
+                (destination_id,),
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+    # ========================================================================
+    # OperationAttempt CRUD（T5）
+    # ========================================================================
+
+    def create_operation_attempt(
+        self,
+        *,
+        destination_id: str,
+        scene_id: str | None,
+        operation_type: str,
+        attempt_number: int,
+        run_id: str,
+        status: str = "started",
+        error_code: str | None = None,
+        error_message: str | None = None,
+    ) -> dict[str, Any]:
+        """创建操作尝试记录。
+
+        Args:
+            destination_id: 目的地 ID
+            scene_id: 场景 ID（可选，环境生成时为 None）
+            operation_type: 操作类型
+            attempt_number: 尝试次数（0-2）
+            run_id: Run ID
+            status: 状态（started/succeeded/failed）
+            error_code: 错误码
+            error_message: 错误消息
+
+        Returns:
+            dict: 新创建的 OperationAttempt 记录
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        if not (0 <= attempt_number <= 3):
+            raise ValueError("attempt_number 必须在 0-3 之间")
+
+        attempt_id = new_id("attempt")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO operation_attempts(attempt_id, destination_id, scene_id, "
+                "operation_type, attempt_number, run_id, status, error_code, error_message, "
+                "created_at, completed_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    attempt_id,
+                    destination_id,
+                    scene_id,
+                    operation_type,
+                    attempt_number,
+                    run_id,
+                    status,
+                    error_code,
+                    error_message,
+                    now,
+                    now if status in ("succeeded", "failed") else None,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM operation_attempts WHERE attempt_id = ?",
+                (attempt_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def update_operation_attempt(
+        self,
+        attempt_id: str,
+        *,
+        status: str,
+        error_code: str | None = None,
+        error_message: str | None = None,
+    ) -> None:
+        """更新操作尝试状态。
+
+        Args:
+            attempt_id: 尝试 ID
+            status: 新状态（succeeded/failed）
+            error_code: 错误码
+            error_message: 错误消息
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        now = _utcnow_iso()
+
+        with self._lock:
+            assert self._conn is not None
+            self._conn.execute(
+                "UPDATE operation_attempts SET status = ?, error_code = ?, "
+                "error_message = ?, completed_at = ? WHERE attempt_id = ?",
+                (status, error_code, error_message, now, attempt_id),
+            )
+
+    def count_operation_attempts(
+        self, destination_id: str, operation_type: str, scene_id: str | None = None
+    ) -> int:
+        """统计操作尝试次数。
+
+        Args:
+            destination_id: 目的地 ID
+            operation_type: 操作类型
+            scene_id: 场景 ID（可选）
+
+        Returns:
+            int: 尝试次数
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            if scene_id is not None:
+                row = self._conn.execute(
+                    "SELECT COUNT(*) as count FROM operation_attempts "
+                    "WHERE destination_id = ? AND operation_type = ? AND scene_id = ?",
+                    (destination_id, operation_type, scene_id),
+                ).fetchone()
+            else:
+                row = self._conn.execute(
+                    "SELECT COUNT(*) as count FROM operation_attempts "
+                    "WHERE destination_id = ? AND operation_type = ? AND scene_id IS NULL",
+                    (destination_id, operation_type),
+                ).fetchone()
+
+        return row["count"] if row else 0
