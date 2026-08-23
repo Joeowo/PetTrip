@@ -10,16 +10,10 @@
 """
 
 import pytest
-import sys
-from pathlib import Path
 from io import BytesIO
 from PIL import Image, ImageDraw
 
-# Add agent_service to path
-agent_service_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(agent_service_root))
-
-from domain.interaction_circle import (
+from agent_service.domain.interaction_circle import (
     detect_black_circle,
     validate_circle_in_bounds,
     DetectionError,
