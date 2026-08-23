@@ -10,7 +10,7 @@ from typing import Any, Protocol
 
 import httpx
 
-from .structured_output import StructuredOutputRequest
+from ..shared.structured_output import StructuredOutputRequest
 
 
 class ChatProviderError(RuntimeError):

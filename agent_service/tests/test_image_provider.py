@@ -8,7 +8,7 @@ import httpx
 import pytest
 from PIL import Image
 
-from agent_service.image_provider import (
+from agent_service.adapters.image import (
     ImageGenerationRequest,
     ImageProviderError,
     OpenAICompatibleImageProvider,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agent_service.file_storage import LocalImageStorage
+from agent_service.storage.files import LocalImageStorage
 
 
 def test_startup_cleanup_removes_orphans_and_service_temp_files(tmp_path: Path) -> None:

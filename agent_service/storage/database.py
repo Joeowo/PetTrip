@@ -1,11 +1,4 @@
-"""SQLite 持久化层（spec §8）。
-
-单进程 Pilot 使用一个共享 SQLite 连接，所有访问由进程内锁串行化；启用 WAL、
-``busy_timeout`` 与外键。表结构覆盖 spec §8.1 的全部七张表；会话 2 使用
-``files/message_files`` 保存图片元数据及消息附件关系。
-
-图片二进制不入库；本层只保存相对路径与元数据。Base64、密钥、绝对路径均不落库。
-"""
+"""SQLite 数据访问层 - 纯 CRUD 操作。"""
 
 from __future__ import annotations
 
@@ -14,45 +7,13 @@ import json
 import sqlite3
 import threading
 from contextlib import contextmanager
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
 
-from .errors import SERVICE_RESTARTED
-from .ids import new_id
+from .models import is_expired, utcnow_iso
+from ..shared.ids import new_id
 
-# ---- 时间工具 -------------------------------------------------------------
-
-
-def utcnow_iso() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def _is_expired(value: str | None) -> bool:
-    if value is None:
-        return False
-    try:
-        expires_at = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError:
-        return True
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
-    return expires_at <= datetime.now(timezone.utc)
-
-
-class IdempotencyKeyReusedError(ValueError):
-    """同一客户端把幂等键用于不同请求体。"""
-
-
-class FileReferenceError(ValueError):
-    """附件不存在、不属于当前客户端，或用途不一致。"""
-
-
-class AttachmentTooLargeError(ValueError):
-    """单个 Run 的附件总字节数超过允许上限。"""
-
-
-# ---- 模式 -----------------------------------------------------------------
+# ---- Schema ---------------------------------------------------------------
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS api_clients (
@@ -138,10 +99,10 @@ def _row_to_dict(row: sqlite3.Row | None) -> dict[str, Any] | None:
     return dict(row) if row is not None else None
 
 
-class Storage:
-    """单连接、锁串行化的 SQLite 访问对象。"""
+class Database:
+    """单连接、锁串行化的 SQLite 数据访问对象。"""
 
-    def __init__(self, db_path: str | Path, *, recover: bool = True) -> None:
+    def __init__(self, db_path: str | Path) -> None:
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = threading.RLock()
@@ -153,10 +114,7 @@ class Storage:
         self._conn.row_factory = sqlite3.Row
         self._configure()
         self._migrate()
-        if recover:
-            self.recover_pending_runs()
 
-    # -- 初始化 ------------------------------------------------------------
     def _configure(self) -> None:
         with self._lock:
             self._conn.execute("PRAGMA journal_mode = WAL")
@@ -172,7 +130,7 @@ class Storage:
             self._conn.close()
 
     @contextmanager
-    def _transaction(self) -> Iterator[sqlite3.Connection]:
+    def transaction(self) -> Iterator[sqlite3.Connection]:
         """显式 ``BEGIN IMMEDIATE`` 事务，异常自动回滚。"""
         with self._lock:
             self._conn.execute("BEGIN IMMEDIATE")
@@ -184,6 +142,7 @@ class Storage:
                 raise
 
     # -- API Client --------------------------------------------------------
+
     def upsert_api_client(self, key_hash: str, name: str) -> str:
         """确保存在一个指定哈希的活跃客户端；已存在则返回其 id（幂等）。"""
         with self._lock:
@@ -215,15 +174,16 @@ class Storage:
             ).fetchall()
         for row in rows:
             matches = hmac.compare_digest(row["key_hash"], candidate_hash)
-            if matches and not _is_expired(row["expires_at"]):
+            if matches and not is_expired(row["expires_at"]):
                 return row["id"]
         return None
 
     # -- Session -----------------------------------------------------------
+
     def create_session(self, api_client_id: str) -> dict[str, Any]:
         session_id = new_id("session")
         now = utcnow_iso()
-        with self._transaction() as conn:
+        with self.transaction() as conn:
             conn.execute(
                 "INSERT INTO sessions(id, api_client_id, created_at, updated_at) "
                 "VALUES(?, ?, ?, ?)",
@@ -239,8 +199,17 @@ class Storage:
             ).fetchone()
         return _row_to_dict(row)
 
+    def update_session_timestamp(self, session_id: str) -> None:
+        """更新会话的 updated_at 时间戳。"""
+        with self._lock:
+            self._conn.execute(
+                "UPDATE sessions SET updated_at = ? WHERE id = ?",
+                (utcnow_iso(), session_id),
+            )
+
     # -- Messages ----------------------------------------------------------
-    def _insert_message(
+
+    def insert_message(
         self,
         conn: sqlite3.Connection,
         *,
@@ -250,6 +219,7 @@ class Storage:
         content_text: str | None,
         structured_data: dict[str, Any] | None,
     ) -> str:
+        """在事务内插入一条消息，返回 message_id。"""
         message_id = new_id("message")
         conn.execute(
             "INSERT INTO messages(id, session_id, run_id, role, content_text, "
@@ -340,7 +310,17 @@ class Storage:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    def attach_file_to_message(
+        self, conn: sqlite3.Connection, message_id: str, file_id: str, role: str
+    ) -> None:
+        """在事务内关联文件到消息。"""
+        conn.execute(
+            "INSERT INTO message_files(message_id, file_id, role) VALUES(?, ?, ?)",
+            (message_id, file_id, role),
+        )
+
     # -- Files --------------------------------------------------------------
+
     def create_file(
         self,
         *,
@@ -358,7 +338,7 @@ class Storage:
         if Path(rel_path).is_absolute():
             raise ValueError("文件记录只能保存相对路径。")
         now = utcnow_iso()
-        with self._transaction() as conn:
+        with self.transaction() as conn:
             conn.execute(
                 "INSERT INTO files(id, api_client_id, source, purpose, mime_type, "
                 "size_bytes, sha256, width, height, rel_path, created_at) "
@@ -380,6 +360,43 @@ class Storage:
             row = conn.execute("SELECT * FROM files WHERE id = ?", (file_id,)).fetchone()
         return dict(row)
 
+    def insert_file(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        file_id: str,
+        api_client_id: str,
+        source: str,
+        purpose: str,
+        mime_type: str,
+        size_bytes: int,
+        sha256: str,
+        width: int,
+        height: int,
+        rel_path: str,
+    ) -> None:
+        """在事务内插入文件记录（用于 Run 完成时的输出文件）。"""
+        if Path(rel_path).is_absolute():
+            raise ValueError("文件记录只能保存相对路径。")
+        conn.execute(
+            "INSERT INTO files(id, api_client_id, source, purpose, mime_type, "
+            "size_bytes, sha256, width, height, rel_path, created_at) "
+            "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                file_id,
+                api_client_id,
+                source,
+                purpose,
+                mime_type,
+                size_bytes,
+                sha256,
+                width,
+                height,
+                rel_path,
+                utcnow_iso(),
+            ),
+        )
+
     def get_file(self, file_id: str, api_client_id: str) -> dict[str, Any] | None:
         with self._lock:
             row = self._conn.execute(
@@ -388,12 +405,24 @@ class Storage:
             ).fetchone()
         return _row_to_dict(row)
 
+    def get_file_for_attachment(
+        self, conn: sqlite3.Connection, file_id: str, api_client_id: str
+    ) -> dict[str, Any] | None:
+        """在事务内查询文件（用于 Run 创建时验证附件）。"""
+        row = conn.execute(
+            "SELECT id, purpose, size_bytes FROM files "
+            "WHERE id = ? AND api_client_id = ? AND source = 'user_upload'",
+            (file_id, api_client_id),
+        ).fetchone()
+        return _row_to_dict(row)
+
     def list_file_paths(self) -> set[str]:
         with self._lock:
             rows = self._conn.execute("SELECT rel_path FROM files").fetchall()
         return {row["rel_path"] for row in rows}
 
     # -- Runs --------------------------------------------------------------
+
     def find_run_by_idempotency(
         self, api_client_id: str, idempotency_key: str
     ) -> dict[str, Any] | None:
@@ -404,84 +433,34 @@ class Storage:
             ).fetchone()
         return _row_to_dict(row)
 
-    def create_run(
+    def insert_run(
         self,
+        conn: sqlite3.Connection,
         *,
-        api_client_id: str,
+        run_id: str,
         session_id: str,
-        request_input: dict[str, Any],
-        response_format: dict[str, Any],
+        api_client_id: str,
         idempotency_key: str,
         idempotency_body_hash: str,
-        max_attachment_bytes: int | None = None,
-    ) -> dict[str, Any]:
-        """原子查找或创建 queued Run，并写入用户消息与 ``run.queued`` 事件。"""
-        run_id = new_id("run")
-        now = utcnow_iso()
-        with self._transaction() as conn:
-            existing = conn.execute(
-                "SELECT * FROM runs WHERE api_client_id = ? AND idempotency_key = ?",
-                (api_client_id, idempotency_key),
-            ).fetchone()
-            if existing is not None:
-                if existing["idempotency_body_hash"] != idempotency_body_hash:
-                    raise IdempotencyKeyReusedError(idempotency_key)
-                return dict(existing)
-
-            conn.execute(
-                "INSERT INTO runs(id, session_id, api_client_id, status, idempotency_key, "
-                "idempotency_body_hash, request_input, response_format, created_at) "
-                "VALUES(?, ?, ?, 'queued', ?, ?, ?, ?, ?)",
-                (
-                    run_id,
-                    session_id,
-                    api_client_id,
-                    idempotency_key,
-                    idempotency_body_hash,
-                    json.dumps(request_input, ensure_ascii=False),
-                    json.dumps(response_format, ensure_ascii=False),
-                    now,
-                ),
-            )
-            message_id = self._insert_message(
-                conn,
-                session_id=session_id,
-                run_id=run_id,
-                role="user",
-                content_text=request_input.get("text") or "",
-                structured_data=None,
-            )
-            attachment_bytes = 0
-            for attachment in request_input.get("attachments") or []:
-                file_row = conn.execute(
-                    "SELECT id, purpose, size_bytes FROM files "
-                    "WHERE id = ? AND api_client_id = ? AND source = 'user_upload'",
-                    (attachment["file_id"], api_client_id),
-                ).fetchone()
-                if file_row is None or file_row["purpose"] != attachment["purpose"]:
-                    raise FileReferenceError(attachment["file_id"])
-                attachment_bytes += file_row["size_bytes"]
-                if (
-                    max_attachment_bytes is not None
-                    and attachment_bytes > max_attachment_bytes
-                ):
-                    raise AttachmentTooLargeError(attachment_bytes)
-                conn.execute(
-                    "INSERT INTO message_files(message_id, file_id, role) "
-                    "VALUES(?, ?, 'input')",
-                    (message_id, file_row["id"]),
-                )
-            self._insert_event(
-                conn,
-                run_id=run_id,
-                event_type="run.queued",
-                payload={"idempotency_key": idempotency_key},
-            )
-            conn.execute(
-                "UPDATE sessions SET updated_at = ? WHERE id = ?", (now, session_id)
-            )
-            row = conn.execute("SELECT * FROM runs WHERE id = ?", (run_id,)).fetchone()
-        return dict(row)
+        request_input: dict[str, Any],
+        response_format: dict[str, Any],
+    ) -> None:
+        """在事务内插入一个新的 queued Run。"""
+        conn.execute(
+            "INSERT INTO runs(id, session_id, api_client_id, status, idempotency_key, "
+            "idempotency_body_hash, request_input, response_format, created_at) "
+            "VALUES(?, ?, ?, 'queued', ?, ?, ?, ?, ?)",
+            (
+                run_id,
+                session_id,
+                api_client_id,
+                idempotency_key,
+                idempotency_body_hash,
+                json.dumps(request_input, ensure_ascii=False),
+                json.dumps(response_format, ensure_ascii=False),
+                utcnow_iso(),
+            ),
+        )
 
     def get_run(self, run_id: str, api_client_id: str) -> dict[str, Any] | None:
         with self._lock:
@@ -491,10 +470,17 @@ class Storage:
             ).fetchone()
         return _row_to_dict(row)
 
+    def get_run_in_transaction(
+        self, conn: sqlite3.Connection, run_id: str
+    ) -> dict[str, Any] | None:
+        """在事务内查询 Run（用于状态转换）。"""
+        row = conn.execute("SELECT * FROM runs WHERE id = ?", (run_id,)).fetchone()
+        return _row_to_dict(row)
+
     def claim_next_queued_run(self) -> dict[str, Any] | None:
         """原子地把最早的 queued Run 置为 running 并返回；无则返回 None。"""
         now = utcnow_iso()
-        with self._transaction() as conn:
+        with self.transaction() as conn:
             row = conn.execute(
                 "UPDATE runs SET status = 'running', started_at = ? "
                 "WHERE id = (SELECT id FROM runs WHERE status = 'queued' "
@@ -503,7 +489,7 @@ class Storage:
                 (now,),
             ).fetchone()
             if row is not None:
-                self._insert_event(
+                self.insert_event(
                     conn,
                     run_id=row["id"],
                     event_type="run.started",
@@ -511,109 +497,61 @@ class Storage:
                 )
         return _row_to_dict(row)
 
-    def complete_run_success(
+    def update_run_success(
         self,
+        conn: sqlite3.Connection,
         run_id: str,
-        *,
-        assistant_text: str | None,
-        structured_data: dict[str, Any] | None = None,
-        output_file: dict[str, Any] | None = None,
+        output_text: str | None,
+        output_structured: dict[str, Any] | None,
     ) -> None:
-        """在单事务内写入助手消息、输出文件关系与完成事件。"""
-        now = utcnow_iso()
-        with self._transaction() as conn:
-            run = conn.execute(
-                "SELECT session_id, api_client_id FROM runs "
-                "WHERE id = ? AND status = 'running'",
-                (run_id,),
-            ).fetchone()
-            if run is None:
-                raise RuntimeError("Run 必须处于 running 状态才能提交成功结果。")
-            if output_file is not None:
-                conn.execute(
-                    "INSERT INTO files(id, api_client_id, source, purpose, mime_type, "
-                    "size_bytes, sha256, width, height, rel_path, created_at) "
-                    "VALUES(?, ?, 'agent_generated', 'generated_image', ?, ?, ?, ?, ?, ?, ?)",
-                    (
-                        output_file["id"],
-                        run["api_client_id"],
-                        output_file["mime_type"],
-                        output_file["size_bytes"],
-                        output_file["sha256"],
-                        output_file["width"],
-                        output_file["height"],
-                        output_file["rel_path"],
-                        now,
-                    ),
-                )
-            message_id = self._insert_message(
-                conn,
-                session_id=run["session_id"],
-                run_id=run_id,
-                role="assistant",
-                content_text=assistant_text,
-                structured_data=structured_data,
-            )
-            if output_file is not None:
-                conn.execute(
-                    "INSERT INTO message_files(message_id, file_id, role) "
-                    "VALUES(?, ?, 'output')",
-                    (message_id, output_file["id"]),
-                )
-                self._insert_event(
-                    conn,
-                    run_id=run_id,
-                    event_type="artifact.created",
-                    payload={
-                        "file_id": output_file["id"],
-                        "message_id": message_id,
-                    },
-                )
-            self._insert_event(
-                conn,
-                run_id=run_id,
-                event_type="message.created",
-                payload={"role": "assistant", "message_id": message_id},
-            )
-            conn.execute(
-                "UPDATE runs SET status = 'succeeded', output_text = ?, "
-                "output_structured = ?, completed_at = ? WHERE id = ? AND status = 'running'",
-                (
-                    assistant_text,
-                    json.dumps(structured_data, ensure_ascii=False)
-                    if structured_data is not None
-                    else None,
-                    now,
-                    run_id,
-                ),
-            )
-            self._insert_event(
-                conn, run_id=run_id, event_type="run.completed", payload=None
-            )
-            conn.execute(
-                "UPDATE sessions SET updated_at = ? WHERE id = ?", (now, run["session_id"])
-            )
+        """在事务内更新 Run 状态为 succeeded。"""
+        conn.execute(
+            "UPDATE runs SET status = 'succeeded', output_text = ?, "
+            "output_structured = ?, completed_at = ? WHERE id = ? AND status = 'running'",
+            (
+                output_text,
+                json.dumps(output_structured, ensure_ascii=False)
+                if output_structured is not None
+                else None,
+                utcnow_iso(),
+                run_id,
+            ),
+        )
 
-    def mark_run_failed(
-        self, run_id: str, *, error_code: str, error_message: str
-    ) -> None:
-        now = utcnow_iso()
-        with self._transaction() as conn:
-            result = conn.execute(
-                "UPDATE runs SET status = 'failed', error_code = ?, error_message = ?, "
-                "completed_at = ? WHERE id = ? AND status = 'running'",
-                (error_code, error_message, now, run_id),
-            )
-            if result.rowcount:
-                self._insert_event(
-                    conn,
-                    run_id=run_id,
-                    event_type="run.failed",
-                    payload={"code": error_code},
-                )
+    def update_run_failed(
+        self,
+        conn: sqlite3.Connection,
+        run_id: str,
+        error_code: str,
+        error_message: str,
+    ) -> int:
+        """在事务内更新 Run 状态为 failed，返回影响行数。"""
+        result = conn.execute(
+            "UPDATE runs SET status = 'failed', error_code = ?, error_message = ?, "
+            "completed_at = ? WHERE id = ? AND status = 'running'",
+            (error_code, error_message, utcnow_iso(), run_id),
+        )
+        return result.rowcount
+
+    def list_running_runs(self) -> list[dict[str, Any]]:
+        """查询所有 running 状态的 Run（用于启动恢复）。"""
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT id FROM runs WHERE status = 'running'"
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def count_queued_runs(self) -> int:
+        """统计 queued 状态的 Run 数量（用于启动恢复）。"""
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT COUNT(*) as cnt FROM runs WHERE status = 'queued'"
+            ).fetchone()
+        return row["cnt"] if row else 0
 
     # -- Events ------------------------------------------------------------
-    def _insert_event(
+
+    def insert_event(
         self,
         conn: sqlite3.Connection,
         *,
@@ -621,6 +559,7 @@ class Storage:
         event_type: str,
         payload: dict[str, Any] | None,
     ) -> str:
+        """在事务内插入事件。"""
         event_id = new_id("event")
         conn.execute(
             "INSERT INTO run_events(id, run_id, event_type, payload, created_at) "
@@ -638,8 +577,8 @@ class Storage:
     def add_event(
         self, run_id: str, event_type: str, payload: dict[str, Any] | None = None
     ) -> None:
-        with self._transaction() as conn:
-            self._insert_event(conn, run_id=run_id, event_type=event_type, payload=payload)
+        with self.transaction() as conn:
+            self.insert_event(conn, run_id=run_id, event_type=event_type, payload=payload)
 
     def list_events(self, run_id: str, api_client_id: str) -> list[dict[str, Any]]:
         with self._lock:
@@ -651,24 +590,3 @@ class Storage:
                 (run_id, api_client_id),
             ).fetchall()
         return [dict(r) for r in rows]
-
-    # -- 启动恢复（spec §6.4）----------------------------------------------
-    def recover_pending_runs(self) -> dict[str, int]:
-        """遗留 ``running`` Run 标记为 ``failed(SERVICE_RESTARTED)``；``queued`` 保留。"""
-        counts = {"recovered_running": 0, "kept_queued": 0}
-        with self._lock:
-            running = self._conn.execute(
-                "SELECT id FROM runs WHERE status = 'running'"
-            ).fetchall()
-            queued = self._conn.execute(
-                "SELECT 1 FROM runs WHERE status = 'queued'"
-            ).fetchall()
-        counts["kept_queued"] = len(queued)
-        for row in running:
-            self.mark_run_failed(
-                row["id"],
-                error_code=SERVICE_RESTARTED,
-                error_message="服务重启，遗留的 running Run 已终止，请重新创建。",
-            )
-            counts["recovered_running"] += 1
-        return counts

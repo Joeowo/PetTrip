@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import uvicorn
 
-from .app import create_app
-from .config import load_settings
+from .api.app import create_app
+from .shared.config import load_settings
 
 
 def main() -> None:

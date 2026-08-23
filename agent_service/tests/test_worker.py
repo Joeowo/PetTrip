@@ -3,10 +3,10 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from agent_service.auth import hash_api_key
-from agent_service.chat_provider import ChatMessage, ChatProviderError
+from agent_service.api.auth import hash_api_key
+from agent_service.adapters.llm import ChatMessage, ChatProviderError
 from agent_service.storage import Storage
-from agent_service.worker import RunWorker
+from agent_service.domain.worker import RunWorker
 
 
 class RecordingProvider:

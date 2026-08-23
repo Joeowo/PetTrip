@@ -8,8 +8,8 @@ from typing import Annotated
 from fastapi import Depends, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from .errors import AUTHENTICATION_FAILED, ApiError
-from .storage import Storage
+from ..shared.errors import AUTHENTICATION_FAILED, ApiError
+from ..storage import Storage  # 从根目录的向后兼容层导入
 
 
 def hash_api_key(value: str) -> str:

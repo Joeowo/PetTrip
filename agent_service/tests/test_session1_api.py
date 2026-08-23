@@ -5,9 +5,9 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from agent_service.app import create_app
-from agent_service.chat_provider import ChatMessage
-from agent_service.config import Settings
+from agent_service.api.app import create_app
+from agent_service.adapters.llm import ChatMessage
+from agent_service.shared.config import Settings
 
 
 class FakeProvider:

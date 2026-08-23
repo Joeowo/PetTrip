@@ -6,27 +6,44 @@ PetTrip 多模态 Agent 服务的生产代码。
 
 ```
 agent_service/
-├── *.py                    # 核心模块（13 个）
-│   ├── app.py             # Flask 应用主入口
-│   ├── chat_provider.py   # 对话服务
-│   ├── image_provider.py  # 图片生成服务
-│   ├── worker.py          # 后台任务处理
-│   ├── storage.py         # 数据存储层
-│   ├── destination_storage.py  # 目的地数据模型（T1）
-│   ├── file_storage.py    # 文件存储
-│   ├── config.py          # 配置管理
-│   ├── auth.py            # 认证
-│   ├── schemas.py         # 数据模式
-│   ├── ids.py             # ID 生成
-│   ├── errors.py          # 错误处理
-│   ├── run_server.py      # 服务器启动
-│   └── structured_output.py  # 结构化输出
+├── api/                   # HTTP 协议适配层
+│   ├── app.py            # FastAPI 应用主入口
+│   ├── auth.py           # Bearer 认证中间件
+│   └── schemas.py        # 请求/响应数据模型
+├── domain/                # 业务逻辑核心
+│   ├── runs.py           # Run 状态机和执行流程
+│   └── worker.py         # Run 异步执行器
+├── adapters/              # 外部服务适配器
+│   ├── llm.py            # LLM Provider 统一接口
+│   └── image.py          # 图片生成 Provider 统一接口
+├── storage/               # 数据持久化层
+│   ├── __init__.py       # Storage 向后兼容层
+│   ├── database.py       # SQLite CRUD 操作
+│   ├── files.py          # 本地文件存储
+│   └── models.py         # 数据模型和异常定义
+├── shared/                # 跨层共享设施
+│   ├── config.py         # 配置管理
+│   ├── errors.py         # 错误定义和处理
+│   ├── ids.py            # ID 生成工具
+│   └── structured_output.py  # 结构化输出注册表
 ├── tests/                 # 测试套件（19 个测试文件）
 ├── scripts/               # 验证和工具脚本
 ├── api_test_client/       # API 测试客户端
+├── run_server.py          # 服务器启动入口
 ├── requirements.txt       # Python 依赖
 └── .env.example          # 环境变量模板
 ```
+
+### 架构原则
+
+本服务采用**轻量分层架构**，基于以下设计原则：
+
+- **深度模块**（Deep Modules）：小接口 + 大实现 = 高杠杆率
+- **清晰的依赖规则**：`api/ → domain/ → adapters/storage/ → shared/`
+- **统一适配器接口**：Provider 通过 Protocol 定义契约，易于测试和扩展
+- **渐进式披露**：现在建立清晰边界，未来按需深化
+
+详见：`docs/adr/0002-layered-architecture-upgrade.md`
 
 ## 快速开始
 
