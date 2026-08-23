@@ -15,38 +15,11 @@ from __future__ import annotations
 # Schema 定义：11 张新表
 DESTINATION_SCHEMA = """
 -- ============================================================================
--- 澄清阶段表
+-- 澄清阶段表（注意：这些表已在 database.py 中定义，这里不重复创建）
 -- ============================================================================
 
--- 澄清输入记录：每次玩家输入
-CREATE TABLE IF NOT EXISTS clarification_inputs (
-    input_id          TEXT PRIMARY KEY,
-    session_id        TEXT NOT NULL REFERENCES sessions(id),
-    run_id            TEXT NOT NULL REFERENCES runs(id),
-    raw_text          TEXT NOT NULL,
-    classification    TEXT NOT NULL CHECK (
-        classification IN ('empty', 'accepted_wish_input', 'off_topic', 'unintelligible')
-    ),
-    normalized_text   TEXT,
-    created_at        TEXT NOT NULL,
-    UNIQUE (session_id, input_id)
-);
-
--- 澄清状态：每个 session 一条
-CREATE TABLE IF NOT EXISTS clarification_state (
-    session_id            TEXT PRIMARY KEY REFERENCES sessions(id),
-    clarification_closed  INTEGER NOT NULL DEFAULT 0 CHECK (clarification_closed IN (0, 1)),
-    close_reason          TEXT CHECK (
-        close_reason IS NULL OR
-        close_reason IN ('accepted_wish_limit', 'non_accepted_limit', 'unity_requested')
-    ),
-    accepted_wish_count   INTEGER NOT NULL DEFAULT 0 CHECK (accepted_wish_count BETWEEN 0 AND 3),
-    non_accepted_count    INTEGER NOT NULL DEFAULT 0 CHECK (non_accepted_count BETWEEN 0 AND 5),
-    destination_id        TEXT REFERENCES destinations(id),
-    closed_at             TEXT,
-    created_at            TEXT NOT NULL,
-    updated_at            TEXT NOT NULL
-);
+-- clarification_inputs 和 clarification_sessions 已在 database.py 中定义
+-- 这里只添加新的目的地相关表
 
 -- ============================================================================
 -- 目的地主表
@@ -448,7 +421,7 @@ class DestinationRepository:
             )
 
     # ========================================================================
-    # ClarificationState CRUD
+    # ClarificationState CRUD（使用 database.py 中的 clarification_sessions 表）
     # ========================================================================
 
     def upsert_clarification_state(
@@ -482,34 +455,32 @@ class DestinationRepository:
         now = _utcnow_iso()
         with self.transaction() as conn:
             existing = conn.execute(
-                "SELECT * FROM clarification_state WHERE session_id = ?",
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
                 (session_id,),
             ).fetchone()
 
             if existing is None:
                 # 创建新记录
                 conn.execute(
-                    "INSERT INTO clarification_state(session_id, clarification_closed, "
-                    "close_reason, accepted_wish_count, non_accepted_count, destination_id, "
-                    "closed_at, created_at, updated_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO clarification_sessions(session_id, clarification_closed, "
+                    "accepted_wish_count, non_accepted_count, close_reason, destination_id, "
+                    "closed_at) VALUES(?, ?, ?, ?, ?, ?, ?)",
                     (
                         session_id,
                         1 if clarification_closed else 0,
-                        close_reason,
                         accepted_wish_count,
                         non_accepted_count,
+                        close_reason,
                         destination_id,
                         closed_at,
-                        now,
-                        now,
                     ),
                 )
             else:
                 # 更新现有记录
                 conn.execute(
-                    "UPDATE clarification_state SET clarification_closed = ?, "
+                    "UPDATE clarification_sessions SET clarification_closed = ?, "
                     "close_reason = ?, accepted_wish_count = ?, non_accepted_count = ?, "
-                    "destination_id = ?, closed_at = ?, updated_at = ? WHERE session_id = ?",
+                    "destination_id = ?, closed_at = ? WHERE session_id = ?",
                     (
                         1 if clarification_closed else 0,
                         close_reason,
@@ -517,13 +488,12 @@ class DestinationRepository:
                         non_accepted_count,
                         destination_id,
                         closed_at,
-                        now,
                         session_id,
                     ),
                 )
 
             row = conn.execute(
-                "SELECT * FROM clarification_state WHERE session_id = ?",
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
                 (session_id,),
             ).fetchone()
 
@@ -544,14 +514,14 @@ class DestinationRepository:
         with self._lock:
             assert self._conn is not None
             row = self._conn.execute(
-                "SELECT * FROM clarification_state WHERE session_id = ?",
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
                 (session_id,),
             ).fetchone()
 
         return _row_to_dict(row)
 
     # ========================================================================
-    # ClarificationInput CRUD
+    # ClarificationInput CRUD（使用 database.py 中的 clarification_inputs 表）
     # ========================================================================
 
     def create_clarification_input(
@@ -578,18 +548,20 @@ class DestinationRepository:
         if not self._is_open:
             raise RuntimeError("Repository 未打开")
 
+        # 使用 database.py 中的表结构：id 作为主键，input_id 作为业务 ID
+        record_id = new_id("clarification_input")
         input_id = new_id("input")
         now = _utcnow_iso()
 
         with self.transaction() as conn:
             conn.execute(
-                "INSERT INTO clarification_inputs(input_id, session_id, run_id, raw_text, "
-                "classification, normalized_text, created_at) VALUES(?, ?, ?, ?, ?, ?, ?)",
-                (input_id, session_id, run_id, raw_text, classification, normalized_text, now),
+                "INSERT INTO clarification_inputs(id, session_id, run_id, input_id, raw_text, "
+                "classification, normalized_text, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+                (record_id, session_id, run_id, input_id, raw_text, classification, normalized_text, now),
             )
             row = conn.execute(
-                "SELECT * FROM clarification_inputs WHERE input_id = ?",
-                (input_id,),
+                "SELECT * FROM clarification_inputs WHERE id = ?",
+                (record_id,),
             ).fetchone()
 
         return dict(row)
@@ -611,6 +583,335 @@ class DestinationRepository:
             rows = self._conn.execute(
                 "SELECT * FROM clarification_inputs WHERE session_id = ? ORDER BY created_at ASC",
                 (session_id,),
+            ).fetchall()
+
+        return [dict(row) for row in rows]
+
+    # ========================================================================
+    # DestinationRequirements CRUD
+    # ========================================================================
+
+    def create_destination_requirements(
+        self,
+        *,
+        destination_id: str,
+        source_inputs: list[dict[str, Any]],
+        sha256: str,
+    ) -> dict[str, Any]:
+        """创建目的地要求集（冻结后不可变）。
+
+        Args:
+            destination_id: 目的地 ID
+            source_inputs: 源输入列表 [{input_id, raw_text, classification}]
+            sha256: 要求集的 SHA-256 哈希
+
+        Returns:
+            dict: 新创建的 Requirements 记录
+        """
+        import json
+
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        requirements_id = new_id("requirements")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO destination_requirements(requirements_id, destination_id, "
+                "source_inputs, frozen_at, sha256, created_at) VALUES(?, ?, ?, ?, ?, ?)",
+                (
+                    requirements_id,
+                    destination_id,
+                    json.dumps(source_inputs),
+                    now,
+                    sha256,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM destination_requirements WHERE requirements_id = ?",
+                (requirements_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def create_requirement_item(
+        self,
+        *,
+        requirements_id: str,
+        normalized_statement: str,
+        polarity: str,
+        fulfillment: str,
+        source_type: str,
+        source_input_ids: list[str],
+        rationale: str | None = None,
+    ) -> dict[str, Any]:
+        """创建要求明细项。
+
+        Args:
+            requirements_id: 要求集 ID
+            normalized_statement: 标准化陈述
+            polarity: 极性（include/exclude）
+            fulfillment: 执行度（must_satisfy/best_effort/creative_discretion）
+            source_type: 来源类型（player_input/agent_inference/template_default）
+            source_input_ids: 源输入 ID 列表
+            rationale: 依据（source_type=agent_inference 时必须）
+
+        Returns:
+            dict: 新创建的要求项记录
+        """
+        import json
+
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        # 校验不变量：agent_inference 必须有 rationale
+        if source_type == "agent_inference" and not rationale:
+            raise ValueError("source_type=agent_inference 时 rationale 不能为空")
+
+        requirement_id = new_id("requirement")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO destination_requirement_items(requirement_id, requirements_id, "
+                "normalized_statement, polarity, fulfillment, source_type, source_input_ids, "
+                "rationale, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    requirement_id,
+                    requirements_id,
+                    normalized_statement,
+                    polarity,
+                    fulfillment,
+                    source_type,
+                    json.dumps(source_input_ids),
+                    rationale,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM destination_requirement_items WHERE requirement_id = ?",
+                (requirement_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def get_destination_requirements(
+        self, destination_id: str
+    ) -> dict[str, Any] | None:
+        """获取目的地的 Requirements 记录。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            dict | None: Requirements 记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM destination_requirements WHERE destination_id = ?",
+                (destination_id,),
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+    def list_requirement_items(self, requirements_id: str) -> list[dict[str, Any]]:
+        """列出 Requirements 的所有明细项。
+
+        Args:
+            requirements_id: 要求集 ID
+
+        Returns:
+            list[dict]: 要求项列表（按创建时间排序）
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            rows = self._conn.execute(
+                "SELECT * FROM destination_requirement_items WHERE requirements_id = ? "
+                "ORDER BY created_at ASC",
+                (requirements_id,),
+            ).fetchall()
+
+        return [dict(row) for row in rows]
+
+    # ========================================================================
+    # DestinationSpec CRUD
+    # ========================================================================
+
+    def create_destination_spec(
+        self,
+        *,
+        destination_id: str,
+        spec_version: int,
+        template_id: str,
+        template_version: str,
+        requirements_id: str,
+        requirements_sha256: str,
+        title: str,
+        shared_environment_spec: dict[str, Any],
+        sha256: str,
+    ) -> dict[str, Any]:
+        """创建目的地规格（锁定后不可变）。
+
+        Args:
+            destination_id: 目的地 ID
+            spec_version: 规格版本（首阶段固定为 1）
+            template_id: 模板 ID
+            template_version: 模板版本
+            requirements_id: 要求集 ID
+            requirements_sha256: 要求集 SHA-256
+            title: 标题
+            shared_environment_spec: 共享环境规格（JSON 对象）
+            sha256: 规格的 SHA-256 哈希
+
+        Returns:
+            dict: 新创建的 Spec 记录
+        """
+        import json
+
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        spec_id = new_id("spec")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO destination_specs(spec_id, destination_id, spec_version, "
+                "template_id, template_version, requirements_id, requirements_sha256, "
+                "title, shared_environment_spec, locked_at, sha256, created_at) "
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    spec_id,
+                    destination_id,
+                    spec_version,
+                    template_id,
+                    template_version,
+                    requirements_id,
+                    requirements_sha256,
+                    title,
+                    json.dumps(shared_environment_spec),
+                    now,
+                    sha256,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM destination_specs WHERE spec_id = ?",
+                (spec_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def get_destination_spec(self, destination_id: str) -> dict[str, Any] | None:
+        """获取目的地的 Spec 记录。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            dict | None: Spec 记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM destination_specs WHERE destination_id = ? "
+                "ORDER BY spec_version DESC LIMIT 1",
+                (destination_id,),
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+    # ========================================================================
+    # ScenePlan CRUD
+    # ========================================================================
+
+    def create_scene_plan(
+        self,
+        *,
+        destination_id: str,
+        spec_id: str,
+        order_index: int,
+        state_label: str,
+        pet_behavior: str,
+        pet_emotion: str,
+        semantic_anchor: str,
+        interaction_prompt: str,
+    ) -> dict[str, Any]:
+        """创建场景计划。
+
+        Args:
+            destination_id: 目的地 ID
+            spec_id: 规格 ID
+            order_index: 顺序索引（0 或 1）
+            state_label: 状态标签
+            pet_behavior: 宠物行为
+            pet_emotion: 宠物情绪
+            semantic_anchor: 语义锚点
+            interaction_prompt: 交互提示
+
+        Returns:
+            dict: 新创建的 ScenePlan 记录
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        scene_id = new_id("scene")
+        now = _utcnow_iso()
+
+        with self.transaction() as conn:
+            conn.execute(
+                "INSERT INTO scene_plans(scene_id, destination_id, spec_id, order_index, "
+                "state_label, pet_behavior, pet_emotion, semantic_anchor, "
+                "interaction_prompt, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    scene_id,
+                    destination_id,
+                    spec_id,
+                    order_index,
+                    state_label,
+                    pet_behavior,
+                    pet_emotion,
+                    semantic_anchor,
+                    interaction_prompt,
+                    now,
+                ),
+            )
+            row = conn.execute(
+                "SELECT * FROM scene_plans WHERE scene_id = ?",
+                (scene_id,),
+            ).fetchone()
+
+        return dict(row)
+
+    def list_scene_plans(self, destination_id: str) -> list[dict[str, Any]]:
+        """列出目的地的所有场景计划。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            list[dict]: 场景计划列表（按 order_index 排序）
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            rows = self._conn.execute(
+                "SELECT * FROM scene_plans WHERE destination_id = ? ORDER BY order_index ASC",
+                (destination_id,),
             ).fetchall()
 
         return [dict(row) for row in rows]
