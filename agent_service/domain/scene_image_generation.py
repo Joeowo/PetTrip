@@ -95,7 +95,7 @@ async def generate_final_scene_with_provider(
     )
 
     # 尝试使用异步任务 API
-    if hasattr(config, "image_use_async_tasks") and config.image_use_async_tasks:
+    if config.image_use_async_tasks:
         client = AsyncImageTaskClient(
             base_url=config.image_base_url,
             api_key=config.image_api_key,

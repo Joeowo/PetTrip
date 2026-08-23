@@ -60,6 +60,7 @@ class Settings:
     image_canvas_height: int = 1024
     image_max_decoded_bytes: int = 20 * 1024 * 1024
     image_max_pixels: int = 20_000_000
+    image_use_async_tasks: bool = False  # 是否使用异步任务 API（推荐）
 
 
 def load_settings(
@@ -121,4 +122,5 @@ def load_settings(
             env.get("IMAGE_MAX_DECODED_BYTES", str(20 * 1024 * 1024))
         ),
         image_max_pixels=int(env.get("IMAGE_MAX_PIXELS", "20000000")),
+        image_use_async_tasks=env.get("IMAGE_USE_ASYNC_TASKS", "false").lower() in ("true", "1", "yes"),
     )
