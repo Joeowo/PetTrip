@@ -305,7 +305,16 @@ def generate_final_scene_node(
 
             from agent_service.domain.scene_image_generation import (
                 generate_final_scene_sync,
+                generate_idempotency_key,
                 SceneGenerationInput,
+            )
+
+            # 生成幂等键
+            idempotency_key = generate_idempotency_key(
+                scene_id=state["scene_id"],
+                aperture_sha256=state["aperture_sha256"],
+                pet_behavior=state["pet_behavior"],
+                pet_emotion=state["pet_emotion"],
             )
 
             # 构建输入
@@ -316,6 +325,7 @@ def generate_final_scene_node(
                 "pet_behavior": state["pet_behavior"],
                 "pet_emotion": state["pet_emotion"],
                 "size": size,
+                "idempotency_key": idempotency_key,
             }
 
             # 调用 Provider
