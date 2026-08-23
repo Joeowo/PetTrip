@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Image 1 and Image 2 are Neva official screenshots used only as visual-style references; inherit their silhouettes, gouache/pastel blocks, paper-brush texture and horizontal staging, but do not copy their specific trees, characters, layout or events
+Primary request: a warm healing Q-version fantasy alpine valley; foreground is a grassy sloped ground strip, midground has several small timber chalets on the lower left and a path leading to a mountain pass, background is a huge gray mountain peak on the right with layered blue-green valleys and soft clouds; preserve two usable landmarks: the chalet path and the safe grass slope before the mountain foot; no character, no person, no UI, no text, no watermark
+Style/medium: Neva-inspired hand-painted 2D storybook landscape; simplified expressive shapes, clear silhouettes, muted gouache and pastel color blocks, restrained paper-and-brush texture, cinematic horizontal staging; no photorealism, no 3D render, no generic anime background
+Composition/framing: clear foreground/midground/background, strong scale contrast, fixed lens, usable standing ground near both landmarks
+Lighting/mood: cool bright alpine daylight with one consistent key-light direction
+Color palette: NEVA Ice Canyon Gate, #E3EDF4 #B7D0E0 #7FA5BC #466276 with #F2D27C limited to warm windows
+Constraints: no pet, no human, no extra building cluster, no text, no logo, no camera movement

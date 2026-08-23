@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Image 1 and Image 2 are Neva official screenshots used only as visual-style references; inherit their silhouettes, gouache/pastel blocks, paper-brush texture and horizontal staging, but do not copy their specific trees, characters, layout or events
+Primary request: a warm healing Q-version fantasy wet forest; foreground has low ferns, wet stones and one horizontal fallen log, midground has a readable waterfall dropping into a shallow pool with a dry stone bank, background is a dense layered green forest with soft mist; preserve two usable landmarks: the dry bank beside the waterfall and the wet-stone ground in front of the fallen log; no character, no person, no UI, no text, no watermark
+Style/medium: Neva-inspired hand-painted 2D storybook landscape; simplified expressive shapes, clear silhouettes, muted gouache and pastel color blocks, restrained paper-and-brush texture, cinematic horizontal staging; no photorealism, no 3D render, no generic anime background
+Composition/framing: clear foreground/midground/background, fixed lens, both landmarks visible and spatially separated
+Lighting/mood: quiet humid daylight, diffuse upper-left light, gentle mist
+Color palette: NEVA Moss Stone Path, #E4E3D4 #BFC2A3 #8E9677 #59614D with #C97C62 used only as tiny accents
+Constraints: no pet, no human, no extra waterfall, no text, no logo, no camera movement

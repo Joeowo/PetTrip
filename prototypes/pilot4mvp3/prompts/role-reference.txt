@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: fixed character reference for a 16:9 game travel scene
+Input images: Image 1 and Image 2 are Neva official screenshots used only as visual-style references; inherit their simplified hand-painted shapes, silhouettes, gouache texture and color treatment, but do not copy their characters, trees, layout or events
+Primary request: a clean full-body Q-version character reference of Wakaba Mutsumi from MYGO!!!!!, standing neutrally on a plain light background, no scene props
+Subject: Wakaba Mutsumi, recognizable cool gray-blue short hair with her signature hair silhouette, teal-green eyes, calm reserved expression, simplified Q-version proportions with a large head and compact body, cool gray-blue stage-inspired outfit with restrained dark accents
+Style/medium: Neva-inspired hand-painted 2D storybook art; simplified expressive shapes, clean readable silhouette, muted gouache and pastel color blocks, restrained paper-and-brush texture, soft cinematic lighting; Q-version proportions without generic anime rendering, no photorealism, no 3D render
+Composition/framing: centered full body, front three-quarter view, feet visible, generous margin around the silhouette, fixed neutral pose for later image editing references
+Lighting/mood: soft diffuse front-left light, gentle contact shadow, calm and quiet
+Constraints: one character only; keep hair silhouette, eye color, body proportion, outfit colors and facial identity consistent; plain background; no text; no logo; no watermark; no musical instruments; no extra props; no cropped limbs

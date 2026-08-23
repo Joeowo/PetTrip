@@ -1,0 +1,8 @@
+Use case: precise-object-edit
+Asset type: control-mask image for a fixed 1376x768 game scene
+Primary request: edit the supplied scene image by adding exactly one pure black solid circular Mask. Place its center on the safe standing ground at 左侧海蚀柱群旁海岸步道, close enough for a small character to interact with that landmark.
+Mask geometry: exactly 108 pixels in diameter on the 1376x768 canvas; perfectly circular; pure black fill; hard clean edge; no outline; no feathering; no transparency; only one circle.
+Target: 左侧海蚀柱群旁海岸步道.
+Do not target: 右侧主海蚀柱下方岩岸.
+Invariants: change only the pixels occupied by the black circle; keep camera, composition, terrain, landmark shapes, colors, lighting, weather and all pixels outside the circle unchanged.
+Constraints: the circle must sit entirely on usable ground; it must not cover the target landmark itself; it must not touch sky or water; no character, no person, no text, no UI, no second circle, no other edits.

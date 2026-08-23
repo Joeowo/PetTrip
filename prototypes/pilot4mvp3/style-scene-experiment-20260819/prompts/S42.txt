@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Images 1, 2, and 3 are visual-style references only. Derive their medium, mark-making, edge treatment, shape language, material treatment, color relationships, lighting logic, and level of detail. Do not copy their specific characters, objects, text, logos, UI, layout, or events.
+Primary request: Generate one pure environment scene of an alpine valley with small timber chalets. The foreground is a broad grassy sloped ground strip with a few wild grasses. The midground contains several small timber chalets on the lower left and a winding path leading toward a mountain pass. The background contains one huge gray alpine peak on the right, layered blue-green valleys, and soft clouds. Keep the chalet path and the safe grass slope before the mountain foot clearly readable as two separate landmarks.
+Target style name: 箱庭玩具模型风
+Style source label: Tunic
+Style keywords: 等距微缩、玩具箱、说明书符号、可爱神秘
+Style direction: 参考《TUNIC》的画风语言，强调等距箱庭视角、微缩模型质感、玩具化比例、干净材质语言与克制明亮的奇幻配色，整体像精修过的桌面立体模型，突出微缩世界感与模型完成度，而不是具体宝箱、道具或角色服装。
+Composition/framing: cinematic horizontal composition, fixed eye-level lens, clear foreground/midground/background, strong scale contrast between the tiny chalets and the large mountain, usable standing ground near both landmarks, no extreme perspective.
+Lighting/mood: calm, inviting alpine daylight with one coherent key-light direction; adapt the rendering of light to the target style while preserving scene readability.
+Constraints: apply the target style consistently to the entire scene; exactly one alpine valley scene; no character, no person, no animal, no pet, no UI, no text, no letters, no numbers, no logo, no watermark, no extra building cluster, no copied composition from the reference images.

@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Images 1, 2, and 3 are visual-style references only. Derive their medium, mark-making, edge treatment, shape language, material treatment, color relationships, lighting logic, and level of detail. Do not copy their specific characters, objects, text, logos, UI, layout, or events.
+Primary request: Generate one pure environment scene of an alpine valley with small timber chalets. The foreground is a broad grassy sloped ground strip with a few wild grasses. The midground contains several small timber chalets on the lower left and a winding path leading toward a mountain pass. The background contains one huge gray alpine peak on the right, layered blue-green valleys, and soft clouds. Keep the chalet path and the safe grass slope before the mountain foot clearly readable as two separate landmarks.
+Target style name: 雨夜赛博街区
+Style source label: Cloudpunk
+Style keywords: 雨夜、霓虹雾、垂直城市、飞车灯海
+Style direction: 参考《Cloudpunk》的画风语言，强调雨夜霓虹反射、垂直城市层级、低能见度雾气、湿润发亮的色面与忧郁赛博氛围，整体密集、朦胧、具有夜行都市感，突出光色反差与空间压缩，而不是具体招牌文本或交通工具。
+Composition/framing: cinematic horizontal composition, fixed eye-level lens, clear foreground/midground/background, strong scale contrast between the tiny chalets and the large mountain, usable standing ground near both landmarks, no extreme perspective.
+Lighting/mood: calm, inviting alpine daylight with one coherent key-light direction; adapt the rendering of light to the target style while preserving scene readability.
+Constraints: apply the target style consistently to the entire scene; exactly one alpine valley scene; no character, no person, no animal, no pet, no UI, no text, no letters, no numbers, no logo, no watermark, no extra building cluster, no copied composition from the reference images.

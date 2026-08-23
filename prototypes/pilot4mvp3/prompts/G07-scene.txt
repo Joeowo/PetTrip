@@ -1,0 +1,9 @@
+Use case: stylized-concept
+Asset type: 16:9 horizontal game travel scene, fixed camera
+Input images: Image 1 and Image 2 are Neva official screenshots used only as visual-style references; inherit their silhouettes, gouache/pastel blocks, paper-brush texture and horizontal staging, but do not copy their specific trees, characters, layout or events
+Primary request: a warm healing Q-version fantasy misty forest trail; foreground is damp leaves and low moss, midground has a wooden stairway rising toward the center and a thick tree trunk with visible mossy roots on the right, background is layered green forest and soft mist; preserve two usable landmarks: the first wide stair near the bottom and the ground directly before the mossy roots; no character, no person, no UI, no text, no watermark
+Style/medium: Neva-inspired hand-painted 2D storybook landscape; simplified expressive shapes, clear silhouettes, muted gouache and pastel color blocks, restrained paper-and-brush texture, cinematic horizontal staging; no photorealism, no 3D render, no generic anime background
+Composition/framing: central perspective, fixed lens, narrow but readable standing surfaces near both landmarks
+Lighting/mood: quiet wet woodland, diffuse filtered daylight, slight mist
+Color palette: NEVA Moss Stone Path, #E4E3D4 #BFC2A3 #8E9677 #59614D with #C97C62 as a tiny leaf accent
+Constraints: no pet, no human, no railing added, no text, no logo, no camera movement
