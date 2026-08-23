@@ -392,6 +392,7 @@ class DestinationRepository:
         *,
         session_id: str,
         api_client_id: str,
+        destination_id: str | None = None,
     ) -> dict[str, Any]:
         """创建新目的地记录。
 
@@ -402,7 +403,7 @@ class DestinationRepository:
         Returns:
             dict: 新创建的目的地记录
         """
-        destination_id = new_id("destination")
+        destination_id = destination_id or new_id("destination")
         now = _utcnow_iso()
 
         with self.transaction() as conn:
@@ -437,6 +438,18 @@ class DestinationRepository:
             ).fetchone()
 
         return _row_to_dict(row)
+
+    def complete_destination(self, destination_id: str, outcome: str = "succeeded") -> None:
+        """以单事务方式提交目的地终态。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        now = _utcnow_iso()
+        with self._lock:
+            assert self._conn is not None
+            self._conn.execute(
+                "UPDATE destinations SET phase = 'terminal', done = 1, terminal_outcome = ?, updated_at = ? WHERE id = ?",
+                (outcome, now, destination_id),
+            )
 
     def update_destination_phase(
         self,
