@@ -48,10 +48,8 @@ def test_migration_creates_tables_without_breaking_existing_data():
             ).fetchall()
             table_names = {row["name"] for row in tables}
 
-        # 验证新增的 11 张表都存在
+        # 验证新增的 11 张表都存在（注意：clarification_inputs 和 clarification_sessions 在 database.py 中）
         expected_new_tables = {
-            "clarification_inputs",
-            "clarification_state",
             "destinations",
             "destination_requirements",
             "destination_requirement_items",
