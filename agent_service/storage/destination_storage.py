@@ -1536,6 +1536,21 @@ class DestinationRepository:
 
         return _row_to_dict(row)
 
+    def get_scene_artifact_for_scene(
+        self, scene_id: str, artifact_version: int = 1
+    ) -> dict[str, Any] | None:
+        """按 Scene 和版本获取已提交制品，用于幂等恢复。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM scene_artifacts "
+                "WHERE scene_id = ? AND artifact_version = ?",
+                (scene_id, artifact_version),
+            ).fetchone()
+        return _row_to_dict(row)
+
     def get_interaction_zone(self, zone_id: str) -> dict[str, Any] | None:
         """根据 ID 获取交互区域。
 

@@ -122,6 +122,9 @@ class Storage:
             rel_path=rel_path,
         )
 
+    def delete_file(self, file_id: str) -> None:
+        self._db.delete_file(file_id)
+
     def get_file(self, file_id: str, api_client_id: str) -> dict[str, Any] | None:
         return self._db.get_file(file_id, api_client_id)
 

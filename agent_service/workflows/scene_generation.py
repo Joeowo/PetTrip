@@ -97,6 +97,8 @@ def mock_generate_final_scene(
     pet_emotion: str,
     width: int,
     height: int,
+    center_x: int | None = None,
+    center_y: int | None = None,
 ) -> bytes:
     """Mock 生成最终场景（真实实现会调用图片生成 Provider）。
 
@@ -121,10 +123,9 @@ def mock_generate_final_scene(
     # 在黑色圆的位置绘制简单的宠物占位符（绿色圆 + 文字）
     draw = ImageDraw.Draw(aperture_image)
 
-    # 找到黑色圆的中心（简单策略：扫描图像找黑色区域）
-    # 这里为了简化，直接使用图像中心附近
-    center_x = width // 2
-    center_y = height // 2
+    # fixture 直接复用 locator 检测出的几何真值；未提供时保持旧单元测试默认。
+    center_x = width // 2 if center_x is None else center_x
+    center_y = height // 2 if center_y is None else center_y
     pet_radius = 60
 
     # 绘制绿色圆（模拟宠物）
@@ -223,8 +224,12 @@ def detect_interaction_circle_node(
 def build_generation_mask_node(
     state: SceneGenerationState,
     file_storage: LocalImageStorage,
+    repo: DestinationRepository,
+    storage=None,
 ) -> SceneGenerationState:
     """节点：构建生成 Mask（字节稳定）。"""
+    stored_assets: list[tuple[str, str]] = []
+    registered_file_ids: list[str] = []
     try:
         # 读取环境母图
         if hasattr(file_storage, "read"):
@@ -251,12 +256,11 @@ def build_generation_mask_node(
         if hasattr(file_storage, "write"):
             file_storage.write(mask_file_id, mask_result["generation_mask_bytes"], "image/png")
         else:
-            file_storage.normalize_and_store_generated(
+            stored_mask = file_storage.store_generated_png(
                 file_id=mask_file_id,
                 data=mask_result["generation_mask_bytes"],
-                target_width=state["environment_width"],
-                target_height=state["environment_height"],
-                max_pixels=state["environment_width"] * state["environment_height"],
+                width=state["environment_width"],
+                height=state["environment_height"],
             )
 
         # 存储 aperture image（内部资产）
@@ -264,13 +268,35 @@ def build_generation_mask_node(
         if hasattr(file_storage, "write"):
             file_storage.write(aperture_file_id, mask_result["aperture_image_bytes"], "image/png")
         else:
-            file_storage.normalize_and_store_generated(
+            stored_aperture = file_storage.store_generated_png(
                 file_id=aperture_file_id,
                 data=mask_result["aperture_image_bytes"],
-                target_width=state["environment_width"],
-                target_height=state["environment_height"],
-                max_pixels=state["environment_width"] * state["environment_height"],
+                width=state["environment_width"],
+                height=state["environment_height"],
             )
+
+        if storage is not None and not hasattr(file_storage, "write"):
+            destination = repo.get_destination(state["destination_id"])
+            if destination is None:
+                raise ValueError("destination_not_found")
+            for file_id, stored in (
+                (mask_file_id, stored_mask),
+                (aperture_file_id, stored_aperture),
+            ):
+                storage.create_file(
+                    file_id=file_id,
+                    api_client_id=destination["api_client_id"],
+                    source="agent_generated",
+                    purpose="generated_image",
+                    mime_type=stored.mime_type,
+                    size_bytes=stored.size_bytes,
+                    sha256=stored.sha256,
+                    width=stored.width,
+                    height=stored.height,
+                    rel_path=stored.rel_path,
+                )
+                registered_file_ids.append(file_id)
+                stored_assets.append((file_id, stored.rel_path))
 
         # 更新状态
         state["generation_mask_file_id"] = mask_file_id
@@ -279,6 +305,14 @@ def build_generation_mask_node(
         state["aperture_sha256"] = mask_result["aperture_image_sha256"]
 
     except Exception as e:
+        if storage is not None and not hasattr(file_storage, "write"):
+            for file_id in registered_file_ids:
+                storage.delete_file(file_id)
+            for _, rel_path in stored_assets:
+                file_storage.delete(rel_path)
+            for file_id in (state.get("generation_mask_file_id"), state.get("aperture_file_id")):
+                if file_id:
+                    storage.delete_file(file_id)
         state["error"] = f"mask_generation_failed: {str(e)}"
 
     return state
@@ -286,6 +320,7 @@ def build_generation_mask_node(
 
 def generate_final_scene_node(
     state: SceneGenerationState,
+    repo: DestinationRepository,
     file_storage: LocalImageStorage,
     config=None,
 ) -> SceneGenerationState:
@@ -319,16 +354,34 @@ def generate_final_scene_node(
                 state["pet_emotion"],
                 state["environment_width"],
                 state["environment_height"],
+                state["planned_center_x"],
+                state["planned_center_y"],
             )
         else:
             # 调用真实图片生成 Provider
             if config is None:
                 raise ValueError("真实 Provider 调用需要 config 参数")
 
+            from agent_service.adapters.image import ImageReference
             from agent_service.domain.scene_image_generation import (
                 generate_final_scene_sync,
                 generate_idempotency_key,
                 SceneGenerationInput,
+            )
+            from agent_service.domain.template_catalog import TemplateCatalog
+
+            pet_asset = TemplateCatalog.default().load_reference(
+                "pet/chongwu-bottom.png"
+            )
+            pet_reference = ImageReference(
+                role="pet_reference",
+                file_id=pet_asset["asset_key"],
+                mime_type=pet_asset["mime_type"],
+                width=pet_asset["width"],
+                height=pet_asset["height"],
+                sha256=pet_asset["sha256"],
+                data=pet_asset["data"],
+                order_index=0,
             )
 
             # 生成幂等键
@@ -337,7 +390,29 @@ def generate_final_scene_node(
                 aperture_sha256=state["aperture_sha256"],
                 pet_behavior=state["pet_behavior"],
                 pet_emotion=state["pet_emotion"],
+                pet_reference_sha256=pet_reference.sha256,
             )
+
+            # 构建与实际 Provider 请求一致的 PromptSnapshot。
+            prompt = (
+                "Replace the black circle with a cute pet character. "
+                f"The pet should be {state['pet_behavior']}, showing "
+                f"{state['pet_emotion']} emotion. Keep the surrounding environment "
+                "unchanged. The pet should fit naturally within the circular area."
+            )
+            snapshot = repo.create_prompt_snapshot(
+                destination_id=state["destination_id"],
+                operation_type="scene_render",
+                prompt_text=prompt,
+                model_params={
+                    "size": f"{state['environment_width']}x{state['environment_height']}",
+                    "pet_reference_role": "pet_reference",
+                    "pet_reference_sha256": pet_reference.sha256,
+                    "aperture_sha256": state["aperture_sha256"],
+                    "mask_sha256": state["generation_mask_sha256"],
+                },
+            )
+            state["prompt_snapshot_id"] = snapshot["snapshot_id"]
 
             # 构建输入
             size = f"{state['environment_width']}x{state['environment_height']}"
@@ -348,6 +423,7 @@ def generate_final_scene_node(
                 "pet_emotion": state["pet_emotion"],
                 "size": size,
                 "idempotency_key": idempotency_key,
+                "pet_reference": pet_reference,
             }
 
             # 调用 Provider
@@ -630,11 +706,13 @@ def build_scene_generation_workflow(
     )
     workflow.add_node(
         "build_generation_mask",
-        lambda state: build_generation_mask_node(state, file_storage),
+        lambda state: build_generation_mask_node(
+            state, file_storage, repo, storage
+        ),
     )
     workflow.add_node(
         "generate_final_scene",
-        lambda state: generate_final_scene_node(state, file_storage, config),
+        lambda state: generate_final_scene_node(state, repo, file_storage, config),
     )
     workflow.add_node(
         "validate_scene_artifact",

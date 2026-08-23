@@ -6,10 +6,12 @@ from typing import TypedDict
 
 from agent_service.adapters.image import (
     ImageEditRequest,
+    ImageReference,
     ImageResult,
     OpenAICompatibleImageProvider,
     ImageProviderError,
 )
+from agent_service.domain.template_catalog import TemplateCatalog
 from agent_service.adapters.async_image_task import (
     AsyncImageTaskClient,
     AsyncImageTaskRequest,
@@ -25,6 +27,7 @@ class SceneGenerationInput(TypedDict):
     pet_emotion: str
     size: str  # 例如 "2048x1152"
     idempotency_key: str  # 幂等键（可选）
+    pet_reference: ImageReference
 
 
 def build_scene_generation_prompt(pet_behavior: str, pet_emotion: str) -> str:
@@ -50,6 +53,7 @@ def generate_idempotency_key(
     aperture_sha256: str,
     pet_behavior: str,
     pet_emotion: str,
+    pet_reference_sha256: str = "",
 ) -> str:
     """生成幂等键。
 
@@ -65,7 +69,10 @@ def generate_idempotency_key(
     Returns:
         str: 幂等键
     """
-    content = f"{scene_id}:{aperture_sha256}:{pet_behavior}:{pet_emotion}"
+    content = (
+        f"{scene_id}:{aperture_sha256}:{pet_behavior}:{pet_emotion}:"
+        f"{pet_reference_sha256}"
+    )
     hash_digest = hashlib.sha256(content.encode("utf-8")).hexdigest()
     return f"scene-{scene_id[:8]}-{hash_digest[:16]}"
 
@@ -111,6 +118,7 @@ async def generate_final_scene_with_provider(
             quality="high",
             n=1,
             idempotency_key=input_data.get("idempotency_key", ""),
+            references=(input_data["pet_reference"],),
         )
 
         result = client.submit_and_wait(request)
@@ -132,6 +140,7 @@ async def generate_final_scene_with_provider(
         mask=input_data["mask_bytes"],
         prompt=prompt,
         size=input_data["size"],
+        references=(input_data["pet_reference"],),
     )
 
     result = await provider.edit(edit_request)

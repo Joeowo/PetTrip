@@ -10,9 +10,11 @@ from pathlib import Path
 
 import pytest
 
+from agent_service.adapters.image import ImageResult
 from agent_service.storage.destination_storage import DestinationRepository
 from agent_service.storage.files import LocalImageStorage
 from agent_service.workflows.generation_planning import (
+    mock_generate_environment_image,
     run_generation_planning_workflow,
 )
 from agent_service.shared.ids import new_id
@@ -128,6 +130,26 @@ def setup_destination(repo):
     shared_environment_spec = {
         "description": "温馨舒适的室内环境",
         "style_constraints": ["温馨", "舒适"],
+        "environment_design": {
+            "style_template_id": "style_fixture",
+            "style_template_version": "2.0",
+            "composition_template_id": "composition_fixture",
+            "composition_template_version": "3.0",
+            "filled_slots": {"destination_description": "温馨舒适的室内环境"},
+            "negative_constraints": ["避免杂乱"],
+            "references": [
+                {
+                    "role": "style_reference",
+                    "asset_key": "style_001/ref_1.png",
+                    "order_index": 0,
+                    "sha256": "134c438d334d332bf9ec4b1653f9558e1df9dd0ad2765bdcf5940f1c17a91b5d",
+                    "mime_type": "image/png",
+                    "width": 90,
+                    "height": 160,
+                }
+            ],
+            "rendered_prompt": "来自模板 fixture 的权威环境 Prompt",
+        },
     }
     spec_content = {
         "template_id": "default",
@@ -232,6 +254,20 @@ def create_run(repo, setup_destination):
         return run_id
 
     return _create_run
+
+
+class RecordingImageProvider:
+    def __init__(self):
+        self.requests = []
+
+    async def generate(self, request):
+        self.requests.append(request)
+        return ImageResult(
+            data=mock_generate_environment_image(),
+            mime_type="image/png",
+            width=2048,
+            height=1152,
+        )
 
 
 # ============================================================================
@@ -489,6 +525,36 @@ def test_workflow_validates_two_scene_invariants(repo, file_storage):
     # 验证失败（因为只有 1 个场景）
     assert result["error"] is not None
     assert "必须恰好 2 个场景计划" in result["error"]
+
+
+def test_provider_request_and_prompt_snapshot_use_spec_rendered_prompt(
+    repo, file_storage, setup_destination, create_run
+):
+    provider = RecordingImageProvider()
+    destination_id = setup_destination["destination_id"]
+
+    result = run_generation_planning_workflow(
+        destination_id=destination_id,
+        spec_id=setup_destination["spec_id"],
+        repo=repo,
+        file_storage=file_storage,
+        run_id=create_run(),
+        image_provider=provider,
+    )
+
+    assert result["error"] is None
+    assert [request.prompt for request in provider.requests] == [
+        "来自模板 fixture 的权威环境 Prompt"
+    ]
+    assert [reference.role for reference in provider.requests[0].references] == [
+        "style_reference"
+    ]
+    assert provider.requests[0].references[0].sha256 == (
+        "134c438d334d332bf9ec4b1653f9558e1df9dd0ad2765bdcf5940f1c17a91b5d"
+    )
+    artifact = repo.get_shared_environment_artifact(destination_id)
+    snapshot = repo.get_prompt_snapshot(artifact["prompt_snapshot_id"])
+    assert snapshot["prompt_text"] == provider.requests[0].prompt
 
 
 def test_prompt_snapshot_created(repo, file_storage, setup_destination, create_run):

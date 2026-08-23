@@ -21,7 +21,7 @@ from typing import Any
 import httpx
 from PIL import Image
 
-from agent_service.adapters.image import ImageProviderError, ImageResult
+from agent_service.adapters.image import ImageProviderError, ImageReference, ImageResult
 
 
 @dataclass
@@ -35,6 +35,7 @@ class AsyncImageTaskRequest:
     quality: str = "high"
     n: int = 1
     idempotency_key: str = ""  # 幂等键
+    references: tuple[ImageReference, ...] = ()
 
 
 class AsyncImageTaskClient:
@@ -116,6 +117,23 @@ class AsyncImageTaskClient:
                 },
             },
         }
+        if request.references:
+            payload["inputs"]["references"] = [
+                {
+                    "role": reference.role,
+                    "file_id": reference.file_id,
+                    "mime_type": reference.mime_type,
+                    "width": reference.width,
+                    "height": reference.height,
+                    "sha256": reference.sha256,
+                    "order_index": reference.order_index,
+                    "data": base64.b64encode(reference.data).decode("ascii"),
+                }
+                for reference in sorted(
+                    request.references,
+                    key=lambda item: (item.order_index, item.role, item.file_id),
+                )
+            ]
 
         headers = {
             "Authorization": f"Bearer {self.api_key}",

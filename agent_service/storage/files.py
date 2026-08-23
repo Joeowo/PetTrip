@@ -187,6 +187,45 @@ class LocalImageStorage:
             height=target_height,
         )
 
+    def store_generated_png(
+        self,
+        *,
+        file_id: str,
+        data: bytes,
+        width: int,
+        height: int,
+    ) -> StoredImage:
+        """原样原子保存内部确定性 PNG，保留调用方字节哈希。"""
+        try:
+            with Image.open(BytesIO(data)) as image:
+                if image.format != "PNG" or image.size != (width, height):
+                    raise LocalFileIntegrityError("内部 PNG 尺寸或格式不匹配。")
+                image.load()
+        except (UnidentifiedImageError, OSError, ValueError) as exc:
+            raise LocalFileIntegrityError("内部 PNG 无法解码。") from exc
+        target = self._generated_dir / f"{file_id}.png"
+        descriptor, temporary_name = tempfile.mkstemp(
+            prefix=f".{file_id}-", suffix=".tmp", dir=self._generated_dir
+        )
+        temporary = Path(temporary_name)
+        try:
+            with os.fdopen(descriptor, "wb") as stream:
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temporary, target)
+        except Exception:
+            temporary.unlink(missing_ok=True)
+            raise
+        return StoredImage(
+            rel_path=target.relative_to(self._data_dir).as_posix(),
+            mime_type="image/png",
+            size_bytes=len(data),
+            sha256=hashlib.sha256(data).hexdigest(),
+            width=width,
+            height=height,
+        )
+
     def store_bytes(self, file_id: str, data: bytes) -> str:
         """为内部测试保存不会覆盖既有资源的受控字节。"""
         target = self._input_dir / f"{file_id}.bin"

@@ -10,7 +10,8 @@ import hashlib
 import json
 from typing import Any, TypedDict
 
-from ..adapters.image import ImageGenerationProvider, ImageGenerationRequest
+from ..adapters.image import ImageGenerationProvider, ImageGenerationRequest, ImageReference
+from ..domain.template_catalog import TemplateCatalog, TemplateError
 
 from langgraph.graph import StateGraph, END
 
@@ -35,6 +36,8 @@ class GenerationPlanningState(TypedDict):
     scene_plans: list[dict[str, Any]] | None
 
     # Prompt Snapshots
+    rendered_prompt: str | None
+    reference_specs: list[dict[str, Any]] | None
     prompt_snapshot_id: str | None
 
     # 共享环境生成
@@ -139,21 +142,56 @@ def validate_two_scene_invariants_node(
     return state
 
 
+def resolve_rendered_environment_prompt_node(
+    state: GenerationPlanningState, repo: DestinationRepository
+) -> GenerationPlanningState:
+    """节点：读取已锁定 Spec 中唯一权威的环境 Prompt。"""
+    if state.get("error"):
+        return state
+    spec = repo.get_destination_spec(state["destination_id"])
+    if spec is None:
+        state["error"] = "未找到 DestinationSpec"
+        return state
+
+    try:
+        shared_environment_spec = json.loads(spec["shared_environment_spec"])
+        environment_design = shared_environment_spec["environment_design"]
+        prompt_text = environment_design["rendered_prompt"]
+        reference_specs = environment_design.get("references", [])
+    except (KeyError, TypeError, json.JSONDecodeError) as exc:
+        state["error"] = f"DestinationSpec 缺少有效的 rendered_prompt: {exc}"
+        return state
+
+    if not isinstance(prompt_text, str) or not prompt_text.strip():
+        state["error"] = "DestinationSpec 的 rendered_prompt 不能为空"
+        return state
+    if not isinstance(reference_specs, list):
+        state["error"] = "DestinationSpec 的 references 必须是数组"
+        return state
+    state["rendered_prompt"] = prompt_text
+    state["reference_specs"] = reference_specs
+    return state
+
+
 def create_prompt_snapshots_node(
     state: GenerationPlanningState, repo: DestinationRepository
 ) -> GenerationPlanningState:
-    """节点：创建 Prompt 快照（简化版）。"""
+    """节点：从权威 rendered prompt 创建 Prompt 快照。"""
+    if state.get("error"):
+        return state
     destination_id = state["destination_id"]
+    prompt_text = state.get("rendered_prompt")
+    if not prompt_text:
+        state["error"] = "缺少 rendered_prompt，无法创建 PromptSnapshot"
+        return state
 
-    # 简化版：创建一个环境生成的 Prompt 快照
-    # 真实实现会从 DestinationSpec 渲染完整 Prompt
-    prompt_text = "生成温馨舒适的宠物旅行环境，包含两个语义明确的锚点位置"
     model_params = {
         "provider": "65535",
         "model": "gpt-image-2",
         "size": "16:9",
         "resolution": "2k",
         "quality": "high",
+        "references": state.get("reference_specs") or [],
     }
 
     snapshot = repo.create_prompt_snapshot(
@@ -182,6 +220,8 @@ def generate_shared_environment_node(
     3. 记录尺寸、MIME、SHA-256、PromptSnapshot
     4. 原子提交不可变 SharedEnvironmentArtifact
     """
+    if state.get("error"):
+        return state
     destination_id = state["destination_id"]
     prompt_snapshot_id = state.get("prompt_snapshot_id")
     attempt_number = state.get("attempt_number", 0)
@@ -210,14 +250,31 @@ def generate_shared_environment_node(
         if image_provider is None:
             image_data = mock_generate_environment_image()
         else:
+            catalog = TemplateCatalog.default()
+            references = []
+            for reference_spec in state.get("reference_specs") or []:
+                asset = catalog.load_reference(reference_spec["asset_key"])
+                if asset["sha256"] != reference_spec["sha256"]:
+                    raise TemplateError(
+                        f"参考资产快照 SHA-256 不匹配: {reference_spec['asset_key']}"
+                    )
+                references.append(
+                    ImageReference(
+                        role=reference_spec["role"],
+                        file_id=reference_spec["asset_key"],
+                        mime_type=asset["mime_type"],
+                        width=asset["width"],
+                        height=asset["height"],
+                        sha256=asset["sha256"],
+                        data=asset["data"],
+                        order_index=reference_spec["order_index"],
+                    )
+                )
             result = asyncio.run(
                 image_provider.generate(
                     ImageGenerationRequest(
-                        prompt=(
-                            "Create a 16:9 travel environment for a pet trip. "
-                            "Keep the scene clear and suitable for placing a pet "
-                            "in two distinct semantic locations."
-                        )
+                        prompt=state["rendered_prompt"],
+                        references=tuple(references),
                     )
                 )
             )
@@ -333,6 +390,10 @@ def build_generation_planning_workflow(
         validate_two_scene_invariants_node,
     )
     workflow.add_node(
+        "resolve_rendered_environment_prompt",
+        lambda state: resolve_rendered_environment_prompt_node(state, repo),
+    )
+    workflow.add_node(
         "create_prompt_snapshots",
         lambda state: create_prompt_snapshots_node(state, repo),
     )
@@ -348,7 +409,10 @@ def build_generation_planning_workflow(
 
     # 添加边
     workflow.add_edge("create_scene_plans", "validate_two_scene_invariants")
-    workflow.add_edge("validate_two_scene_invariants", "create_prompt_snapshots")
+    workflow.add_edge(
+        "validate_two_scene_invariants", "resolve_rendered_environment_prompt"
+    )
+    workflow.add_edge("resolve_rendered_environment_prompt", "create_prompt_snapshots")
     workflow.add_edge("create_prompt_snapshots", "generate_shared_environment")
     workflow.add_edge("generate_shared_environment", END)
 
@@ -396,6 +460,8 @@ def run_generation_planning_workflow(
         "destination_id": destination_id,
         "spec_id": spec_id,
         "scene_plans": None,
+        "rendered_prompt": None,
+        "reference_specs": None,
         "prompt_snapshot_id": None,
         "shared_environment_id": None,
         "environment_file_id": None,

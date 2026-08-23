@@ -463,9 +463,8 @@ def detect_black_circle(
     from PIL import Image
     from io import BytesIO
 
-    # 使用默认参数
-    if policy is None:
-        policy = DEFAULT_LOCATOR_POLICY.copy()
+    # 调用方只覆盖需要调整的策略项，其余沿用已版本化默认值。
+    policy = {**DEFAULT_LOCATOR_POLICY, **(policy or {})}
 
     # 加载图像
     env_image = Image.open(BytesIO(environment_image_bytes)).convert("RGB")
@@ -537,6 +536,11 @@ def detect_black_circle(
 
     if not color_qualified:
         raise DetectionError("no_plausible_black_marker", rejection_counts)
+    if policy.get("require_unique_candidate") and len(color_qualified) != 1:
+        raise DetectionError(
+            "multiple_plausible_black_markers",
+            {"qualified_candidate_count": len(color_qualified)},
+        )
 
     # 第四阶段：评分与选择
     for candidate in color_qualified:

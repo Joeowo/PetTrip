@@ -10,6 +10,7 @@ import json
 from typing import Any, TypedDict
 
 from langgraph.graph import StateGraph, END
+from ..domain.template_catalog import TemplateCatalog, TemplateError
 from ..storage.destination_storage import DestinationRepository
 from ..shared.ids import new_id
 
@@ -317,8 +318,15 @@ def design_environment_template_node(
         "wish_items": wish_items,
     }
 
-    # 调用 LLM 选择模板（Mock 实现）
+    # 调用 LLM 选择模板（Mock 实现），随后用运行时目录校验选择结果。
     template_selection = mock_select_environment_template(requirements_data)
+    try:
+        catalog = TemplateCatalog.default()
+        catalog.get_style(template_selection["style_template_id"])
+        catalog.get_composition(template_selection["composition_template_id"])
+    except TemplateError as exc:
+        state["error"] = f"环境模板不可用: {exc}"
+        return state
 
     # 保存模板选择结果到 State
     state["style_template_id"] = template_selection["style_template_id"]
@@ -353,12 +361,41 @@ def generate_destination_spec_node(
     # 生成 Spec 内容（使用模板选择结果）
     spec_data = mock_generate_destination_spec(requirements_id, requirements_sha256)
 
-    # Issue #36 - 2.4: 添加 environment_design 字段
-    # 包含模板选择结果和渲染后的 prompt
+    # Issue #36 - 2.4: 添加由运行时目录产生的 environment_design。
+    try:
+        catalog = TemplateCatalog.default()
+        rendered = catalog.render_environment(
+            style_template_id=style_template_id or "",
+            composition_template_id=composition_template_id or "",
+            slot_values={"destination_description": spec_data["shared_environment_spec"]["description"]},
+        )
+        references = []
+        for reference in rendered.references:
+            metadata = catalog.load_reference(reference.asset_key)
+            references.append(
+                {
+                    "role": metadata["role"],
+                    "asset_key": reference.asset_key,
+                    "order_index": reference.order_index,
+                    "sha256": metadata["sha256"],
+                    "mime_type": metadata["mime_type"],
+                    "width": metadata["width"],
+                    "height": metadata["height"],
+                }
+            )
+    except TemplateError as exc:
+        state["error"] = f"环境模板渲染失败: {exc}"
+        return state
+
     environment_design = {
-        "style_template_id": style_template_id,
-        "composition_template_id": composition_template_id,
-        "rendered_prompt": f"使用 {style_template_id} 画风和 {composition_template_id} 构图创建温馨宠物环境",
+        "style_template_id": rendered.style_template_id,
+        "style_template_version": rendered.style_template_version,
+        "composition_template_id": rendered.composition_template_id,
+        "composition_template_version": rendered.composition_template_version,
+        "filled_slots": rendered.filled_slots,
+        "negative_constraints": list(rendered.negative_constraints),
+        "references": references,
+        "rendered_prompt": rendered.prompt,
     }
 
     # 将 environment_design 添加到 shared_environment_spec

@@ -198,21 +198,19 @@ def test_reject_when_no_circle():
     assert exc_info.value.reason == "no_black_pixels_found"
 
 
-def test_select_best_when_multiple_circles():
-    """测试 3: 多圆时选择最佳候选（通过评分）。"""
+def test_production_policy_rejects_multiple_plausible_circles():
+    """生产定位策略要求恰好一个合格黑圈。"""
     env_image = create_test_environment()
     loc_image = create_locator_with_multiple_circles()
 
-    result = detect_black_circle(env_image, loc_image)
+    with pytest.raises(DetectionError) as exc_info:
+        detect_black_circle(
+            env_image,
+            loc_image,
+            policy={"require_unique_candidate": True},
+        )
 
-    # 应该检测到多个候选（至少 2 个通过几何资格）
-    # 但最终选择一个最佳候选
-    assert result["qualified_candidate_count"] >= 1
-
-    # 验证返回了唯一的圆心
-    center_x, center_y = result["planned_locator_center"]
-    assert isinstance(center_x, int)
-    assert isinstance(center_y, int)
+    assert exc_info.value.reason == "multiple_plausible_black_markers"
 
 
 def test_reject_when_dimension_mismatch():

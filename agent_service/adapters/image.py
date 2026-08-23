@@ -8,7 +8,7 @@ import binascii
 import io
 import json
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 from PIL import Image, UnidentifiedImageError
@@ -19,8 +19,44 @@ class ImageProviderError(RuntimeError):
 
 
 @dataclass(frozen=True)
+class ImageReference:
+    role: Literal[
+        "style_reference",
+        "composition_reference",
+        "pet_reference",
+        "environment_reference",
+        "locator_reference",
+    ]
+    file_id: str
+    mime_type: str
+    width: int
+    height: int
+    sha256: str
+    data: bytes
+    order_index: int = 0
+
+    def __post_init__(self) -> None:
+        if not self.file_id or len(self.sha256) != 64:
+            raise ValueError("参考图必须包含 file_id 和 SHA-256")
+        if self.width <= 0 or self.height <= 0:
+            raise ValueError("参考图尺寸必须为正数")
+        if self.order_index < 0:
+            raise ValueError("参考图顺序不能为负数")
+
+
+def _validate_reference_order(references: tuple[ImageReference, ...]) -> None:
+    order_indexes = [reference.order_index for reference in references]
+    if len(order_indexes) != len(set(order_indexes)):
+        raise ValueError("参考图 order_index 必须唯一")
+
+
+@dataclass(frozen=True)
 class ImageGenerationRequest:
     prompt: str
+    references: tuple[ImageReference, ...] = ()
+
+    def __post_init__(self) -> None:
+        _validate_reference_order(self.references)
 
 
 @dataclass(frozen=True)
@@ -33,6 +69,10 @@ class ImageEditRequest:
     mask: bytes   # Mask 图像（PNG，白色区域将被编辑）
     prompt: str   # 编辑提示词
     size: str = "1024x1024"  # 期望输出尺寸
+    references: tuple[ImageReference, ...] = ()
+
+    def __post_init__(self) -> None:
+        _validate_reference_order(self.references)
 
 
 @dataclass(frozen=True)
@@ -87,6 +127,23 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
             "n": 1,
             "response_format": "b64_json",
         }
+        if request.references:
+            payload["references"] = [
+                {
+                    "role": reference.role,
+                    "file_id": reference.file_id,
+                    "mime_type": reference.mime_type,
+                    "width": reference.width,
+                    "height": reference.height,
+                    "sha256": reference.sha256,
+                    "data": base64.b64encode(reference.data).decode("ascii"),
+                    "order_index": reference.order_index,
+                }
+                for reference in sorted(
+                    request.references,
+                    key=lambda item: (item.order_index, item.role, item.file_id),
+                )
+            ]
         try:
             async with httpx.AsyncClient(
                 timeout=self._timeout_seconds,
@@ -169,6 +226,15 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
             "image": ("image.png", io.BytesIO(request.image), "image/png"),
             "mask": ("mask.png", io.BytesIO(request.mask), "image/png"),
         }
+        for reference in sorted(
+            request.references,
+            key=lambda item: (item.order_index, item.role, item.file_id),
+        ):
+            files[f"reference_{reference.order_index}"] = (
+                reference.file_id,
+                io.BytesIO(reference.data),
+                reference.mime_type,
+            )
 
         data = {
             "model": self._model,
@@ -177,6 +243,26 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
             "size": request.size,
             "response_format": "b64_json",
         }
+        if request.references:
+            data["reference_manifest"] = json.dumps(
+                [
+                    {
+                        "field": f"reference_{reference.order_index}",
+                        "role": reference.role,
+                        "file_id": reference.file_id,
+                        "mime_type": reference.mime_type,
+                        "width": reference.width,
+                        "height": reference.height,
+                        "sha256": reference.sha256,
+                        "order_index": reference.order_index,
+                    }
+                    for reference in sorted(
+                        request.references,
+                        key=lambda item: (item.order_index, item.role, item.file_id),
+                    )
+                ],
+                sort_keys=True,
+            )
 
         try:
             async with httpx.AsyncClient(
