@@ -75,6 +75,10 @@ def load_settings(
     if overrides:
         env.update(overrides)
 
+    # 兼容早期试点配置；当前 Chat Provider 仍使用 Chat Completions 协议。
+    for chat_key in ("BASE_URL", "API_KEY", "MODEL"):
+        env.setdefault(f"CHAT_{chat_key}", env.get(f"RESPONSES_{chat_key}", ""))
+
     required = ["PILOT_API_KEY"]
     if require_chat:
         required.extend(["CHAT_BASE_URL", "CHAT_API_KEY", "CHAT_MODEL"])
