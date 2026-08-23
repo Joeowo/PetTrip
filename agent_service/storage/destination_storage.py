@@ -1472,3 +1472,71 @@ class DestinationRepository:
                 ).fetchone()
 
         return row["count"] if row else 0
+
+    # ========================================================================
+    # SceneArtifact 和 InteractionZone 查询方法（T7 支持）
+    # ========================================================================
+
+    def get_scene_artifact(self, scene_artifact_id: str) -> dict[str, Any] | None:
+        """根据 ID 获取场景制品。
+
+        Args:
+            scene_artifact_id: 场景制品 ID
+
+        Returns:
+            dict | None: 场景制品记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM scene_artifacts WHERE scene_artifact_id = ?",
+                (scene_artifact_id,),
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+    def get_interaction_zone(self, zone_id: str) -> dict[str, Any] | None:
+        """根据 ID 获取交互区域。
+
+        Args:
+            zone_id: 交互区域 ID
+
+        Returns:
+            dict | None: 交互区域记录，不存在则返回 None
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM interaction_zones WHERE zone_id = ?", (zone_id,)
+            ).fetchone()
+
+        return _row_to_dict(row)
+
+    def list_scene_artifacts(self, destination_id: str) -> list[dict[str, Any]]:
+        """列出目的地的所有场景制品。
+
+        Args:
+            destination_id: 目的地 ID
+
+        Returns:
+            list[dict]: 场景制品列表（按创建时间排序）
+        """
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+
+        with self._lock:
+            assert self._conn is not None
+            rows = self._conn.execute(
+                "SELECT * FROM scene_artifacts WHERE destination_id = ? ORDER BY created_at ASC",
+                (destination_id,),
+            ).fetchall()
+
+        return [dict(row) for row in rows]
+
+        return row["count"] if row else 0
