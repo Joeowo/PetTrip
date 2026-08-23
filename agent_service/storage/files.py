@@ -16,7 +16,7 @@ from pathlib import Path
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from .errors import (
+from ..shared.errors import (
     FILE_DECODE_FAILED,
     FILE_TOO_LARGE,
     FILE_TYPE_UNSUPPORTED,

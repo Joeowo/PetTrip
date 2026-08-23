@@ -7,22 +7,22 @@ import json
 import logging
 from contextlib import suppress
 
-from .chat_provider import ChatMessage, ChatModelProvider, ChatProviderError, VisionImage
-from .errors import (
+from ..adapters.llm import ChatMessage, ChatModelProvider, ChatProviderError, VisionImage
+from ..adapters.image import (
+    ImageGenerationProvider,
+    ImageGenerationRequest,
+    ImageProviderError,
+)
+from ..shared.errors import (
     CHAT_PROVIDER_UNAVAILABLE,
     IMAGE_PROVIDER_UNAVAILABLE,
     INTERNAL_ERROR,
     STRUCTURED_OUTPUT_INVALID,
 )
-from .file_storage import LocalFileIntegrityError, LocalImageStorage
-from .ids import new_id
-from .image_provider import (
-    ImageGenerationProvider,
-    ImageGenerationRequest,
-    ImageProviderError,
-)
-from .storage import Storage
-from .structured_output import StructuredOutputInvalid, StructuredOutputRegistry
+from ..shared.ids import new_id
+from ..shared.structured_output import StructuredOutputInvalid, StructuredOutputRegistry
+from ..storage.files import LocalFileIntegrityError, LocalImageStorage
+from ..storage import Storage
 
 LOGGER = logging.getLogger("uvicorn.error")
 

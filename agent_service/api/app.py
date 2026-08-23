@@ -15,10 +15,11 @@ from fastapi.responses import FileResponse, JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .auth import AuthenticatedClientId, hash_api_key
-from .chat_provider import ChatModelProvider, OpenAICompatibleChatProvider
-from .config import Settings, load_settings
-from .image_provider import ImageGenerationProvider, OpenAICompatibleImageProvider
-from .errors import (
+from .schemas import CreateRunRequest
+from ..adapters.llm import ChatModelProvider, OpenAICompatibleChatProvider
+from ..adapters.image import ImageGenerationProvider, OpenAICompatibleImageProvider
+from ..shared.config import Settings, load_settings
+from ..shared.errors import (
     AUTHENTICATION_FAILED,
     FILE_TOO_LARGE,
     IDEMPOTENCY_KEY_REUSED,
@@ -29,16 +30,15 @@ from .errors import (
     unhandled_exception_handler,
     validation_error_payload,
 )
-from .file_storage import LocalImageStorage
-from .ids import new_id
-from .schemas import CreateRunRequest
-from .storage import (
+from ..shared.ids import new_id
+from ..storage.files import LocalImageStorage
+from ..storage import (
     AttachmentTooLargeError,
     FileReferenceError,
     IdempotencyKeyReusedError,
     Storage,
 )
-from .worker import RunWorker
+from ..domain.worker import RunWorker
 
 LOGGER = logging.getLogger("uvicorn.error")
 
