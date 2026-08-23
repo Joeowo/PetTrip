@@ -9,9 +9,15 @@ from ..storage.models import (
     AttachmentTooLargeError,
     FileReferenceError,
     IdempotencyKeyReusedError,
+    ClarificationAlreadyClosedError,
+    InputIdConflictError,
 )
 from ..shared.errors import SERVICE_RESTARTED
 from ..shared.ids import new_id
+from .clarification import (
+    process_clarification_input,
+    process_clarification_close,
+)
 
 
 def create_run(
@@ -87,6 +93,126 @@ def create_run(
             event_type="run.queued",
             payload={"idempotency_key": idempotency_key},
         )
+
+        # 更新会话时间戳
+        db.update_session_timestamp(session_id)
+
+        # 返回创建的 Run
+        row = db.get_run_in_transaction(conn, run_id)
+
+    return row
+
+
+def create_clarification_run(
+    db: Database,
+    *,
+    api_client_id: str,
+    session_id: str,
+    command: dict[str, Any],
+    idempotency_key: str,
+    idempotency_body_hash: str,
+) -> dict[str, Any]:
+    """创建澄清命令的 Run（submit_input 或 close）。
+
+    抛出:
+    - IdempotencyKeyReusedError: 幂等键被不同内容复用
+    - ClarificationAlreadyClosedError: 澄清已关闭
+    - InputIdConflictError: input_id 冲突
+    """
+    run_id = new_id("run")
+    command_type = command["type"]
+
+    with db.transaction() as conn:
+        # 幂等性检查
+        existing = db.find_run_by_idempotency(api_client_id, idempotency_key)
+        if existing is not None:
+            if existing["idempotency_body_hash"] != idempotency_body_hash:
+                raise IdempotencyKeyReusedError(idempotency_key)
+            return existing
+
+        # 创建 Run 记录（初始为 queued）
+        db.insert_run(
+            conn,
+            run_id=run_id,
+            session_id=session_id,
+            api_client_id=api_client_id,
+            idempotency_key=idempotency_key,
+            idempotency_body_hash=idempotency_body_hash,
+            request_input=command,
+            response_format={},  # 澄清命令不需要 response_format
+        )
+
+        # 记录排队事件
+        db.insert_event(
+            conn,
+            run_id=run_id,
+            event_type="run.queued",
+            payload={"idempotency_key": idempotency_key, "command_type": command_type},
+        )
+
+        # 立即标记为 running（T2 阶段同步处理）
+        from ..storage.models import utcnow_iso
+        now = utcnow_iso()
+        conn.execute(
+            "UPDATE runs SET status = 'running', started_at = ? WHERE id = ?",
+            (now, run_id),
+        )
+        db.insert_event(
+            conn, run_id=run_id, event_type="run.started", payload=None
+        )
+
+        # 处理澄清命令
+        if command_type == "clarification.submit_input":
+            result = process_clarification_input(
+                conn,
+                db,
+                session_id=session_id,
+                run_id=run_id,
+                input_id=command["input_id"],
+                text=command["text"],
+            )
+
+            # 创建用户消息（记录输入文本）
+            db.insert_message(
+                conn,
+                session_id=session_id,
+                run_id=run_id,
+                role="user",
+                content_text=command["text"],
+                structured_data=None,
+            )
+
+            # 立即标记为成功
+            output_structured = {
+                "classification": result["classification"],
+                "normalized_text": result["normalized_text"],
+                "clarification_closed": result["clarification_closed"],
+                "destination_id": result["destination_id"],
+                "close_reason": result["close_reason"],
+            }
+            db.update_run_success(conn, run_id, None, output_structured)
+            db.insert_event(
+                conn, run_id=run_id, event_type="run.completed", payload=None
+            )
+
+        elif command_type == "clarification.close":
+            result = process_clarification_close(
+                conn,
+                db,
+                session_id=session_id,
+                close_request_id=command["close_request_id"],
+            )
+
+            # 立即标记为成功
+            output_structured = {
+                "clarification_closed": result["clarification_closed"],
+                "destination_id": result["destination_id"],
+                "close_reason": result["close_reason"],
+            }
+            db.update_run_success(conn, run_id, None, output_structured)
+            db.insert_event(
+                conn, run_id=run_id, event_type="run.completed", payload=None
+            )
 
         # 更新会话时间戳
         db.update_session_timestamp(session_id)

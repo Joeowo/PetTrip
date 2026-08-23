@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Literal, Union
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator, Discriminator
 
 
 class InputAttachment(BaseModel):
@@ -66,14 +66,77 @@ class TextResponseFormat(BaseModel):
         return self
 
 
+# ---- Run Command Union Type (Issue #10 Section 5) -------------------------
+
+class ClarificationSubmitInputCommand(BaseModel):
+    """澄清流程提交玩家输入命令。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: Literal["clarification.submit_input"] = "clarification.submit_input"
+    input_id: str = Field(min_length=1, description="客户端稳定的输入标识")
+    text: str = Field(description="玩家输入文本，允许空字符串")
+
+
+class ClarificationCloseCommand(BaseModel):
+    """Unity 主动关闭澄清流程命令。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: Literal["clarification.close"] = "clarification.close"
+    close_request_id: str = Field(min_length=1, description="客户端稳定的关闭请求标识")
+
+
+class AgentGenerateCommand(BaseModel):
+    """传统 Agent 生成命令（向后兼容）。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: Literal["agent.generate"] = "agent.generate"
+
+
+RunCommand = Annotated[
+    Union[
+        ClarificationSubmitInputCommand,
+        ClarificationCloseCommand,
+        AgentGenerateCommand,
+    ],
+    Discriminator("type"),
+]
+
+
 class CreateRunRequest(BaseModel):
     """创建纯文本异步 Run 的请求。"""
 
     model_config = ConfigDict(extra="forbid")
 
     session_id: str = Field(min_length=1)
-    input: TextInput
-    response_format: TextResponseFormat
+    command: RunCommand | None = None  # None 表示向后兼容的隐式 agent.generate
+    input: TextInput | None = None  # command 存在时可选
+    response_format: TextResponseFormat | None = None  # command 存在时可选
+
+    @model_validator(mode="after")
+    def validate_command_constraints(self) -> "CreateRunRequest":
+        """验证命令约束条件。"""
+        if self.command is None:
+            # 向后兼容模式：必须提供 input 和 response_format
+            if self.input is None or self.response_format is None:
+                raise ValueError("未提供 command 时必须提供 input 和 response_format。")
+        else:
+            # 命令模式
+            if isinstance(self.command, ClarificationSubmitInputCommand):
+                # 提交输入命令：text 在 command 中，不能同时提供独立的 input
+                if self.input is not None:
+                    raise ValueError(
+                        "clarification.submit_input 命令的文本已在 command 中，不能同时提供 input。"
+                    )
+            elif isinstance(self.command, ClarificationCloseCommand):
+                # 关闭命令：不能携带文本
+                if self.input is not None and self.input.text:
+                    raise ValueError(
+                        "clarification.close 命令不能携带玩家文本输入。"
+                    )
+        return self
 
 
 class ErrorBody(BaseModel):

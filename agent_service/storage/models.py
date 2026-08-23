@@ -18,6 +18,14 @@ class AttachmentTooLargeError(ValueError):
     """单个 Run 的附件总字节数超过允许上限。"""
 
 
+class ClarificationAlreadyClosedError(ValueError):
+    """澄清流程已关闭，不能提交新输入。"""
+
+
+class InputIdConflictError(ValueError):
+    """同一 input_id 用于不同内容。"""
+
+
 # ---- 时间工具 -------------------------------------------------------------
 
 
