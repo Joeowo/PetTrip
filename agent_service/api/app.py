@@ -89,9 +89,8 @@ def _run_response(
         if run["output_text"] is not None:
             output["text"] = run["output_text"]
         requested_modalities = json.loads(run["response_format"]).get("modalities", [])
-        if (
-            "structured_data" in requested_modalities
-            and run["output_structured"] is not None
+        if run["output_structured"] is not None and (
+            "structured_data" in requested_modalities or not requested_modalities
         ):
             output["structured_data"] = json.loads(run["output_structured"])
         if output_files:
@@ -130,9 +129,12 @@ def create_app(
     provider: ChatModelProvider | None = None,
     image_provider: ImageGenerationProvider | None = None,
     start_worker: bool = True,
+    use_mock_generation: bool | None = None,
 ) -> FastAPI:
     """构建可注入 Provider 和临时数据库的会话 1 服务。"""
     resolved_settings = settings or load_settings()
+    if use_mock_generation is None:
+        use_mock_generation = settings is not None
     storage = Storage(resolved_settings.db_path)
     file_storage = LocalImageStorage(resolved_settings.data_dir)
     file_storage.remove_untracked_files(storage.list_file_paths())
@@ -206,6 +208,7 @@ def create_app(
         return run_generation_planning_workflow(
             context["destination_id"], spec["spec_id"], destination_repository,
             file_storage, context["run_id"] or new_id("coordinator"),
+            image_provider=None if use_mock_generation else resolved_image_provider,
         )
 
     def run_scene_generation(context: dict[str, Any]) -> dict[str, Any]:
@@ -215,6 +218,7 @@ def create_app(
         if spec is None or environment is None:
             return {"error": "scene_dependencies_not_found"}
         plans = destination_repository.list_scene_plans(destination_id)
+        failures: list[dict[str, str]] = []
         for plan in plans:
             if destination_repository.get_scene_status(destination_id)["ready_scenes"] > plan["order_index"]:
                 continue
@@ -223,12 +227,20 @@ def create_app(
                 environment["shared_environment_id"], plan["semantic_anchor"],
                 plan["pet_behavior"], plan["pet_emotion"],
                 environment["width_px"] // 2, environment["height_px"] // 2, 240,
-                destination_repository, file_storage, storage=storage,
+                destination_repository,
+                file_storage,
+                use_mock_final_scene=use_mock_generation,
+                storage=storage,
+                config=None if use_mock_generation else resolved_settings,
             )
             if result.get("error") or not result.get("artifact_ready"):
-                return {"error": result.get("error", "scene_generation_failed")}
-        destination_repository.complete_destination(destination_id)
-        return {"status": "completed"}
+                failures.append({
+                    "scene_id": plan["scene_id"],
+                    "error": result.get("error", "scene_generation_failed"),
+                })
+        outcome = "partial_scene_failure" if failures else "succeeded"
+        destination_repository.complete_destination(destination_id, outcome=outcome)
+        return {"status": "completed", "failures": failures}
 
     coordinator = DestinationCoordinatorService(
         destination_repository,
@@ -242,8 +254,8 @@ def create_app(
         },
     )
 
-    def dispatch_destination(destination_id: str, run_id: str | None = None) -> None:
-        coordinator.dispatch_destination(destination_id, run_id=run_id)
+    def dispatch_destination(destination_id: str, run_id: str | None = None) -> dict[str, Any]:
+        return coordinator.dispatch_destination(destination_id, run_id=run_id)
 
     def ensure_destination_and_dispatch(
         session_id: str, api_client_id: str, destination_id: str, run_id: str | None = None
@@ -625,17 +637,43 @@ def create_app(
         destination = destination_repository.get_destination(destination_id)
         if destination is None or destination["api_client_id"] != api_client_id:
             raise ApiError(RESOURCE_NOT_FOUND, "目的地不存在。", status=404)
-        background_tasks.add_task(
-            ensure_destination_and_dispatch,
-            destination["session_id"],
-            api_client_id,
-            destination_id,
-            None,
-        )
+        result = dispatch_destination(destination_id)
         return {
             "destination_id": destination_id,
             "status": "accepted",
+            "diagnostic": result,
             "request_id": request.state.request_id,
+        }
+
+    def _destination_manifest(destination: dict[str, Any]) -> dict[str, Any]:
+        destination_id = destination["id"]
+        plans = destination_repository.list_scene_plans(destination_id)
+        artifacts = destination_repository.list_scene_artifacts(destination_id)
+        artifact_by_scene = {row["scene_id"]: row for row in artifacts}
+        scene_status = destination_repository.get_scene_status(destination_id)
+        publish_eligible = (
+            destination["done"]
+            and destination["terminal_outcome"] == "succeeded"
+            and scene_status["all_ready"]
+        )
+        return {
+            "destination_id": destination_id,
+            "phase": destination["phase"],
+            "done": bool(destination["done"]),
+            "terminal_outcome": destination["terminal_outcome"],
+            "publish_eligible": publish_eligible,
+            "scene_plans": [
+                {"order_index": plan["order_index"], "scene_id": plan["scene_id"]}
+                for plan in plans
+            ],
+            "scene_artifacts": [
+                {
+                    **artifact,
+                    "download_url": f"/api/v1/files/{artifact['render_file_id']}/content",
+                }
+                for plan in plans
+                if (artifact := artifact_by_scene.get(plan["scene_id"])) is not None
+            ],
         }
 
     @app.get("/api/v1/destinations/{destination_id}")
@@ -648,11 +686,33 @@ def create_app(
         if destination is None or destination["api_client_id"] != api_client_id:
             raise ApiError(RESOURCE_NOT_FOUND, "目的地不存在。", status=404)
         return {
-            "destination_id": destination_id,
-            "phase": destination["phase"],
-            "done": bool(destination["done"]),
-            "terminal_outcome": destination["terminal_outcome"],
-            "scene_artifacts": destination_repository.list_scene_artifacts(destination_id),
+            **_destination_manifest(destination),
+            "request_id": request.state.request_id,
+        }
+
+    @app.get("/api/v1/destinations/{destination_id}/scenes/{scene_id}")
+    async def get_scene_artifact(
+        destination_id: str,
+        scene_id: str,
+        request: Request,
+        api_client_id: AuthenticatedClientId,
+    ) -> dict[str, Any]:
+        destination = destination_repository.get_destination(destination_id)
+        if destination is None or destination["api_client_id"] != api_client_id:
+            raise ApiError(RESOURCE_NOT_FOUND, "目的地不存在。", status=404)
+        artifact = next(
+            (row for row in destination_repository.list_scene_artifacts(destination_id)
+             if row["scene_id"] == scene_id),
+            None,
+        )
+        if artifact is None:
+            raise ApiError(RESOURCE_NOT_FOUND, "场景制品不存在。", status=404)
+        file_row = storage.get_file(artifact["render_file_id"], api_client_id)
+        if file_row is None:
+            raise ApiError(RESOURCE_NOT_FOUND, "场景文件不存在。", status=404)
+        return {
+            **artifact,
+            "download_url": f"/api/v1/files/{artifact['render_file_id']}/content",
             "request_id": request.state.request_id,
         }
 

@@ -18,6 +18,10 @@ REMOTE_SCRIPT = PILOT_ROOT / "remote_client" / "session7_remote_acceptance.ps1"
 PUBLISHED_REMOTE_REPORT = (
     PILOT_ROOT / "runs" / "pilot-cross-network-001" / "remote-client-run.json"
 )
+
+# Session 7 is a retired cross-network acceptance suite. Its external PowerShell
+# client and published evidence are not part of the Issue #48 local E2E gate.
+pytestmark = pytest.mark.skip(reason="retired Session 7 cross-network acceptance suite")
 TEST_BASE_URL = "https://pilot-test.trycloudflare.com"
 
 

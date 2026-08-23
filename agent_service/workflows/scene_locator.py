@@ -145,7 +145,7 @@ def generate_locator_node(
 
         # 存储定位参考图
         locator_sha256 = hashlib.sha256(locator_bytes).hexdigest()
-        locator_file_id = new_id()
+        locator_file_id = new_id("locator")
 
         file_storage.write(
             file_id=locator_file_id,
@@ -335,7 +335,9 @@ def run_scene_locator_workflow(
         最终状态字典，包含圆心坐标或错误信息
     """
     # 读取共享环境制品
-    env_artifact = repo.get_shared_environment_artifact(shared_environment_id)
+    env_artifact = repo.get_shared_environment_artifact(destination_id)
+    if env_artifact is None or env_artifact["shared_environment_id"] != shared_environment_id:
+        return {"status": "failed", "error": "shared_environment_not_found"}
 
     # 构建初始状态
     initial_state = SceneLocatorState(

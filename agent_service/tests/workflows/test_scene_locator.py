@@ -12,17 +12,18 @@ from pathlib import Path
 
 import pytest
 
-from storage.destination_storage import DestinationRepository
-from storage.files import LocalImageStorage
-from workflows.scene_locator import run_scene_locator_workflow
-from shared.ids import new_id
+from agent_service.storage import Storage
+from agent_service.storage.destination_storage import DestinationRepository
+from agent_service.workflows.scene_locator import run_scene_locator_workflow
+from agent_service.shared.ids import new_id
+from agent_service.tests.helpers.simple_file_storage import SimpleFileStorage
 
 
 @pytest.fixture
 def temp_storage():
     """临时文件存储。"""
     with tempfile.TemporaryDirectory() as tmpdir:
-        storage = LocalImageStorage(base_dir=Path(tmpdir))
+        storage = SimpleFileStorage(Path(tmpdir))
         yield storage
 
 
@@ -31,8 +32,12 @@ def temp_repo():
     """临时数据库 Repository。"""
     with tempfile.TemporaryDirectory() as tmpdir:
         db_path = Path(tmpdir) / "test.db"
+        storage = Storage(db_path, recover=False)
+        storage.close()
         repo = DestinationRepository(db_path=str(db_path))
+        repo.open()
         yield repo
+        repo.close()
 
 
 def create_mock_environment(repo, file_storage, destination_id):
@@ -55,32 +60,61 @@ def create_mock_environment(repo, file_storage, destination_id):
     image.save(buffer, format="PNG")
     image_bytes = buffer.getvalue()
 
-    # 存储文件
-    file_id = new_id()
-    file_storage.write(file_id, image_bytes, "image/png")
+    client_storage = Storage(repo.db_path, recover=False)
+    try:
+        api_client_id = client_storage.upsert_api_client("test-key", "test-client")
+        session = client_storage.create_session(api_client_id)
+        repo.create_destination(
+            session_id=session["id"],
+            api_client_id=api_client_id,
+            destination_id=destination_id,
+        )
+
+        run = client_storage.create_run(
+            api_client_id=api_client_id,
+            session_id=session["id"],
+            request_input={},
+            response_format={},
+            idempotency_key=new_id("test"),
+            idempotency_body_hash=new_id("test"),
+        )
+        file_id = new_id("test")
+        file_storage.write(file_id, image_bytes, "image/png")
+        client_storage.create_file(
+            file_id=file_id,
+            api_client_id=api_client_id,
+            source="agent_generated",
+            purpose="generated_image",
+            mime_type="image/png",
+            size_bytes=len(image_bytes),
+            sha256=hashlib.sha256(image_bytes).hexdigest(),
+            width=width,
+            height=height,
+            rel_path=f"{file_id}.dat",
+        )
+    finally:
+        client_storage.close()
 
     # 创建共享环境制品
-    shared_env_id = new_id()
     sha256 = hashlib.sha256(image_bytes).hexdigest()
 
-    repo.create_shared_environment_artifact(
-        shared_environment_id=shared_env_id,
+    artifact = repo.create_shared_environment_artifact(
         destination_id=destination_id,
-        source_run_id=new_id(),
+        source_run_id=run["id"],
         image_file_id=file_id,
         image_sha256=sha256,
         width_px=width,
         height_px=height,
-        prompt_snapshot_id=new_id(),
+        prompt_snapshot_id=new_id("test"),
     )
 
-    return shared_env_id
+    return artifact["shared_environment_id"]
 
 
 def test_locator_workflow_success(temp_repo, temp_storage):
     """测试：定位工作流成功检测圆心。"""
-    destination_id = new_id()
-    scene_id = new_id()
+    destination_id = new_id("test")
+    scene_id = new_id("test")
 
     # 创建共享环境
     shared_env_id = create_mock_environment(temp_repo, temp_storage, destination_id)
@@ -90,6 +124,8 @@ def test_locator_workflow_success(temp_repo, temp_storage):
         destination_id=destination_id,
         scene_id=scene_id,
         shared_environment_id=shared_env_id,
+            # repository lookup is destination-scoped
+
         semantic_anchor="木屋前道路内侧平地",
         interaction_diameter_px=160,  # 固定偶数直径
         repo=temp_repo,
@@ -110,8 +146,8 @@ def test_locator_workflow_success(temp_repo, temp_storage):
 
 def test_locator_max_3_attempts(temp_repo, temp_storage):
     """测试 7: 定位最多 3 attempts，耗尽后 Scene failed。"""
-    destination_id = new_id()
-    scene_id = new_id()
+    destination_id = new_id("test")
+    scene_id = new_id("test")
 
     # 创建共享环境
     shared_env_id = create_mock_environment(temp_repo, temp_storage, destination_id)
@@ -121,6 +157,8 @@ def test_locator_max_3_attempts(temp_repo, temp_storage):
         destination_id=destination_id,
         scene_id=scene_id,
         shared_environment_id=shared_env_id,
+            # repository lookup is destination-scoped
+
         semantic_anchor="测试锚点",
         interaction_diameter_px=160,
         repo=temp_repo,
@@ -139,8 +177,8 @@ def test_locator_max_3_attempts(temp_repo, temp_storage):
 
 def test_locator_retry_preserves_inputs(temp_repo, temp_storage):
     """测试 8: 重试保持 ScenePlan、PromptSnapshot 和母图不变。"""
-    destination_id = new_id()
-    scene_id = new_id()
+    destination_id = new_id("test")
+    scene_id = new_id("test")
 
     # 创建共享环境
     shared_env_id = create_mock_environment(temp_repo, temp_storage, destination_id)
@@ -152,6 +190,8 @@ def test_locator_retry_preserves_inputs(temp_repo, temp_storage):
         destination_id=destination_id,
         scene_id=scene_id,
         shared_environment_id=shared_env_id,
+            # repository lookup is destination-scoped
+
         semantic_anchor=semantic_anchor,
         interaction_diameter_px=160,
         repo=temp_repo,
@@ -177,8 +217,8 @@ def test_locator_no_fallback_to_template_coordinates(temp_repo, temp_storage):
     - 检测失败时不使用模板固定点
     - 检测失败时不使用计划锚点坐标
     """
-    destination_id = new_id()
-    scene_id = new_id()
+    destination_id = new_id("test")
+    scene_id = new_id("test")
 
     # 创建共享环境
     shared_env_id = create_mock_environment(temp_repo, temp_storage, destination_id)
@@ -188,6 +228,8 @@ def test_locator_no_fallback_to_template_coordinates(temp_repo, temp_storage):
         destination_id=destination_id,
         scene_id=scene_id,
         shared_environment_id=shared_env_id,
+            # repository lookup is destination-scoped
+
         semantic_anchor="测试",
         interaction_diameter_px=160,
         repo=temp_repo,
@@ -203,8 +245,8 @@ def test_locator_no_fallback_to_template_coordinates(temp_repo, temp_storage):
 
 def test_locator_diagnostics_available(temp_repo, temp_storage):
     """测试：定位工作流保存诊断信息。"""
-    destination_id = new_id()
-    scene_id = new_id()
+    destination_id = new_id("test")
+    scene_id = new_id("test")
 
     # 创建共享环境
     shared_env_id = create_mock_environment(temp_repo, temp_storage, destination_id)
@@ -214,6 +256,8 @@ def test_locator_diagnostics_available(temp_repo, temp_storage):
         destination_id=destination_id,
         scene_id=scene_id,
         shared_environment_id=shared_env_id,
+            # repository lookup is destination-scoped
+
         semantic_anchor="诊断测试",
         interaction_diameter_px=160,
         repo=temp_repo,

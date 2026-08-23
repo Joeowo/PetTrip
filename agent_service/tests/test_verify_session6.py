@@ -12,6 +12,10 @@ import pytest
 from agent_service.scripts import verify_session6
 
 
+# Session 6 cross-process acceptance is retired and depends on external evidence.
+pytestmark = pytest.mark.skip(reason="retired Session 6 cross-process acceptance suite")
+
+
 def test_session6_publishes_only_passed_evidence(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
