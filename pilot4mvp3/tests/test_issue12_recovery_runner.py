@@ -95,6 +95,26 @@ def test_preflight_rejects_locator_center_mismatch(tmp_path):
         runner.preflight("run")
 
 
+def test_review_run_records_manual_acceptance(tmp_path):
+    _source_fixture(tmp_path)
+    runner = recovery.RecoveryRunner(tmp_path)
+    runner.prepare("issue12-full-001", "run")
+    manifest = runner.load("run")
+    for call in manifest["calls"].values():
+        call["status"] = "succeeded"
+    runner._update_final_review(manifest)
+    runner.save("run", manifest)
+
+    note = "开发者人工确认定位、aperture 与最终场景均通过。"
+    runner.review_run("run", "accept", note)
+
+    final_review = runner.load("run")["final_review"]
+    assert final_review["status"] == "reviewed"
+    assert final_review["decision"] == "accept"
+    assert final_review["note"] == note
+    assert final_review["reviewed_at"]
+
+
 def test_submission_unknown_never_gets_second_attempt(tmp_path, monkeypatch):
     _source_fixture(tmp_path)
     runner = recovery.RecoveryRunner(tmp_path)

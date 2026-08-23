@@ -332,12 +332,16 @@ def main() -> None:
     prepare = commands.add_parser("prepare-recovery")
     prepare.add_argument("--source-run", required=True)
     prepare.add_argument("--run-id", required=True)
-    for name in ("preflight", "execute", "status"):
+    for name in ("preflight", "execute", "status", "report"):
         item = commands.add_parser(name)
         item.add_argument("--run", required=True)
     approve = commands.add_parser("approve")
     approve.add_argument("--run", required=True)
     approve.add_argument("--plan-sha256", required=True)
+    review = commands.add_parser("review-run")
+    review.add_argument("--run", required=True)
+    review.add_argument("--decision", choices=("accept", "reject"), required=True)
+    review.add_argument("--note", required=True)
     args = parser.parse_args()
     runner = RecoveryRunner()
     if args.command == "prepare-recovery":
@@ -349,8 +353,19 @@ def main() -> None:
         runner.approve_plan(args.run, args.plan_sha256)
     elif args.command == "execute":
         print(json.dumps(runner.execute(args.run), indent=2))
-    else:
+    elif args.command == "status":
         print(json.dumps(runner.status(args.run), indent=2))
+    elif args.command == "review-run":
+        runner.review_run(args.run, args.decision, args.note)
+        print("review recorded")
+    else:
+        report = FULL_MODULE._module(
+            "issue12_report_recovery", ROOT / "scripts" / "issue12_report.py"
+        )
+        run_dir, manifest_path = runner.paths(args.run)
+        output = run_dir / "evidence.html"
+        report.render_evidence(manifest_path, output)
+        print(output)
 
 
 if __name__ == "__main__":

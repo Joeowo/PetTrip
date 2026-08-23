@@ -199,6 +199,12 @@ def test_report_renders_issue12_recovery_01_real_schema(tmp_path):
                 "source_run_id": "issue12-full-001",
                 "source_manifest_sha256": "source-manifest-sha",
             },
+            "final_review": {
+                "status": "reviewed",
+                "decision": "accept",
+                "note": "开发者人工评审通过。",
+                "reviewed_at": "2026-08-23T12:00:00Z",
+            },
         },
     }
     manifest_path = tmp_path / "manifest.json"
@@ -221,6 +227,9 @@ def test_report_renders_issue12_recovery_01_real_schema(tmp_path):
     assert "final-preserved-0" in page and "result-preserved-0" in page
     assert "final-new-0" in page and "result-new-0" in page
     assert "Provenance" in page and "issue12-full-001" in page
+    assert "Final review" in page
+    assert "reviewed" in page and "accept" in page
+    assert "开发者人工评审通过" in page
     assert "data:" not in lowered
     assert manifest_path.read_text(encoding="utf-8") == original
 

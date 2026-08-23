@@ -205,11 +205,12 @@
     "character:bottom": {
       "kind": "character_bottom",
       "path": "assets/character/chongwu-bottom.png",
-      "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b",
+      "sha256": "fa4ad2248ff23300ca21ce833bb6cdef9ec49a56308d50f8624b4558b622b7c3",
       "size": [
-        1248,
+        941,
         353
-      ]
+      ],
+      "normalization_note": "manual crop removing unrelated non-character information; no regeneration triggered"
     },
     "environment:G06:M0": {
       "kind": "environment",
@@ -20752,9 +20753,10 @@
     }
   },
   "final_review": {
-    "status": "waiting_for_review",
-    "decision": null,
-    "note": null
+    "status": "reviewed",
+    "decision": "accept",
+    "note": "开发者人工评审通过：16/16 semantic locator 均唯一识别出正确黑色圆或椭圆标记中心；16/16 deterministic aperture 均位于正确位置；6 张保留 final 与 10 张 recovery final 共 16/16 最终场景均通过人工评审。原型技术路线可行。该结论不把 planned locator center 或 aperture 自动宣称为最终交付图点击真值，后者仍需独立最终图检测或分割。",
+    "reviewed_at": "2026-08-23T02:22:26.831818+00:00"
   },
   "events": [
     {
@@ -20762,5 +20764,5 @@
       "event": "plan_approved"
     }
   ],
-  "updated_at": "2026-08-23T02:07:14.320670+00:00"
+  "updated_at": "2026-08-23T02:22:26.831818+00:00"
 }

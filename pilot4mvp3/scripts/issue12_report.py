@@ -377,6 +377,13 @@ def _render_recovery(manifest: dict[str, Any]) -> str:
     ]
     new_finals = [call for call in calls if call.get("phase") == "final"]
     old_failed = 16 - len([item for item in measurements if item.get("selected_candidate")])
+    final_review = recovery.get("final_review") or manifest.get("final_review")
+    review_html = (
+        f'<section class="assets"><h2>Final review</h2>'
+        f"<pre>{_json(final_review)}</pre></section>"
+        if final_review is not None
+        else ""
+    )
     body = f"""
     <section class="assets"><h2>Recovery source and approval</h2>
       <dl><dt>Source manifest hash</dt><dd><code>{_text(source)}</code></dd>
@@ -394,6 +401,7 @@ def _render_recovery(manifest: dict[str, Any]) -> str:
     {_recovery_calls("Preserved final", recovery.get("preserved_final") or recovery.get("preserved"), "6")}
     {_recovery_calls("New final", recovery.get("new_final") or recovery.get("new_finals"), "10")}
     <section class="assets"><h2>Provenance</h2><pre>{_json(provenance)}</pre></section>
+    {review_html}
     """
     return _document(manifest.get("run_id"), body)
 
