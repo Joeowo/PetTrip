@@ -63,6 +63,7 @@ class SceneGenerationState(TypedDict):
     # 最终场景生成
     final_scene_file_id: str | None
     final_scene_sha256: str | None
+    final_scene_size_bytes: int | None
     final_scene_width: int | None
     final_scene_height: int | None
     scene_generation_attempt: int
@@ -358,6 +359,7 @@ def generate_final_scene_node(
         if hasattr(file_storage, "write"):
             file_storage.write(final_scene_file_id, final_scene_bytes, "image/png")
             final_scene_sha256 = hashlib.sha256(final_scene_bytes).hexdigest()
+            final_scene_size_bytes = len(final_scene_bytes)
         else:
             stored_scene = file_storage.normalize_and_store_generated(
                 file_id=final_scene_file_id,
@@ -367,10 +369,12 @@ def generate_final_scene_node(
                 max_pixels=state["environment_width"] * state["environment_height"],
             )
             final_scene_sha256 = stored_scene.sha256
+            final_scene_size_bytes = stored_scene.size_bytes
 
         # 更新状态
         state["final_scene_file_id"] = final_scene_file_id
         state["final_scene_sha256"] = final_scene_sha256
+        state["final_scene_size_bytes"] = final_scene_size_bytes
         state["final_scene_width"] = state["environment_width"]
         state["final_scene_height"] = state["environment_height"]
 
@@ -450,7 +454,7 @@ def commit_scene_artifact_node(
                     source="agent_generated",
                     purpose="generated_image",
                     mime_type="image/png",
-                    size_bytes=0,  # 简化：实际应该从文件获取
+                    size_bytes=state["final_scene_size_bytes"],
                     sha256=state["final_scene_sha256"],
                     width=state["final_scene_width"],
                     height=state["final_scene_height"],
@@ -738,6 +742,7 @@ def run_scene_generation_workflow(
         aperture_sha256=None,
         final_scene_file_id=None,
         final_scene_sha256=None,
+        final_scene_size_bytes=None,
         final_scene_width=None,
         final_scene_height=None,
         scene_generation_attempt=0,

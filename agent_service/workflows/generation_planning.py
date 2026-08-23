@@ -5,9 +5,12 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 from typing import Any, TypedDict
+
+from ..adapters.image import ImageGenerationProvider, ImageGenerationRequest
 
 from langgraph.graph import StateGraph, END
 
@@ -169,6 +172,7 @@ def generate_shared_environment_node(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
     run_id: str,
+    image_provider: ImageGenerationProvider | None = None,
 ) -> GenerationPlanningState:
     """节点：生成共享环境母图。
 
@@ -203,8 +207,21 @@ def generate_shared_environment_node(
     )
 
     try:
-        # 生成环境图片（Mock 实现）
-        image_data = mock_generate_environment_image()
+        if image_provider is None:
+            image_data = mock_generate_environment_image()
+        else:
+            result = asyncio.run(
+                image_provider.generate(
+                    ImageGenerationRequest(
+                        prompt=(
+                            "Create a 16:9 travel environment for a pet trip. "
+                            "Keep the scene clear and suitable for placing a pet "
+                            "in two distinct semantic locations."
+                        )
+                    )
+                )
+            )
+            image_data = result.data
 
         # 使用 FileStorage 存储并验证
         file_id = new_id("file")
@@ -292,6 +309,7 @@ def build_generation_planning_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
     run_id: str,
+    image_provider: ImageGenerationProvider | None = None,
 ) -> StateGraph:
     """构建 Generation Planning 工作流。
 
@@ -320,7 +338,9 @@ def build_generation_planning_workflow(
     )
     workflow.add_node(
         "generate_shared_environment",
-        lambda state: generate_shared_environment_node(state, repo, file_storage, run_id),
+        lambda state: generate_shared_environment_node(
+            state, repo, file_storage, run_id, image_provider=image_provider
+        ),
     )
 
     # 设置入口点
@@ -346,6 +366,7 @@ def run_generation_planning_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
     run_id: str,
+    image_provider: ImageGenerationProvider | None = None,
 ) -> dict[str, Any]:
     """运行 Generation Planning 工作流。
 
@@ -366,7 +387,9 @@ def run_generation_planning_workflow(
             - error: str | None
     """
     # 构建工作流
-    app = build_generation_planning_workflow(repo, file_storage, run_id)
+    app = build_generation_planning_workflow(
+        repo, file_storage, run_id, image_provider=image_provider
+    )
 
     # 初始化状态
     initial_state: GenerationPlanningState = {

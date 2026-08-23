@@ -24,11 +24,17 @@ close、Destination dispatch、Manifest 轮询和 SceneArtifact 文件下载。�
 
 ## 真实 Provider 演示
 
-启动真实服务后运行：
+在 `agent_service/.env.local` 配置真实服务的 `PILOT_API_KEY`、
+`CHAT_BASE_URL`、`CHAT_API_KEY` 和 `CHAT_MODEL`。图片配置默认复用 Chat 配置；如需
+单独配置图片服务，设置 `IMAGES_BASE_URL`、`IMAGES_API_KEY` 和 `IMAGES_MODEL`。
+普通 `python -m agent_service.run_server` 启动会从该文件加载配置，并使用真实
+Chat/Image Provider；fixture 测试通过显式注入 `Settings` 保持 mock 工作流。
+
+启动真实服务后，在另一个终端运行：
 
 ```text
-set PETTRIP_BASE_URL=https://your-service.example
-set PETTRIP_API_KEY=your-key
+set PETTRIP_BASE_URL=http://127.0.0.1:8001
+set PETTRIP_API_KEY=<与 PILOT_API_KEY 相同的值>
 python agent_service/scripts/run_real_provider_demo.py --output-dir outputs/issue48-real-demo
 ```
 

@@ -8,6 +8,7 @@ from fastapi.testclient import TestClient
 
 from agent_service.api.app import create_app
 from agent_service.shared.config import Settings
+from agent_service.workflows import scene_generation
 
 
 AUTH = {"Authorization": "Bearer issue48-fixture-key"}
@@ -123,6 +124,11 @@ def test_fixture_http_e2e_closes_and_publishes_two_immutable_scenes(tmp_path: Pa
             download = client.get(artifact_payload["download_url"], headers=AUTH)
             assert download.status_code == 200
             assert hashlib.sha256(download.content).hexdigest() == artifact["render_sha256"]
+            client_id = app.state.storage.find_active_api_client_by_hash(
+                hashlib.sha256(b"issue48-fixture-key").hexdigest()
+            )
+            file_row = app.state.storage.get_file(artifact["render_file_id"], client_id)
+            assert file_row["size_bytes"] == len(download.content)
 
         again = client.post(
             f"/api/v1/destinations/{destination_id}/dispatch", headers=AUTH
@@ -130,3 +136,51 @@ def test_fixture_http_e2e_closes_and_publishes_two_immutable_scenes(tmp_path: Pa
         assert again.status_code == 202
         unchanged = client.get(f"/api/v1/destinations/{destination_id}", headers=AUTH).json()
         assert unchanged["scene_artifacts"] == manifest["scene_artifacts"]
+
+
+def test_fixture_http_e2e_aggregates_partial_scene_failure(
+    tmp_path: Path, monkeypatch
+) -> None:
+    original = scene_generation.run_scene_generation_workflow
+    calls = 0
+
+    def run_first_scene_then_fail(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            return {"artifact_ready": False, "error": "fixture_scene_failure"}
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(
+        scene_generation, "run_scene_generation_workflow", run_first_scene_then_fail
+    )
+    app = create_app(settings=_settings(tmp_path), start_worker=False)
+    with TestClient(app) as client:
+        session = client.post("/api/v1/sessions", headers=AUTH)
+        assert session.status_code == 201, session.text
+        session_id = session.json()["session_id"]
+        _submit(
+            client,
+            session_id,
+            "partial-wish-1",
+            {"type": "clarification.submit_input", "input_id": "input-1", "text": "海边散步"},
+        )
+        _submit(
+            client,
+            session_id,
+            "partial-wish-2",
+            {"type": "clarification.submit_input", "input_id": "input-2", "text": "看灯塔"},
+        )
+        closed = _submit(
+            client,
+            session_id,
+            "partial-close",
+            {"type": "clarification.close", "close_request_id": "partial-close"},
+        )
+        manifest = _wait_destination(client, closed["output"]["structured_data"]["destination_id"])
+
+        assert calls == 2
+        assert manifest["done"] is True
+        assert manifest["terminal_outcome"] == "partial_scene_failure"
+        assert manifest["publish_eligible"] is False
+        assert len(manifest["scene_artifacts"]) == 1

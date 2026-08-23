@@ -129,9 +129,12 @@ def create_app(
     provider: ChatModelProvider | None = None,
     image_provider: ImageGenerationProvider | None = None,
     start_worker: bool = True,
+    use_mock_generation: bool | None = None,
 ) -> FastAPI:
     """构建可注入 Provider 和临时数据库的会话 1 服务。"""
     resolved_settings = settings or load_settings()
+    if use_mock_generation is None:
+        use_mock_generation = settings is not None
     storage = Storage(resolved_settings.db_path)
     file_storage = LocalImageStorage(resolved_settings.data_dir)
     file_storage.remove_untracked_files(storage.list_file_paths())
@@ -205,6 +208,7 @@ def create_app(
         return run_generation_planning_workflow(
             context["destination_id"], spec["spec_id"], destination_repository,
             file_storage, context["run_id"] or new_id("coordinator"),
+            image_provider=None if use_mock_generation else resolved_image_provider,
         )
 
     def run_scene_generation(context: dict[str, Any]) -> dict[str, Any]:
@@ -223,7 +227,11 @@ def create_app(
                 environment["shared_environment_id"], plan["semantic_anchor"],
                 plan["pet_behavior"], plan["pet_emotion"],
                 environment["width_px"] // 2, environment["height_px"] // 2, 240,
-                destination_repository, file_storage, storage=storage,
+                destination_repository,
+                file_storage,
+                use_mock_final_scene=use_mock_generation,
+                storage=storage,
+                config=None if use_mock_generation else resolved_settings,
             )
             if result.get("error") or not result.get("artifact_ready"):
                 failures.append({

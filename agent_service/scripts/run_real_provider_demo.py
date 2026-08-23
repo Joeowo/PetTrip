@@ -90,6 +90,13 @@ def main() -> int:
             break
         time.sleep(args.poll_seconds)
 
+    if manifest["terminal_outcome"] != "succeeded":
+        print(
+            f"destination failed: outcome={manifest['terminal_outcome']}",
+            file=sys.stderr,
+        )
+        return 1
+
     (output_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     for artifact in manifest["scene_artifacts"]:
         _, detail = request_json(base_url, api_key, "GET", f"/api/v1/destinations/{destination_id}/scenes/{artifact['scene_id']}")
