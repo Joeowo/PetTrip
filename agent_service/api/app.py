@@ -9,7 +9,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import Annotated, Any, AsyncIterator, Literal
 
-from fastapi import FastAPI, File, Form, Header, Request, UploadFile
+from fastapi import BackgroundTasks, FastAPI, File, Form, Header, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -42,6 +42,8 @@ from ..storage import (
     Storage,
 )
 from ..domain.worker import RunWorker
+from ..domain.destination_coordinator import DestinationCoordinatorService
+from ..storage.destination_storage import DestinationRepository
 
 LOGGER = logging.getLogger("uvicorn.error")
 
@@ -176,6 +178,7 @@ def create_app(
         finally:
             await worker.stop()
             storage.close()
+            destination_repository.close()
 
     app = FastAPI(
         title="PetTrip Agent Service",
@@ -185,7 +188,77 @@ def create_app(
     app.state.settings = resolved_settings
     app.state.storage = storage
     app.state.file_storage = file_storage
+    destination_repository = DestinationRepository(resolved_settings.db_path)
+    destination_repository.open()
+    from ..workflows.clarification_spec import run_clarification_spec_workflow
+    from ..workflows.generation_planning import run_generation_planning_workflow
+    from ..workflows.scene_generation import run_scene_generation_workflow
+
+    def run_clarification(context: dict[str, Any]) -> dict[str, Any]:
+        return run_clarification_spec_workflow(
+            context["session_id"], context["destination_id"], destination_repository
+        )
+
+    def run_planning(context: dict[str, Any]) -> dict[str, Any]:
+        spec = destination_repository.get_destination_spec(context["destination_id"])
+        if spec is None:
+            return {"error": "spec_not_found"}
+        return run_generation_planning_workflow(
+            context["destination_id"], spec["spec_id"], destination_repository,
+            file_storage, context["run_id"] or new_id("coordinator"),
+        )
+
+    def run_scene_generation(context: dict[str, Any]) -> dict[str, Any]:
+        destination_id = context["destination_id"]
+        spec = destination_repository.get_destination_spec(destination_id)
+        environment = destination_repository.get_shared_environment_artifact(destination_id)
+        if spec is None or environment is None:
+            return {"error": "scene_dependencies_not_found"}
+        plans = destination_repository.list_scene_plans(destination_id)
+        for plan in plans:
+            if destination_repository.get_scene_status(destination_id)["ready_scenes"] > plan["order_index"]:
+                continue
+            result = run_scene_generation_workflow(
+                destination_id, plan["scene_id"], spec["spec_id"],
+                environment["shared_environment_id"], plan["semantic_anchor"],
+                plan["pet_behavior"], plan["pet_emotion"],
+                environment["width_px"] // 2, environment["height_px"] // 2, 240,
+                destination_repository, file_storage, storage=storage,
+            )
+            if result.get("error") or not result.get("artifact_ready"):
+                return {"error": result.get("error", "scene_generation_failed")}
+        destination_repository.complete_destination(destination_id)
+        return {"status": "completed"}
+
+    coordinator = DestinationCoordinatorService(
+        destination_repository,
+        workflows={
+            "clarification": run_clarification,
+            "requirements": run_clarification,
+            "specification": run_clarification,
+            "planning": run_planning,
+            "shared_environment": run_planning,
+            "scene_generation": run_scene_generation,
+        },
+    )
+
+    def dispatch_destination(destination_id: str, run_id: str | None = None) -> None:
+        coordinator.dispatch_destination(destination_id, run_id=run_id)
+
+    def ensure_destination_and_dispatch(
+        session_id: str, api_client_id: str, destination_id: str, run_id: str | None = None
+    ) -> None:
+        if destination_repository.get_destination(destination_id) is None:
+            destination_repository.create_destination(
+                session_id=session_id,
+                api_client_id=api_client_id,
+                destination_id=destination_id,
+            )
+        dispatch_destination(destination_id, run_id)
+
     app.state.worker = worker
+    app.state.destination_repository = destination_repository
+    app.state.coordinator = coordinator
 
     @app.middleware("http")
     async def request_id_middleware(request: Request, call_next: Any) -> Any:
@@ -412,6 +485,7 @@ def create_app(
     async def create_run(
         body: CreateRunRequest,
         request: Request,
+        background_tasks: BackgroundTasks,
         api_client_id: AuthenticatedClientId,
         idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
     ) -> dict[str, Any]:
@@ -516,12 +590,71 @@ def create_app(
             except FileReferenceError as exc:
                 raise ApiError(RESOURCE_NOT_FOUND, "附件不存在。", status=404) from exc
 
+        if (
+            isinstance(
+                body.command,
+                (ClarificationSubmitInputCommand, ClarificationCloseCommand),
+            )
+            and run["status"] == "succeeded"
+        ):
+            close_state = json.loads(run["output_structured"] or "{}")
+            destination_id = close_state.get("destination_id")
+            if destination_id:
+                background_tasks.add_task(
+                    ensure_destination_and_dispatch,
+                    body.session_id,
+                    api_client_id,
+                    destination_id,
+                    run["id"],
+                )
+
         output_files = (
             storage.list_output_files_for_run(run["id"], api_client_id)
             if run["status"] == "succeeded"
             else []
         )
         return _run_response(run, request.state.request_id, output_files)
+
+    @app.post("/api/v1/destinations/{destination_id}/dispatch", status_code=202)
+    async def dispatch_destination_endpoint(
+        destination_id: str,
+        request: Request,
+        background_tasks: BackgroundTasks,
+        api_client_id: AuthenticatedClientId,
+    ) -> dict[str, Any]:
+        destination = destination_repository.get_destination(destination_id)
+        if destination is None or destination["api_client_id"] != api_client_id:
+            raise ApiError(RESOURCE_NOT_FOUND, "目的地不存在。", status=404)
+        background_tasks.add_task(
+            ensure_destination_and_dispatch,
+            destination["session_id"],
+            api_client_id,
+            destination_id,
+            None,
+        )
+        return {
+            "destination_id": destination_id,
+            "status": "accepted",
+            "request_id": request.state.request_id,
+        }
+
+    @app.get("/api/v1/destinations/{destination_id}")
+    async def get_destination_status(
+        destination_id: str,
+        request: Request,
+        api_client_id: AuthenticatedClientId,
+    ) -> dict[str, Any]:
+        destination = destination_repository.get_destination(destination_id)
+        if destination is None or destination["api_client_id"] != api_client_id:
+            raise ApiError(RESOURCE_NOT_FOUND, "目的地不存在。", status=404)
+        return {
+            "destination_id": destination_id,
+            "phase": destination["phase"],
+            "done": bool(destination["done"]),
+            "terminal_outcome": destination["terminal_outcome"],
+            "scene_artifacts": destination_repository.list_scene_artifacts(destination_id),
+            "request_id": request.state.request_id,
+        }
 
     @app.get("/api/v1/runs/{run_id}")
     async def get_run(
