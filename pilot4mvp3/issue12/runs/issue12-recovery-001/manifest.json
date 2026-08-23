@@ -19528,6 +19528,123 @@
         2048,
         1152
       ]
+    },
+    "final:G02:M0:B": {
+      "kind": "final",
+      "producer_call_id": "final:G02:M0:B",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/recovery-finals/G02/M0/B.png",
+      "sha256": "15520d2ac0ef94037130369b1b0ef18a867303eab375a1d515885d2924b42ebe",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G03:M0:A": {
+      "kind": "final",
+      "producer_call_id": "final:G03:M0:A",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/recovery-finals/G03/M0/A.png",
+      "sha256": "82a3b0c614feeb528dde1e2e5535616b94b4e9b8aa584b493abec9ebfe23b750",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G03:M0:B": {
+      "kind": "final",
+      "producer_call_id": "final:G03:M0:B",
+      "destination": "G03",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/recovery-finals/G03/M0/B.png",
+      "sha256": "4abe6cf64f08fcd2e98209353a7b65c690e7902fbe56454a868f5040cecf2a0c",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G03:M1:A": {
+      "kind": "final",
+      "producer_call_id": "final:G03:M1:A",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/recovery-finals/G03/M1/A.png",
+      "sha256": "16465234c913e8ffe9e3e13ac9fa73f10967071f1882c6674dac27b51cc4e577",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G03:M1:B": {
+      "kind": "final",
+      "producer_call_id": "final:G03:M1:B",
+      "destination": "G03",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/recovery-finals/G03/M1/B.png",
+      "sha256": "dbba4cf7f438b1053c3116acb5c80490f4ea722733e57381e9dad1990904daad",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G06:M0:A": {
+      "kind": "final",
+      "producer_call_id": "final:G06:M0:A",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/recovery-finals/G06/M0/A.png",
+      "sha256": "80a2408a27654a9e264f279c34c502a4339cf08314f9b91501caa36bbc1e5cb7",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G06:M0:B": {
+      "kind": "final",
+      "producer_call_id": "final:G06:M0:B",
+      "destination": "G06",
+      "route": "M0",
+      "scene": "B",
+      "path": "artifacts/recovery-finals/G06/M0/B.png",
+      "sha256": "bab834a6033f881c1155aa88e96d05b2563e3bebe6bb456a30940ffb65985674",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G06:M1:A": {
+      "kind": "final",
+      "producer_call_id": "final:G06:M1:A",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "A",
+      "path": "artifacts/recovery-finals/G06/M1/A.png",
+      "sha256": "05ced19e64fe5b65a26568b407336a11a1118e9cb5fd5b61b4cebfb5ef964689",
+      "size": [
+        2048,
+        1152
+      ]
+    },
+    "final:G06:M1:B": {
+      "kind": "final",
+      "producer_call_id": "final:G06:M1:B",
+      "destination": "G06",
+      "route": "M1",
+      "scene": "B",
+      "path": "artifacts/recovery-finals/G06/M1/B.png",
+      "sha256": "d965887a86c6181e0d172f78fb3e8fc6eab5afafa9605b467e66109cc0f7a8f9",
+      "size": [
+        2048,
+        1152
+      ]
     }
   },
   "calls": {
@@ -19640,7 +19757,7 @@
       "destination": "G02",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19681,8 +19798,59 @@
         "depends_on": [],
         "snapshot_sha256": "3e96b25c4544927e21fae7630993510914f983406eb5d1fd08445ea330795b13"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:01:50.083711+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g02-m0-b",
+        "task_id": "img_5e0e654d3841b10e6ed6b72709d986ba",
+        "submitted_at": "2026-08-23T02:01:53.073136+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M0:B",
+            "path": "artifacts/apertures/G02/M0/B.png",
+            "sha256": "1cdfba85501a10603abb128f6a2d8fb49c0290384851879380c884b35ac54b41"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "ab724146920290cd07b14864f7a0d23013e6ec4dc50baaa846e4832d54799a63",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_5e0e654d3841b10e6ed6b72709d986ba",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:01:55.056101Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G02:M0:B",
+            "destination": "G02",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/recovery-finals/G02/M0/B.png",
+            "sha256": "15520d2ac0ef94037130369b1b0ef18a867303eab375a1d515885d2924b42ebe",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:02:25.472926+00:00"
+      }
     },
     "final:G03:M0:A": {
       "id": "final:G03:M0:A",
@@ -19691,7 +19859,7 @@
       "destination": "G03",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19732,8 +19900,59 @@
         "depends_on": [],
         "snapshot_sha256": "de3e9fcb8add4caf59638d06025b061fed89c5e2ca33fa2c6e1a93f319c55594"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:02:25.608958+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g03-m0-a",
+        "task_id": "img_3ec0d4d3e3c6bcd90c7dc29f8b84af99",
+        "submitted_at": "2026-08-23T02:02:28.441252+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M0:A",
+            "path": "artifacts/apertures/G03/M0/A.png",
+            "sha256": "567b767b4240bccd5875c8b93f00eff6f3d5ea2c1cff8aefaec5b12eeba3d29d"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "e13490862a6724552432de85e724d8d4fe665e719ec0685a63bd844227fda7ba",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_3ec0d4d3e3c6bcd90c7dc29f8b84af99",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:02:30.432385Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G03:M0:A",
+            "destination": "G03",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/recovery-finals/G03/M0/A.png",
+            "sha256": "82a3b0c614feeb528dde1e2e5535616b94b4e9b8aa584b493abec9ebfe23b750",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:03:00.744991+00:00"
+      }
     },
     "final:G03:M0:B": {
       "id": "final:G03:M0:B",
@@ -19742,7 +19961,7 @@
       "destination": "G03",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19783,8 +20002,59 @@
         "depends_on": [],
         "snapshot_sha256": "cf7a722f4226a48039d20f701b67aa4e8ce41fb2dbc1ab47634bcc4973147b34"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:03:00.861710+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g03-m0-b",
+        "task_id": "img_bca2081ff60937ba12a74052783474a5",
+        "submitted_at": "2026-08-23T02:03:07.134466+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M0:B",
+            "path": "artifacts/apertures/G03/M0/B.png",
+            "sha256": "206c91bdea1673e54a0390752fb9f4716a3294090af1ec94d764d3bd04251343"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "b884f326ccc2fe4f2a2342d7f99474de0218edfb95ef65bb2fc7d4e99af6c878",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_bca2081ff60937ba12a74052783474a5",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:03:09.109249Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G03:M0:B",
+            "destination": "G03",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/recovery-finals/G03/M0/B.png",
+            "sha256": "4abe6cf64f08fcd2e98209353a7b65c690e7902fbe56454a868f5040cecf2a0c",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:03:39.507634+00:00"
+      }
     },
     "final:G03:M1:A": {
       "id": "final:G03:M1:A",
@@ -19793,7 +20063,7 @@
       "destination": "G03",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19834,8 +20104,59 @@
         "depends_on": [],
         "snapshot_sha256": "719ad723d65b287cb57da2bea03a3d8a2bc6ea7140359f31d69c11ee96be2be4"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:03:39.631435+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g03-m1-a",
+        "task_id": "img_556a0de4198b7e71eac161bc7fe7c1b5",
+        "submitted_at": "2026-08-23T02:03:42.683446+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M1:A",
+            "path": "artifacts/apertures/G03/M1/A.png",
+            "sha256": "d1843d7ec380858b3287902fdce16b9910a4d51ba89491dac109aef91ffa55d7"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "55b451f391318f51514baad35aff00b3965cbbdb70eae05be9f2b3bf177da411",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_556a0de4198b7e71eac161bc7fe7c1b5",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:03:44.663646Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G03:M1:A",
+            "destination": "G03",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/recovery-finals/G03/M1/A.png",
+            "sha256": "16465234c913e8ffe9e3e13ac9fa73f10967071f1882c6674dac27b51cc4e577",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:04:09.929526+00:00"
+      }
     },
     "final:G03:M1:B": {
       "id": "final:G03:M1:B",
@@ -19844,7 +20165,7 @@
       "destination": "G03",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19885,8 +20206,59 @@
         "depends_on": [],
         "snapshot_sha256": "b34c78e980aa3fb6675f244dc4ce8c42342773e4eee914d9a4dd3b044cc13956"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:04:10.054415+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g03-m1-b",
+        "task_id": "img_724eb7bfc582831528d8abe69b2fd088",
+        "submitted_at": "2026-08-23T02:04:13.177314+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G03:M1:B",
+            "path": "artifacts/apertures/G03/M1/B.png",
+            "sha256": "f765f5837ef858da2c312904801249a1654379daeaacecf5bada219256f174c5"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "30410bc93b37ba5ea64ff6551ee987a454b88d4794c81af7ab99f951635be234",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_724eb7bfc582831528d8abe69b2fd088",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:04:15.147566Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G03:M1:B",
+            "destination": "G03",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/recovery-finals/G03/M1/B.png",
+            "sha256": "dbba4cf7f438b1053c3116acb5c80490f4ea722733e57381e9dad1990904daad",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:04:51.607344+00:00"
+      }
     },
     "final:G06:M0:A": {
       "id": "final:G06:M0:A",
@@ -19895,7 +20267,7 @@
       "destination": "G06",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19936,8 +20308,59 @@
         "depends_on": [],
         "snapshot_sha256": "61d1ada530bfa167c70613f87ff59a50f228bad9990f89bb354a27d2ca1228d5"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:04:51.746984+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g06-m0-a",
+        "task_id": "img_5c9aaf9c00bfc0e4cfa0f9385a59ac0d",
+        "submitted_at": "2026-08-23T02:04:54.929065+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M0:A",
+            "path": "artifacts/apertures/G06/M0/A.png",
+            "sha256": "2a04c3d6d82fc3241c02331fb9f5839a92da9eaa90bc5207a84719c587ba4e90"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "77b4657f524f9ec90dde35a245a80dbf9f6a5894349cb7a7c69e9a76561b5367",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_5c9aaf9c00bfc0e4cfa0f9385a59ac0d",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:04:56.902497Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G06:M0:A",
+            "destination": "G06",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/recovery-finals/G06/M0/A.png",
+            "sha256": "80a2408a27654a9e264f279c34c502a4339cf08314f9b91501caa36bbc1e5cb7",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:05:27.464507+00:00"
+      }
     },
     "final:G06:M0:B": {
       "id": "final:G06:M0:B",
@@ -19946,7 +20369,7 @@
       "destination": "G06",
       "route": "M0",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19987,8 +20410,59 @@
         "depends_on": [],
         "snapshot_sha256": "6360e618ad917d7a621e21866983ba7d8fddcaac49e65d1fff14deb62acf4d40"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:05:27.607319+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g06-m0-b",
+        "task_id": "img_4fa6fe7da68b7acaf625c2dd472feee3",
+        "submitted_at": "2026-08-23T02:05:30.814040+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M0:B",
+            "path": "artifacts/apertures/G06/M0/B.png",
+            "sha256": "e47d4b2e15c227ce6bbbeb53a8aa6e02c598aef492d12edfb1ed6871c7844724"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "294b7f4dd33bbacedb4c600901c2d9dc15d907cc7435b4cbdfd7e119e2393f1f",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_4fa6fe7da68b7acaf625c2dd472feee3",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:05:32.789256Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G06:M0:B",
+            "destination": "G06",
+            "route": "M0",
+            "scene": "B",
+            "path": "artifacts/recovery-finals/G06/M0/B.png",
+            "sha256": "bab834a6033f881c1155aa88e96d05b2563e3bebe6bb456a30940ffb65985674",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:06:02.821670+00:00"
+      }
     },
     "final:G06:M1:A": {
       "id": "final:G06:M1:A",
@@ -19997,7 +20471,7 @@
       "destination": "G06",
       "route": "M1",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -20038,8 +20512,59 @@
         "depends_on": [],
         "snapshot_sha256": "4a053e73fbe95540449d97c03e06bb06564111ff1a1e47513bb40f55bc7807b0"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:06:02.968733+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g06-m1-a",
+        "task_id": "img_b41fbf25273ede8bd3d61361161deade",
+        "submitted_at": "2026-08-23T02:06:06.009718+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M1:A",
+            "path": "artifacts/apertures/G06/M1/A.png",
+            "sha256": "440f4fc105a325c1d528d860ce5da2fa92c096e9b8a82d2eac79dfc65d384b61"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "e4a975a1133c2a7e768b910380c9a5ce3dc42b6df9fc1605a3c6f3afd85e5e2c",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_b41fbf25273ede8bd3d61361161deade",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:06:08.000136Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G06:M1:A",
+            "destination": "G06",
+            "route": "M1",
+            "scene": "A",
+            "path": "artifacts/recovery-finals/G06/M1/A.png",
+            "sha256": "05ced19e64fe5b65a26568b407336a11a1118e9cb5fd5b61b4cebfb5ef964689",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:06:38.648790+00:00"
+      }
     },
     "final:G06:M1:B": {
       "id": "final:G06:M1:B",
@@ -20048,7 +20573,7 @@
       "destination": "G06",
       "route": "M1",
       "scene": "B",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -20089,8 +20614,59 @@
         "depends_on": [],
         "snapshot_sha256": "fea21145e6523c5524b989fe3e76005588563d9d75b027fed84e4e4a82ca78f0"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T02:06:38.762176+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g06-m1-b",
+        "task_id": "img_c26ba08953fc026f0040b39ecc7f0d44",
+        "submitted_at": "2026-08-23T02:06:41.821394+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G06:M1:B",
+            "path": "artifacts/apertures/G06/M1/B.png",
+            "sha256": "3b30dc4368a41b52a412845ca5385ccef79becda5622bcb1c812521f4c26f9e8"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "b438696ed8c918d8e9c413651c47e45ea144de7b55574385faeef1a4ddd28106",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_c26ba08953fc026f0040b39ecc7f0d44",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T02:06:43.807079Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G06:M1:B",
+            "destination": "G06",
+            "route": "M1",
+            "scene": "B",
+            "path": "artifacts/recovery-finals/G06/M1/B.png",
+            "sha256": "d965887a86c6181e0d172f78fb3e8fc6eab5afafa9605b467e66109cc0f7a8f9",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T02:07:14.230807+00:00"
+      }
     }
   },
   "counts": {
@@ -20176,7 +20752,7 @@
     }
   },
   "final_review": {
-    "status": "pending",
+    "status": "waiting_for_review",
     "decision": null,
     "note": null
   },
@@ -20186,5 +20762,5 @@
       "event": "plan_approved"
     }
   ],
-  "updated_at": "2026-08-23T01:47:01.911525+00:00"
+  "updated_at": "2026-08-23T02:07:14.320670+00:00"
 }
