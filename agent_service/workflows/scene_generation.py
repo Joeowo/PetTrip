@@ -268,16 +268,26 @@ def build_generation_mask_node(
 def generate_final_scene_node(
     state: SceneGenerationState,
     file_storage: LocalImageStorage,
+    config=None,
 ) -> SceneGenerationState:
-    """节点：生成最终场景。"""
+    """节点：生成最终场景。
+
+    Args:
+        state: 工作流状态
+        file_storage: 文件存储
+        config: 配置对象（可选，用于真实 Provider 调用）
+    """
     # 如果已经有错误，跳过生成
     if state.get("error") is not None:
         return state
 
     try:
-        # 读取 aperture 图
+        # 读取 aperture 图和 mask
         aperture_file = file_storage.read(state["aperture_file_id"])
         aperture_bytes = aperture_file.content
+
+        mask_file = file_storage.read(state["generation_mask_file_id"])
+        mask_bytes = mask_file.content
 
         # 生成最终场景（mock 或真实 Provider）
         if state["use_mock_final_scene"]:
@@ -289,9 +299,37 @@ def generate_final_scene_node(
                 state["environment_height"],
             )
         else:
-            # TODO: 调用真实图片生成 Provider
-            # final_scene_bytes = call_image_generation_provider(...)
-            raise NotImplementedError("真实 Provider 调用尚未实现")
+            # 调用真实图片生成 Provider
+            if config is None:
+                raise ValueError("真实 Provider 调用需要 config 参数")
+
+            from agent_service.domain.scene_image_generation import (
+                generate_final_scene_sync,
+                generate_idempotency_key,
+                SceneGenerationInput,
+            )
+
+            # 生成幂等键
+            idempotency_key = generate_idempotency_key(
+                scene_id=state["scene_id"],
+                aperture_sha256=state["aperture_sha256"],
+                pet_behavior=state["pet_behavior"],
+                pet_emotion=state["pet_emotion"],
+            )
+
+            # 构建输入
+            size = f"{state['environment_width']}x{state['environment_height']}"
+            input_data: SceneGenerationInput = {
+                "aperture_bytes": aperture_bytes,
+                "mask_bytes": mask_bytes,
+                "pet_behavior": state["pet_behavior"],
+                "pet_emotion": state["pet_emotion"],
+                "size": size,
+                "idempotency_key": idempotency_key,
+            }
+
+            # 调用 Provider
+            final_scene_bytes = generate_final_scene_sync(config, input_data)
 
         # 计算哈希
         final_scene_sha256 = hashlib.sha256(final_scene_bytes).hexdigest()
@@ -525,6 +563,7 @@ def build_scene_generation_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
     storage=None,
+    config=None,
 ) -> StateGraph:
     """构建场景生成工作流。
 
@@ -542,6 +581,7 @@ def build_scene_generation_workflow(
         repo: Repository
         file_storage: 文件存储
         storage: Storage 实例（可选，用于注册文件）
+        config: Config 实例（可选，用于真实 Provider 调用）
     """
     workflow = StateGraph(SceneGenerationState)
 
@@ -564,7 +604,7 @@ def build_scene_generation_workflow(
     )
     workflow.add_node(
         "generate_final_scene",
-        lambda state: generate_final_scene_node(state, file_storage),
+        lambda state: generate_final_scene_node(state, file_storage, config),
     )
     workflow.add_node(
         "validate_scene_artifact",
@@ -626,6 +666,7 @@ def run_scene_generation_workflow(
     file_storage: LocalImageStorage,
     use_mock_final_scene: bool = True,
     storage=None,
+    config=None,
 ) -> dict[str, Any]:
     """运行场景生成工作流。
 
@@ -644,6 +685,7 @@ def run_scene_generation_workflow(
         file_storage: 文件存储
         use_mock_final_scene: 是否使用 mock 最终场景（默认 True）
         storage: Storage 实例（可选，用于注册文件）
+        config: Config 实例（可选，用于真实 Provider 调用）
 
     Returns:
         最终状态字典，包含 SceneArtifact ID 或错误信息
@@ -683,7 +725,7 @@ def run_scene_generation_workflow(
     )
 
     # 构建并运行工作流
-    workflow = build_scene_generation_workflow(repo, file_storage, storage)
+    workflow = build_scene_generation_workflow(repo, file_storage, storage, config)
     app = workflow.compile()
 
     final_state = app.invoke(initial_state)

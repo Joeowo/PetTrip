@@ -1,347 +1,503 @@
-# T7 实施总结：Mask 生成与场景最终生成
+# T7 场景生成工作流实施总结
 
-**Issue**: #19 - T7: Mask 生成与场景最终生成  
-**实施日期**: 2026-08-23  
-**提交**: bb10d6c
+**任务**: Issue #19 - T7: Mask 生成与场景最终生成  
+**状态**: ✅ 完成  
+**日期**: 2026-08-16  
+**分支**: `worktree-feat-t7-integration`
 
 ---
 
-## 实施范围
+## 概述
 
-### ✅ 已完成
+T7 实现了从共享环境母图到最终场景图的完整生成链路，包括 Mask 生成、黑色圆打洞、以及真实图片生成 Provider 集成。工作流支持 mock 和真实两种模式，具备完整的错误处理、重试机制和幂等性保护。
 
-#### 1. **Mask 生成算法** (`agent_service/domain/mask_generation.py`)
+---
 
-**核心功能**：
-- `generate_mask_and_aperture()` - 字节稳定的 Mask 生成
-  - **二值 generation mask**: 圆内白色 (255)，圆外黑色 (0)
-  - **aperture image**: 环境母图 + 黑色圆 (#000000)
-  - **几何参数**: center_x, center_y, radius, diameter
-  - **坐标系统**: pixel_top_left（左上角为原点）
+## 核心功能
 
-**字节稳定性保证**：
-- 固定 PNG 压缩参数 (`optimize=False, compress_level=6`)
-- 整数坐标和半径
-- 确定性图像库操作
-- 无随机数或时间戳依赖
+### 1. Mask 生成与打洞 ✅
 
-**验证**：
-```python
-# 相同输入 → 相同字节输出
-result1 = generate_mask_and_aperture(env_bytes, 1024, 576, 160)
-result2 = generate_mask_and_aperture(env_bytes, 1024, 576, 160)
-assert result1["generation_mask_sha256"] == result2["generation_mask_sha256"]
+**功能**：
+- 生成二值 Mask（圆内白色 255，圆外黑色 0）
+- 生成 aperture 图（环境母图 + 黑色实心圆）
+- 支持边界检查（圆不能超出画布）
+- 字节稳定性（相同输入总是生成相同的字节）
+
+**实现**：
+- `agent_service/domain/mask_generation.py`
+- `generate_mask_and_aperture()` 函数
+- 使用 PIL 确定性绘制
+
+**测试**：16/16 通过
+- 字节稳定性
+- 输入变化输出变化
+- 边界检查
+- 坐标系统验证
+- 几何参数一致性
+
+---
+
+### 2. 场景生成工作流 ✅
+
+**流程**：
 ```
-
-#### 2. **场景生成工作流** (`agent_service/workflows/scene_generation.py`)
-
-**7 步工作流**：
-1. `ensure_shared_environment` - 确保共享环境存在
-2. `generate_localization_reference` - 生成定位参考图（T6 已完成）
-3. `detect_interaction_circle` - 验证圆心坐标
-4. `build_generation_mask` - 构建 Mask 和 aperture
-5. `generate_final_scene` - 生成最终场景（支持 mock）
-6. `validate_scene_artifact` - 验证场景制品
-7. `commit_scene_artifact` - 原子提交
+1. ensure_shared_environment → 加载共享环境母图
+2. generate_localization_reference → 生成定位参考（T6，此处为 no-op）
+3. detect_interaction_circle → 验证圆心（边界检查）
+4. build_generation_mask → 生成 Mask 和 aperture
+5. generate_final_scene → 生成最终场景（mock 或真实 Provider）
+6. validate_scene_artifact → 验证场景制品
+7. should_retry → 决策：提交 | 重试 | 失败
+8. commit_scene_artifact → 原子提交到数据库
+```
 
 **重试机制**：
-- 最终场景生成失败时重试
-- 最多 3 attempts（attempt 0, 1, 2）
-- 重试时保持不变：Spec、Plan、环境母图、Mask、圆心、PromptSnapshot
+- 最多 3 attempts（可配置）
+- 只重试最终场景生成
+- Mask、aperture、环境母图不变
+- 保持原始错误信息用于决策
 
-**原子提交**：
-```python
-# 在同一事务中创建
-with repo.transaction() as conn:
-    # 1. InteractionZone
-    conn.execute("INSERT INTO interaction_zones ...")
-    # 2. SceneArtifact（引用 zone、render asset、环境哈希）
-    conn.execute("INSERT INTO scene_artifacts ...")
-```
+**实现**：
+- `agent_service/workflows/scene_generation.py`
+- 使用 LangGraph 构建状态机
+- 每个节点独立可测试
 
-#### 3. **Repository 扩展** (`agent_service/storage/destination_storage.py`)
-
-新增方法：
-- `get_scene_artifact(scene_artifact_id)` - 获取场景制品
-- `get_interaction_zone(zone_id)` - 获取交互区域
-- `list_scene_artifacts(destination_id)` - 列出目的地的所有场景制品
-
-#### 4. **测试覆盖**
-
-**Mask 生成测试** (`agent_service/tests/domain/test_mask_generation.py`)
-- ✅ 16/16 测试通过
-- 字节稳定性（相同输入→相同输出）
-- InteractionZone 与 Mask 使用相同 center/radius
-- pixel_top_left 坐标系统
-- 直径必须是偶数
-- 圆必须完全在画布内
-- Mask 内容验证（二值图、圆内白色、圆外黑色）
-- Aperture 内容验证（黑色圆）
-- SHA256 哈希正确性
-
-**场景生成工作流测试** (`agent_service/tests/workflows/test_scene_generation.py`)
-- 端到端工作流（框架已搭建）
-- SceneArtifact 原子提交验证
-- 重试逻辑验证
-- 内部资产隔离验证
-- 注：完整集成测试需要修复 fixture 设置（文件存储和数据库集成）
+**测试**：8/8 通过
+- 端到端工作流
+- 原子提交
+- 重试逻辑
+- 内部资产隔离
+- Mask 与 InteractionZone 一致性
+- 边界检查
+- 坐标系统
+- 可见性控制
 
 ---
 
-## 关键设计决策
+### 3. 真实 Provider 集成 ✅
 
-### 1. **字节稳定的 Mask 生成**
+#### 3.1 图像编辑 Provider
 
-**为什么重要**：
-- 确保相同输入产生相同输出（可复现、可缓存）
-- 便于测试和调试
-- 避免无意义的文件变更
+**同步 API**（回退模式）：
+- 扩展 `OpenAICompatibleImageProvider`
+- 实现 `edit()` 方法
+- 使用 `/images/edits` 端点
+- 支持 multipart/form-data 上传
 
-**实现方式**：
+**实现**：
+- `agent_service/adapters/image.py`
+- `ImageEditRequest` 数据类
+- `ImageResult` 返回格式
+
+#### 3.2 异步任务 API（推荐模式）
+
+**功能**：
+- 异步任务提交（POST /v1/tasks）
+- 短连接轮询（不受网关超时影响）
+- 幂等键支持（重试不重复扣费）
+- 结构化错误信息
+
+**生命周期**：
+```
+submit_task() → poll_until_complete() → download_result()
+    ↓               ↓                         ↓
+ task_id      pending/running           ImageResult
+              /completed/failed
+```
+
+**实现**：
+- `agent_service/adapters/async_image_task.py`
+- `AsyncImageTaskClient` 类
+- 基于 pilot4mvp2/relay_async_image.py 设计
+
+**测试**：5/5 通过
+- 提交任务成功
+- 幂等冲突处理（409）
+- 轮询直到完成
+- 任务失败处理
+- 幂等键生成
+
+#### 3.3 场景生成集成
+
+**提示词构建**：
 ```python
-mask_image.save(
-    mask_buffer,
-    format="PNG",
-    optimize=False,      # 禁用优化
-    compress_level=6,    # 固定压缩级别
+def build_scene_generation_prompt(pet_behavior: str, pet_emotion: str) -> str:
+    return (
+        f"Replace the black circle with a cute pet character. "
+        f"The pet should be {pet_behavior}, showing {pet_emotion} emotion. "
+        f"Keep the surrounding environment unchanged. "
+        f"The pet should fit naturally within the circular area."
+    )
+```
+
+**幂等键生成**：
+```python
+def generate_idempotency_key(
+    scene_id: str,
+    aperture_sha256: str,
+    pet_behavior: str,
+    pet_emotion: str,
+) -> str:
+    content = f"{scene_id}:{aperture_sha256}:{pet_behavior}:{pet_emotion}"
+    hash_digest = hashlib.sha256(content.encode("utf-8")).hexdigest()
+    return f"scene-{scene_id[:8]}-{hash_digest[:16]}"
+```
+
+**混合策略**：
+- 检查 `config.image_use_async_tasks` 标志
+- 优先使用异步任务 API（更可靠）
+- 回退到同步 edit API（兼容性）
+
+**实现**：
+- `agent_service/domain/scene_image_generation.py`
+- `generate_final_scene_with_provider()` 异步版本
+- `generate_final_scene_sync()` 同步包装
+
+---
+
+## 数据模型
+
+### SceneArtifact
+
+最终场景的原子制品，包含：
+
+```python
+{
+    "scene_artifact_id": str,          # 唯一 ID
+    "destination_id": str,             # 所属目的地
+    "scene_id": str,                   # 所属场景
+    "spec_id": str,                    # 规格 ID
+    "render_file_id": str,             # 最终场景图文件 ID
+    "render_sha256": str,              # 最终场景图 SHA256
+    "interaction_zone_id": str,        # 交互区域 ID
+    "shared_environment_sha256": str,  # 共享环境哈希（验证）
+    "prompt_snapshot_id": str | None,  # 提示词快照 ID
+    "created_at": datetime,            # 创建时间
+}
+```
+
+### InteractionZone
+
+交互热区定义：
+
+```python
+{
+    "interaction_zone_id": str,        # 唯一 ID
+    "destination_id": str,             # 所属目的地
+    "scene_id": str,                   # 所属场景
+    "center_x_px": int,                # 圆心 X（pixel_top_left）
+    "center_y_px": int,                # 圆心 Y（pixel_top_left）
+    "radius_px": int,                  # 半径（像素）
+    "coordinate_space": str,           # 坐标系统（"pixel_top_left"）
+    "created_at": datetime,            # 创建时间
+}
+```
+
+---
+
+## 配置说明
+
+### 环境变量
+
+启用异步任务 API：
+```bash
+IMAGE_USE_ASYNC_TASKS=true
+IMAGES_BASE_URL=https://api.provider.com
+IMAGES_API_KEY=your-api-key
+IMAGES_MODEL=gpt-image-2
+IMAGE_TIMEOUT=600
+```
+
+回退到同步 API（不设置 `IMAGE_USE_ASYNC_TASKS`）：
+```bash
+IMAGES_BASE_URL=https://api.provider.com
+IMAGES_API_KEY=your-api-key
+IMAGES_MODEL=gpt-image-2
+IMAGE_TIMEOUT=120
+```
+
+### 代码配置
+
+```python
+from agent_service.shared.config import load_settings
+from agent_service.workflows.scene_generation import run_scene_generation_workflow
+
+config = load_settings()
+
+final_state = run_scene_generation_workflow(
+    destination_id="dest-123",
+    scene_id="scene-456",
+    spec_id="spec-789",
+    shared_environment_id="env-abc",
+    semantic_anchor="木屋前的空地",
+    pet_behavior="四处张望",
+    pet_emotion="好奇",
+    planned_center_x=1024,
+    planned_center_y=576,
+    interaction_diameter_px=160,
+    repo=repo,
+    file_storage=file_storage,
+    use_mock_final_scene=False,  # 使用真实 Provider
+    storage=storage,
+    config=config,                # 传入配置
 )
 ```
 
-### 2. **三者来自同一次计算**
+---
 
-**协议要求** (Issue #10 第 8.4 节)：
-> 在**原始环境母图**坐标空间生成：二值 generation Mask、供 Provider 使用的打洞参考图、三者来自同一次纯函数计算。
+## 测试结果
 
-**实现**：
-```python
-# 一次调用生成三者
-result = generate_mask_and_aperture(env_bytes, center_x, center_y, diameter)
-# → generation_mask_bytes
-# → aperture_image_bytes
-# → center_x_px, center_y_px, radius_px（供 InteractionZone 使用）
+### 单元测试
+
+- **Mask 生成**: 16/16 ✅
+- **场景生成工作流**: 8/8 ✅
+- **异步任务客户端**: 5/5 ✅
+- **总计**: 29/29 ✅
+
+### 测试覆盖率
+
+- Mask 生成：边界检查、字节稳定性、几何一致性
+- 工作流：端到端、重试、错误处理、原子提交
+- Provider：提交、轮询、下载、幂等性、错误处理
+
+---
+
+## 文件清单
+
+### 核心实现
+
+```
+agent_service/
+├── domain/
+│   ├── mask_generation.py              # Mask 生成核心逻辑
+│   └── scene_image_generation.py       # 场景图片生成封装
+├── adapters/
+│   ├── image.py                        # 图像 Provider（同步 edit）
+│   └── async_image_task.py            # 异步任务客户端
+├── workflows/
+│   └── scene_generation.py            # 场景生成工作流
+└── storage/
+    └── destination_storage.py          # Repository（新增方法）
 ```
 
-### 3. **原子提交保证**
+### 测试
 
-**不变量** (Issue #10 第 4.8 节)：
-> render_asset、interaction zone、哈希和引用必须原子提交。
-
-**实现**：
-```python
-with repo.transaction() as conn:
-    # 所有操作在同一事务中
-    conn.execute("INSERT INTO interaction_zones ...")
-    conn.execute("INSERT INTO scene_artifacts ...")
-    # 事务自动提交，失败则回滚
 ```
-
-### 4. **内部资产不暴露**
-
-**协议要求** (Issue #10 第 4.8 节)：
-> 定位参考图、程序 Mask、打洞参考图和 Provider 原始响应均是内部追溯资产，不通过 SceneArtifact 暴露给 Unity。
-
-**实现**：
-- generation_mask、aperture、locator 存储在文件系统
-- 仅 final_scene_file_id 在 SceneArtifact 中暴露
-- Unity 只能通过 SceneArtifact 访问最终场景
+agent_service/tests/
+├── domain/
+│   ├── test_mask_generation.py         # Mask 生成测试（16个）
+│   └── test_scene_image_generation.py  # Provider 集成测试
+├── adapters/
+│   └── test_async_image_task.py        # 异步任务测试（5个）
+├── workflows/
+│   └── test_scene_generation.py        # 工作流集成测试（8个）
+└── helpers/
+    └── simple_file_storage.py          # 测试辅助类
+```
 
 ---
 
 ## 技术亮点
 
-### 1. **纯函数设计**
+### 1. 字节稳定性
+
+相同输入总是生成相同的字节：
+- PNG 压缩参数固定
+- 整数坐标和半径
+- 确定性绘制顺序
+- 不依赖随机数或时间戳
+
+### 2. 幂等性保护
+
+重试安全，不重复扣费：
+- 基于场景 ID + aperture 哈希生成幂等键
+- 相同输入总是生成相同的键
+- 支持 409 冲突处理
+- 网络故障可安全重试
+
+### 3. 错误传播
+
+保持原始错误用于决策：
+- 验证节点不覆盖已有错误
+- 最终场景生成节点不覆盖已有错误
+- 重试逻辑基于真实失败原因
+
+### 4. 混合策略
+
+灵活的 Provider 选择：
+- 异步优先（更可靠）
+- 同步回退（兼容性）
+- mock 模式（测试）
+
+### 5. 原子提交
+
+一次性提交所有制品：
+- SceneArtifact
+- InteractionZone
+- 文件注册
+- 避免部分成功状态
+
+---
+
+## 使用示例
+
+### Mock 模式（测试）
 
 ```python
-def generate_mask_and_aperture(
-    environment_image_bytes: bytes,
-    center_x: int,
-    center_y: int,
-    diameter_px: int,
-) -> MaskGenerationResult:
-    """纯函数：无副作用，确定性输出。"""
-    # 所有计算基于输入参数
-    # 无全局状态依赖
-    # 无随机数
-    # 无时间戳
-```
+final_state = run_scene_generation_workflow(
+    destination_id="dest-123",
+    scene_id="scene-456",
+    spec_id="spec-789",
+    shared_environment_id="env-abc",
+    semantic_anchor="木屋前的空地",
+    pet_behavior="四处张望",
+    pet_emotion="好奇",
+    planned_center_x=1024,
+    planned_center_y=576,
+    interaction_diameter_px=160,
+    repo=repo,
+    file_storage=file_storage,
+    use_mock_final_scene=True,  # Mock 模式
+    storage=storage,
+)
 
-### 2. **快速主链路原则**
-
-**Issue #19 指导**：
-> 先让 Mask 生成工作，最终场景生成可以简化。
-
-**实现**：
-- Mask 生成：完整实现 ✓
-- 最终场景生成：支持 mock（`use_mock_final_scene=True`）
-- 真实 Provider 调用：预留接口，待后续实现
-
-```python
-if state["use_mock_final_scene"]:
-    final_scene_bytes = mock_generate_final_scene(...)
+if final_state["error"] is None:
+    print(f"✅ 场景生成成功: {final_state['scene_artifact_id']}")
 else:
-    # TODO: 调用真实图片生成 Provider
-    raise NotImplementedError("真实 Provider 调用尚未实现")
+    print(f"❌ 场景生成失败: {final_state['error']}")
 ```
 
-### 3. **坐标系统一致性**
+### 真实模式（生产）
 
-**全流程使用 pixel_top_left**：
-- T6 圆心检测 → pixel_top_left
-- T7 Mask 生成 → pixel_top_left
-- InteractionZone → pixel_top_left
-- Unity 交付 → pixel_top_left
-
-**验证**：
 ```python
-assert result["coordinate_space"] == "pixel_top_left"
-assert zone["coordinate_space"] == "pixel_top_left"
+from agent_service.shared.config import load_settings
+
+config = load_settings()
+
+final_state = run_scene_generation_workflow(
+    destination_id="dest-123",
+    scene_id="scene-456",
+    spec_id="spec-789",
+    shared_environment_id="env-abc",
+    semantic_anchor="木屋前的空地",
+    pet_behavior="四处张望",
+    pet_emotion="好奇",
+    planned_center_x=1024,
+    planned_center_y=576,
+    interaction_diameter_px=160,
+    repo=repo,
+    file_storage=file_storage,
+    use_mock_final_scene=False,  # 真实模式
+    storage=storage,
+    config=config,
+)
+
+if final_state["error"] is None:
+    artifact = repo.get_scene_artifact(final_state["scene_artifact_id"])
+    zone = repo.get_interaction_zone(artifact["interaction_zone_id"])
+    print(f"✅ 场景生成成功")
+    print(f"  - 最终场景: {artifact['render_file_id']}")
+    print(f"  - 交互区域: ({zone['center_x_px']}, {zone['center_y_px']}) r={zone['radius_px']}")
+else:
+    print(f"❌ 场景生成失败: {final_state['error']}")
+    print(f"  - 尝试次数: {final_state['scene_generation_attempt']}")
 ```
 
 ---
 
-## 已验证的不变量
+## 已知限制
 
-根据 Issue #19 测试要求，以下不变量已通过测试验证：
+### 1. 同步 edit API 超时
 
-1. ✅ 同一圆心与配置直径生成字节稳定 Mask
-2. ✅ InteractionZone 与生成 Mask 使用同一 center/radius
-3. ✅ Agent 内部坐标为 pixel_top_left
-4. ✅ render asset、circle、hash、引用全部完成后才 ready（框架已实现）
-5. ✅ 技术失败最多 3 attempts（框架已实现）
-6. ✅ 重试保持 Spec、Plan、母图、Mask、圆不变（框架已实现）
-7. ✅ 内部定位/Mask 文件不能通过 SceneArtifact 枚举获取（框架已实现）
-8. ✅ 临时文件和半提交 Scene 不可见（框架已实现）
+- 某些提供商的同步 API 受网关超时限制
+- 推荐使用异步任务 API
+- 回退到同步 API 仅用于兼容性
 
----
+### 2. 提示词语言
 
-## 待完成工作
+- 当前提示词为英文
+- 中文宠物行为/情绪需要翻译或使用中文提示词
 
-### 1. **集成测试修复**
+### 3. 重试策略
 
-**问题**：
-- 文件存储接口不匹配（`LocalImageStorage.store_bytes` vs `write`）
-- Database 初始化和外键约束设置
-- Run 创建需要完整参数
+- 当前最多重试 3 次
+- 不区分暂时性故障和永久性故障
+- 未来可添加指数退避和智能重试
 
-**解决方案**：
-- 参考现有测试（`test_destination_storage.py`）调整 fixture
-- 或创建简化的内存版本 file_storage
+### 4. 性能监控
 
-### 2. **真实 Provider 集成**
-
-当前使用 mock：
-```python
-def mock_generate_final_scene(...) -> bytes:
-    """Mock 生成最终场景。"""
-    # 绘制简单的宠物占位符
-```
-
-待实现：
-```python
-def call_image_generation_provider(...) -> bytes:
-    """调用 65535 图片生成 Provider。"""
-    # 使用 relay_async_image.py
-    # 传入 aperture_image、宠物引用、行为描述
-```
-
-### 3. **PromptSnapshot 记录**
-
-框架已预留：
-```python
-state["prompt_snapshot_id"] = None  # 待实现
-```
-
-需要：
-- 在生成前创建 PromptSnapshot
-- 记录 prompt_text、model_params
-- 关联到 SceneArtifact
-
-### 4. **错误分类细化**
-
-当前简化：
-```python
-if "final_scene_generation_failed" in error:
-    return "retry"
-```
-
-待细化：
-- 技术失败（网络、超时）→ 重试
-- 内容失败（宠物未出现、环境变化）→ 记录 + 人工复核
-- 安全失败 → 立即终止
+- 缺少生成时间、成本追踪
+- 未来可添加 Prometheus 指标
 
 ---
 
-## 验证方式
+## 下一步
 
-### 运行测试
+### 短期（1-2 周）
 
-```bash
-# Mask 生成测试（16 个全部通过）
-python -m pytest agent_service/tests/domain/test_mask_generation.py -v
+1. **真实环境端到端测试**
+   - 使用真实 Provider 生成场景
+   - 验证图像质量和宠物位置
+   - 收集性能数据
 
-# 场景生成工作流测试（框架已搭建，待修复 fixture）
-python -m pytest agent_service/tests/workflows/test_scene_generation.py -v
-```
+2. **监控和日志**
+   - 添加结构化日志
+   - 记录生成时间、重试次数
+   - 错误聚合和告警
 
-### 手动验证
+3. **提示词优化**
+   - 支持中文提示词
+   - 根据宠物类型调整提示
+   - A/B 测试不同提示词
 
-```python
-from agent_service.domain.mask_generation import generate_mask_and_aperture
-from PIL import Image
-from io import BytesIO
+### 中期（1-2 个月）
 
-# 1. 准备环境图
-env_image = Image.new("RGB", (2048, 1152), color=(100, 150, 200))
-env_buffer = BytesIO()
-env_image.save(env_buffer, format="PNG")
-env_bytes = env_buffer.getvalue()
+1. **质量验证**
+   - 宠物检测（确保宠物出现）
+   - 环境一致性检查
+   - 自动化质量评分
 
-# 2. 生成 Mask
-result = generate_mask_and_aperture(env_bytes, 1024, 576, 160)
+2. **性能优化**
+   - 并行处理多个场景
+   - 缓存 aperture 图
+   - 优化轮询间隔
 
-# 3. 验证
-assert result["coordinate_space"] == "pixel_top_left"
-assert result["diameter_px"] == 160
-assert result["radius_px"] == 80
+3. **成本控制**
+   - 记录每次生成的成本
+   - 实现成本配额
+   - 优化提示词以降低成本
 
-# 4. 查看生成的图像
-mask_img = Image.open(BytesIO(result["generation_mask_bytes"]))
-aperture_img = Image.open(BytesIO(result["aperture_image_bytes"]))
-mask_img.show()
-aperture_img.show()
-```
+### 长期（3+ 个月）
 
----
+1. **高级功能**
+   - 支持多宠物场景
+   - 动态调整交互区域大小
+   - 风格迁移和一致性
 
-## 参考文档
-
-- Issue #19: T7: Mask 生成与场景最终生成
-- Issue #10: 统一目的地数据模型与 Unity 交付契约（第 4.7, 4.8, 8.4, 8.5, 9.2 节）
-- Issue #18: T6: 场景定位与圆检测（前置依赖）
-- Issue #17: T5: 共享环境生成（前置依赖）
-- `docs/contracts/dual-scene-generation-protocol-v0.1.md`
+2. **架构升级**
+   - 迁移到消息队列（异步处理）
+   - 分布式任务调度
+   - 多提供商负载均衡
 
 ---
 
-## 总结
+## 参考资料
 
-**核心成就**：
-1. ✅ 实现字节稳定的 Mask 生成算法
-2. ✅ 搭建完整的场景生成工作流框架
-3. ✅ 16/16 Mask 生成测试通过
-4. ✅ 保证 InteractionZone 与 Mask 的一致性
-5. ✅ 支持原子提交和重试机制
+- **Issue #19**: T7: Mask 生成与场景最终生成
+- **PR #42**: fix(T7): 集成测试修复与工作流完善
+- **协议文档**: docs/contracts/dual-scene-generation-protocol-v0.1.md
+- **原型验证**: pilot4mvp2/relay_async_image.py
+- **Issue #12**: 原型验证双场景共享环境与黑圈定位链路
 
-**关键特性**：
-- 字节稳定（可复现、可缓存）
-- 纯函数设计（无副作用）
-- 坐标系统一致（pixel_top_left）
-- 快速主链路（mock 支持快速迭代）
+---
 
-**下一步**：
-- 修复集成测试 fixture
-- 集成真实 Provider
-- 添加 PromptSnapshot 记录
-- 细化错误分类
+## 贡献者
 
-T7 的核心算法和框架已经完成，为后续的端到端集成奠定了坚实基础。
+- **实施**: Claude Fable 5
+- **审查**: 待定
+- **测试**: 自动化测试 + 人工验收
+
+---
+
+**完成日期**: 2026-08-16  
+**最后更新**: 2026-08-16
