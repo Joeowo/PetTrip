@@ -182,11 +182,16 @@ class RecoveryRunner(FullRunner):
             spec.pop("snapshot_sha256", None)
             spec["snapshot_sha256"] = _digest(spec)
             calls[call_id] = {
-                "id": call_id, "ordinal": ordinal, "phase": "final",
+                "id": call_id, "artifact_id": f"recovery_final:{call_id}", "ordinal": ordinal, "phase": "final",
                 "destination": source_call["destination"], "route": source_call["route"],
                 "scene": source_call["scene"], "status": "pending", "blocked_by": [],
                 "spec": spec, "attempt": None, "result": None,
             }
+        preserved_final_sha256s = [
+            source_manifest["artifacts"][identifier]["sha256"]
+            for identifier in sorted(source_manifest["artifacts"])
+            if identifier.startswith("final:")
+        ]
         plan_body = {
             "ordered_call_ids": list(calls),
             "snapshot_sha256s": [call["spec"]["snapshot_sha256"] for call in calls.values()],
@@ -201,11 +206,7 @@ class RecoveryRunner(FullRunner):
                 for identifier in sorted(artifacts)
                 if identifier.startswith("aperture:")
             ],
-            "preserved_final_sha256s": [
-                artifacts[identifier]["sha256"]
-                for identifier in sorted(artifacts)
-                if identifier.startswith("final:")
-            ],
+            "preserved_final_sha256s": preserved_final_sha256s,
         }
         manifest = {
             "schema_version": "issue12-recovery/0.1", "run_id": run_id,
@@ -255,11 +256,7 @@ class RecoveryRunner(FullRunner):
                 for identifier in sorted(manifest["artifacts"])
                 if identifier.startswith("aperture:")
             ],
-            "preserved_final_sha256s": [
-                manifest["artifacts"][identifier]["sha256"]
-                for identifier in sorted(manifest["artifacts"])
-                if identifier.startswith("final:")
-            ],
+            "preserved_final_sha256s": manifest["plan"].get("preserved_final_sha256s", []),
         }
         if _digest(body) != plan["plan_sha256"] or plan["ordered_call_ids"] != body["ordered_call_ids"]:
             raise ValueError("plan digest mismatch")

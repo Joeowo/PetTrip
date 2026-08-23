@@ -19515,6 +19515,19 @@
       "destination": "G06",
       "route": "M1",
       "scene": "B"
+    },
+    "final:G02:M0:A": {
+      "kind": "final",
+      "producer_call_id": "final:G02:M0:A",
+      "destination": "G02",
+      "route": "M0",
+      "scene": "A",
+      "path": "artifacts/recovery-finals/G02/M0/A.png",
+      "sha256": "b60356e6cfbe63bcb0f59409cf94ce15d84e979462732acfbb0586f57ebf1a58",
+      "size": [
+        2048,
+        1152
+      ]
     }
   },
   "calls": {
@@ -19525,7 +19538,7 @@
       "destination": "G02",
       "route": "M0",
       "scene": "A",
-      "status": "pending",
+      "status": "succeeded",
       "blocked_by": [],
       "spec": {
         "prompt": {
@@ -19566,8 +19579,59 @@
         "depends_on": [],
         "snapshot_sha256": "62247af8e619072eb6ec1ebd517fd71a64c71da92338d22edb43b6eac6d25853"
       },
-      "attempt": null,
-      "result": null
+      "attempt": {
+        "attempt_number": 1,
+        "started_at": "2026-08-23T01:46:26.592741+00:00",
+        "idem_key": "issue12-issue12-recovery-001-final-g02-m0-a",
+        "task_id": "img_051673a61ed396b733098a48fd570762",
+        "submitted_at": "2026-08-23T01:46:29.625794+00:00",
+        "resolved_references": [
+          {
+            "order": 1,
+            "role": "deterministic_aperture",
+            "artifact_id": "aperture:G02:M0:A",
+            "path": "artifacts/apertures/G02/M0/A.png",
+            "sha256": "a1876b13b2736169fd1c3bec951616101ceda9223373a2c30c6c4123ad8d906f"
+          },
+          {
+            "order": 2,
+            "role": "character_bottom",
+            "artifact_id": "character:bottom",
+            "path": "assets/character/chongwu-bottom.png",
+            "sha256": "51ac32a5caf1f07477639591935d7db93f2d869a1ed647478b6027e96da2042b"
+          }
+        ],
+        "resolved_request_sha256": "33d18257afc3c1dd20e64978e5ca5a664068156d16c561f8ec24b5b11c7c1b69",
+        "error": null
+      },
+      "result": {
+        "task": {
+          "id": "img_051673a61ed396b733098a48fd570762",
+          "status": "done",
+          "model": "gpt-image-2",
+          "quality": "high",
+          "size": "2048x1152",
+          "image_size_tier": "2K",
+          "cost_usd": 0.038,
+          "created_at": "2026-08-23T01:46:31.58913Z"
+        },
+        "outputs": [
+          {
+            "kind": "final",
+            "producer_call_id": "final:G02:M0:A",
+            "destination": "G02",
+            "route": "M0",
+            "scene": "A",
+            "path": "artifacts/recovery-finals/G02/M0/A.png",
+            "sha256": "b60356e6cfbe63bcb0f59409cf94ce15d84e979462732acfbb0586f57ebf1a58",
+            "size": [
+              2048,
+              1152
+            ]
+          }
+        ],
+        "finished_at": "2026-08-23T01:47:01.911525+00:00"
+      }
     },
     "final:G02:M0:B": {
       "id": "final:G02:M0:B",
@@ -20106,13 +20170,21 @@
       "25edc64de9e7dde54b72d8bdf18556debb69e028e10df20d950a032dd411dc0c"
     ],
     "plan_sha256": "147d912e663301bdc717b064535189580cbb9385fe8cd82d8bf27cb639c35d29",
-    "approval": null
+    "approval": {
+      "plan_sha256": "147d912e663301bdc717b064535189580cbb9385fe8cd82d8bf27cb639c35d29",
+      "approved_at": "2026-08-23T01:44:49.152943+00:00"
+    }
   },
   "final_review": {
     "status": "pending",
     "decision": null,
     "note": null
   },
-  "events": [],
-  "updated_at": "2026-08-23T01:40:41.870696+00:00"
+  "events": [
+    {
+      "at": "2026-08-23T01:44:49.152943+00:00",
+      "event": "plan_approved"
+    }
+  ],
+  "updated_at": "2026-08-23T01:47:01.911525+00:00"
 }

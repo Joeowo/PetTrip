@@ -451,7 +451,7 @@ class FullRunner:
             self.save(run_id, manifest); return
         if len(downloaded["saved"]) != 1:
             call["status"] = "failed"; attempt["error"] = {"code": "output_count_mismatch"}; self.save(run_id, manifest); return
-        path = Path(downloaded["saved"][0]["path"]); artifact_id = call_id if call["phase"] == "environment" else call_id
+        path = Path(downloaded["saved"][0]["path"]); artifact_id = call.get("artifact_id", call_id)
         artifact = {
             "kind": call["phase"],
             "producer_call_id": call_id,
