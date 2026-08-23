@@ -24,7 +24,6 @@ from ..shared.errors import (
     FILE_TOO_LARGE,
     IDEMPOTENCY_KEY_REUSED,
     CLARIFICATION_ALREADY_CLOSED,
-    INPUT_ID_CONFLICT,
     RESOURCE_NOT_FOUND,
     VALIDATION_ERROR,
     ApiError,
@@ -456,8 +455,8 @@ def create_app(
                     ) from exc
                 except InputIdConflictError as exc:
                     raise ApiError(
-                        INPUT_ID_CONFLICT,
-                        "input_id 已用于不同的文本内容。",
+                        IDEMPOTENCY_KEY_REUSED,
+                        "Idempotency-Key 已用于不同请求。",
                         status=409,
                     ) from exc
 

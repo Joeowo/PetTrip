@@ -1,6 +1,13 @@
 """T2 澄清状态机测试（Issue #14）。"""
 
+from pathlib import Path
+
 import pytest
+from fastapi.testclient import TestClient
+
+from agent_service.api.app import create_app
+from agent_service.api.auth import hash_api_key
+from agent_service.shared.config import Settings
 from agent_service.storage import (
     Storage,
     ClarificationAlreadyClosedError,
@@ -290,6 +297,60 @@ def test_same_input_id_different_content_conflict(storage, session):
         )
 
 
+def _api_settings(tmp_path: Path) -> Settings:
+    return Settings(
+        service_version="0.1.0-test",
+        host="127.0.0.1",
+        port=8001,
+        pilot_root=tmp_path,
+        data_dir=tmp_path,
+        db_path=tmp_path / "agent.db",
+        chat_base_url="https://example.invalid/v1",
+        chat_api_key="test-provider-key",
+        chat_model="test-model",
+        chat_timeout=1,
+        chat_temperature=0,
+        chat_max_tokens=32,
+        pilot_api_key="pilot-test-key",
+        worker_poll_interval=0.01,
+        max_text_chars=100,
+    )
+
+
+def test_idempotency_input_id_different_text(tmp_path: Path) -> None:
+    """同一 input_id 复用不同文本时返回规范幂等错误码。"""
+    app = create_app(settings=_api_settings(tmp_path), start_worker=False)
+    with TestClient(app) as client:
+        auth = {"Authorization": "Bearer pilot-test-key"}
+        session_id = client.post("/api/v1/sessions", headers=auth).json()["session_id"]
+        base_payload = {
+            "session_id": session_id,
+            "command": {
+                "type": "clarification.submit_input",
+                "input_id": "input-1",
+                "text": "原始文本",
+            },
+        }
+
+        first = client.post(
+            "/api/v1/runs",
+            headers={**auth, "Idempotency-Key": "key-1"},
+            json=base_payload,
+        )
+        assert first.status_code == 202
+
+        conflict = client.post(
+            "/api/v1/runs",
+            headers={**auth, "Idempotency-Key": "key-2"},
+            json={
+                **base_payload,
+                "command": {**base_payload["command"], "text": "不同的文本"},
+            },
+        )
+        assert conflict.status_code == 409
+        assert conflict.json()["error"]["code"] == "IDEMPOTENCY_KEY_REUSED"
+
+
 def test_same_input_id_same_content_idempotent(storage, session):
     """补充测试: 相同 input_id 相同内容幂等返回原结果。"""
     client_id = storage.find_active_api_client_by_hash(hash_api_key("test-key"))
@@ -330,4 +391,3 @@ def test_same_input_id_same_content_idempotent(storage, session):
 
 # 需要导入 json 用于解析
 import json
-from agent_service.api.auth import hash_api_key
