@@ -1,0 +1,18 @@
+[
+  {
+    "asset_id": "beach_background",
+    "source": "images_api",
+    "model": "gpt-image-2",
+    "raw_filename": "assets/raw/beach_background.png",
+    "filename": "assets/beach_background.png",
+    "uri": "/assets/beach_background.png",
+    "mime_type": "image/png",
+    "original_width": 1774,
+    "original_height": 887,
+    "normalized_width": 512,
+    "normalized_height": 288,
+    "channels": 3,
+    "raw_sha256": "37a3f7557f0694e10927cbd6a434791da4bc24640df19c7560f77b1dd1f14717",
+    "sha256": "f5ab89711abb9f0ea3ef6239f766177c88bf4280e7d72e875dc2c17f5cc51355"
+  }
+]

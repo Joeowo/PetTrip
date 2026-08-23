@@ -1,0 +1,128 @@
+{
+  "endpoint": "https://api.denxio.com/v1/responses",
+  "method": "POST",
+  "http_status": 200,
+  "request_id": "902648fa-9b46-423e-b739-bb2a3f5e6cc5",
+  "request": {
+    "model": "gpt-5.6-sol",
+    "input": "生成一个横向 2D 海边场景，包含一座灯塔；宠物可以在灯塔前挥手；右侧可以放置一个小窝；不要出现车辆。请严格按提供的 JSON Schema 返回。",
+    "store": false,
+    "text": {
+      "format": {
+        "type": "json_schema",
+        "name": "pettrip_world_spec",
+        "schema": {
+          "additionalProperties": false,
+          "description": "模型必须完整返回的固定海边灯塔意图；禁止默认补值和额外字段。",
+          "properties": {
+            "theme": {
+              "const": "seaside",
+              "title": "Theme",
+              "type": "string"
+            },
+            "landmark": {
+              "const": "lighthouse",
+              "title": "Landmark",
+              "type": "string"
+            },
+            "interaction_id": {
+              "const": "pet_wave",
+              "title": "Interaction Id",
+              "type": "string"
+            },
+            "build_slot_id": {
+              "const": "small_shelter",
+              "title": "Build Slot Id",
+              "type": "string"
+            },
+            "forbidden_objects": {
+              "items": {
+                "const": "vehicle",
+                "type": "string"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "title": "Forbidden Objects",
+              "type": "array"
+            },
+            "canvas_width": {
+              "const": 512,
+              "title": "Canvas Width",
+              "type": "integer"
+            },
+            "canvas_height": {
+              "const": 288,
+              "title": "Canvas Height",
+              "type": "integer"
+            },
+            "pixels_per_unit": {
+              "const": 16,
+              "title": "Pixels Per Unit",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "theme",
+            "landmark",
+            "interaction_id",
+            "build_slot_id",
+            "forbidden_objects",
+            "canvas_width",
+            "canvas_height",
+            "pixels_per_unit"
+          ],
+          "title": "WorldSpec",
+          "type": "object"
+        },
+        "strict": true
+      }
+    }
+  },
+  "response": {
+    "id": "resp_0c38c56e2d90086b016a7fd087f328819a883efdb5144dfc3c",
+    "object": "response",
+    "created_at": 1786761352,
+    "completed_at": 1786761355,
+    "status": "completed",
+    "model": "gpt-5.6-sol",
+    "error": null,
+    "incomplete_details": null,
+    "output": [
+      {
+        "id": "rs_0c38c56e2d90086b016a7fd08a0368819a8d6af9a82d44168a",
+        "type": "reasoning",
+        "content": [],
+        "encrypted_content": "gAAAAABqf9CKyL0tB0_gAPvkqPhC8vJYSUMSr6mKNReqTNmgmWhfp3A7FeHz4nFtPwb3-nkQmkpuOUExSQV8D0olcoowdTMcrcyGSIEHWJri9PZ6z0Z8c2O1Bm7yjiyone7Kcw8O81V3WVwVhnzqxPMcGFelYzcWBVw32hAPgdLaJ3TPRn5uguXUihvAzKuPbY_Mw41Baw-sEgpZGZzu-26DPdGzsTklHPAFGTAze_TNBLcYMthbuVMjPqie6Xbmm9jHecRuzHJE3UpAJwvfJHq229o8B49GW9OlEg68GcgrSVFnEf-Sqh7jV1zY5k74L7SE958ejuFn8ipMaJn-9LzD12di1YFFZi5wYWbaxuWa-QYC5pyPvWVbuJlYRpRWQexpPS0oj9WUR9AoaFwkF0IHS7kfVzBpym3s6YPjHXBZmg-xecXrSMu-FwSsiw099C_tDXLFYVMyw7plerjVbRDphWT7_IQ__OPzyQ4EubWpzkiW4Kw8VHlYRaJwMaA-8J6yPZdqDzC3rfejqEDUC5RwqTcTRO1pgzUhdCS1bCn-NVqQ7YDUb24zGe37ejC5SBJJlq06Ch5gmSx207wXYq0mmsDEqoL_Gg1RRXqzB82hruLSipkBhYjLkelhCsvObGpKG1KT7l80sRAPdG0HVK7TNRiGfw4-0MdkGuoMJQjx_gwBPnR7W4ZSYQRgdz8XIMGbkRu5augQAgRSyeo0RJmo_Qxng7YsVMcUVmEEivBeMC8ZAEv58s21_wOpmG10701E-bdAOVy916Go9D3nY3fs4MfGgoa6MsKqyCV2ePZ-JXgJmlMkwwOggD0hTsNlwaOIIG7fOXiEUNp4exS7QLGhJaalgbfgzS5teIHlROtQ6Mgg-3hInKP1yzAcXbIJYVXt4pU5m_az-HlfQ9OI8qOQx0KFEVYt9hUyLVYYYeQcl4YpluunTfqdolbkpZD9aWaM3ayg_Ih5y-cdQ1VBdN0P4Ka-04soD_WHeXRqQf3d9lsD4AyCbbCfhFROvO5ricXGTkLMAy4ST_aHK_0NQajvSOmDfnaPbT64aYfxV_8u82PbhyNxoJc1oOZAG-_kpi2kj9koedj-caOwVGsjqijfoKuneYjWQfDwXOUeE01cloIfCKyO7GwkTkyK8WE2dm0u1aBOPm34JzMDZKfag3VssHMamMxMnE0zKGCUxeppqgFVssalcekuy0fbwFL0Bon-5nGkWjNZOz6vH-yYtgzsvzMsAgRMCPuX1OI5wBeJlSu-mEkRgXYlN8svRQ0YKQotmw9cuu610zm0ZJKN3m6aTP6Saoj52wTHkIru3sWfSX4NXdT93f4yomIcysFCx1A2eCjz3yoE0710RciBV8tT_MQ7-0z-iJTX0RUPZctcGIf_UoEj-mk=",
+        "summary": []
+      },
+      {
+        "id": "msg_0c38c56e2d90086b016a7fd08aa2dc819ab44bb799facefaaf",
+        "type": "message",
+        "status": "completed",
+        "content": [
+          {
+            "type": "output_text",
+            "annotations": [],
+            "logprobs": [],
+            "text": "{\"theme\":\"seaside\",\"landmark\":\"lighthouse\",\"interaction_id\":\"pet_wave\",\"build_slot_id\":\"small_shelter\",\"forbidden_objects\":[\"vehicle\"],\"canvas_width\":512,\"canvas_height\":288,\"pixels_per_unit\":16}"
+          }
+        ],
+        "phase": "final_answer",
+        "role": "assistant"
+      }
+    ],
+    "usage": {
+      "input_tokens": 5016,
+      "input_tokens_details": {
+        "cache_write_tokens": 0,
+        "cached_tokens": 0
+      },
+      "output_tokens": 88,
+      "output_tokens_details": {
+        "reasoning_tokens": 26
+      },
+      "total_tokens": 5104
+    },
+    "request_id": "902648fa-9b46-423e-b739-bb2a3f5e6cc5"
+  }
+}

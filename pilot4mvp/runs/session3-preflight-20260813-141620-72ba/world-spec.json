@@ -1,0 +1,12 @@
+{
+  "theme": "seaside",
+  "landmark": "lighthouse",
+  "interaction_id": "pet_wave",
+  "build_slot_id": "small_shelter",
+  "forbidden_objects": [
+    "vehicle"
+  ],
+  "canvas_width": 512,
+  "canvas_height": 288,
+  "pixels_per_unit": 16
+}

@@ -1,0 +1,25 @@
+INFO:     Started server process [6348]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+SESSION4_SERVER_READY run_id=None
+INFO:     127.0.0.1:52865 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52868 - "POST /runs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:52869 - "POST /runs HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:52870 - "GET /run-id HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /snapshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/pet.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /run-id HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "POST /runs/session4-20260815-143009-f3e9/snapshot-v2 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:59995 - "GET /snapshot HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/beach_background.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/lighthouse.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/pet.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /assets/small_shelter.png HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "GET /snapshot-meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59995 - "POST /runs/session4-20260815-143009-f3e9/reports HTTP/1.1" 201 Created
+INFO:     127.0.0.1:60009 - "GET /snapshot-meta HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60010 - "GET /runs/session4-20260815-143009-f3e9 HTTP/1.1" 200 OK

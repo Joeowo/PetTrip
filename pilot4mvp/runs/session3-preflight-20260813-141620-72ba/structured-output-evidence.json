@@ -1,0 +1,8 @@
+{
+  "structured_output_api": "responses",
+  "responses_attempted": true,
+  "responses_passed": true,
+  "compatibility_adapter_allowed": true,
+  "compatibility_adapter_used": false,
+  "responses_failure": null
+}

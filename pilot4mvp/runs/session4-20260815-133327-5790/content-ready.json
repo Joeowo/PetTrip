@@ -1,0 +1,9 @@
+{
+  "run_id": "session4-20260815-133327-5790",
+  "created_at": "2026-08-15T13:33:42.329218+00:00",
+  "scene_snapshot": "scene-snapshot-v2.json",
+  "asset_manifest": "asset-manifest.json",
+  "unity": "passed",
+  "unity_evidence": "session4-unity/",
+  "replayed": true
+}
