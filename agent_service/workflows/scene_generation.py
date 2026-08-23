@@ -226,8 +226,16 @@ def build_generation_mask_node(
     """节点：构建生成 Mask（字节稳定）。"""
     try:
         # 读取环境母图
-        env_file = file_storage.read(state["environment_file_id"])
-        env_bytes = env_file.content
+        if hasattr(file_storage, "read"):
+            env_bytes = file_storage.read(state["environment_file_id"]).content
+        else:
+            environment_path = next(
+                file_storage._generated_dir.glob(f"{state['environment_file_id']}.*"),
+                None,
+            )
+            if environment_path is None:
+                raise FileNotFoundError(state["environment_file_id"])
+            env_bytes = environment_path.read_bytes()
 
         # 生成 Mask 和 aperture
         mask_result = generate_mask_and_aperture(
@@ -239,19 +247,29 @@ def build_generation_mask_node(
 
         # 存储 generation mask（内部资产）
         mask_file_id = new_id("mask")
-        file_storage.write(
-            file_id=mask_file_id,
-            content=mask_result["generation_mask_bytes"],
-            mime_type="image/png",
-        )
+        if hasattr(file_storage, "write"):
+            file_storage.write(mask_file_id, mask_result["generation_mask_bytes"], "image/png")
+        else:
+            file_storage.normalize_and_store_generated(
+                file_id=mask_file_id,
+                data=mask_result["generation_mask_bytes"],
+                target_width=state["environment_width"],
+                target_height=state["environment_height"],
+                max_pixels=state["environment_width"] * state["environment_height"],
+            )
 
         # 存储 aperture image（内部资产）
         aperture_file_id = new_id("aperture")
-        file_storage.write(
-            file_id=aperture_file_id,
-            content=mask_result["aperture_image_bytes"],
-            mime_type="image/png",
-        )
+        if hasattr(file_storage, "write"):
+            file_storage.write(aperture_file_id, mask_result["aperture_image_bytes"], "image/png")
+        else:
+            file_storage.normalize_and_store_generated(
+                file_id=aperture_file_id,
+                data=mask_result["aperture_image_bytes"],
+                target_width=state["environment_width"],
+                target_height=state["environment_height"],
+                max_pixels=state["environment_width"] * state["environment_height"],
+            )
 
         # 更新状态
         state["generation_mask_file_id"] = mask_file_id
@@ -283,11 +301,14 @@ def generate_final_scene_node(
 
     try:
         # 读取 aperture 图和 mask
-        aperture_file = file_storage.read(state["aperture_file_id"])
-        aperture_bytes = aperture_file.content
-
-        mask_file = file_storage.read(state["generation_mask_file_id"])
-        mask_bytes = mask_file.content
+        if hasattr(file_storage, "read"):
+            aperture_bytes = file_storage.read(state["aperture_file_id"]).content
+            mask_bytes = file_storage.read(state["generation_mask_file_id"]).content
+        else:
+            aperture_path = file_storage._generated_dir / f"{state['aperture_file_id']}.png"
+            mask_path = file_storage._generated_dir / f"{state['generation_mask_file_id']}.png"
+            aperture_bytes = aperture_path.read_bytes()
+            mask_bytes = mask_path.read_bytes()
 
         # 生成最终场景（mock 或真实 Provider）
         if state["use_mock_final_scene"]:
@@ -332,15 +353,20 @@ def generate_final_scene_node(
             final_scene_bytes = generate_final_scene_sync(config, input_data)
 
         # 计算哈希
-        final_scene_sha256 = hashlib.sha256(final_scene_bytes).hexdigest()
-
-        # 存储最终场景
+        # 存储最终场景，并以规范化后的 PNG 计算公开哈希。
         final_scene_file_id = new_id("scene")
-        file_storage.write(
-            file_id=final_scene_file_id,
-            content=final_scene_bytes,
-            mime_type="image/png",
-        )
+        if hasattr(file_storage, "write"):
+            file_storage.write(final_scene_file_id, final_scene_bytes, "image/png")
+            final_scene_sha256 = hashlib.sha256(final_scene_bytes).hexdigest()
+        else:
+            stored_scene = file_storage.normalize_and_store_generated(
+                file_id=final_scene_file_id,
+                data=final_scene_bytes,
+                target_width=state["environment_width"],
+                target_height=state["environment_height"],
+                max_pixels=state["environment_width"] * state["environment_height"],
+            )
+            final_scene_sha256 = stored_scene.sha256
 
         # 更新状态
         state["final_scene_file_id"] = final_scene_file_id
@@ -428,7 +454,7 @@ def commit_scene_artifact_node(
                     sha256=state["final_scene_sha256"],
                     width=state["final_scene_width"],
                     height=state["final_scene_height"],
-                    rel_path=f"{state['final_scene_file_id']}.dat",
+                    rel_path=f"files/generated/{state['final_scene_file_id']}.png",
                 )
 
         with repo.transaction() as conn:
