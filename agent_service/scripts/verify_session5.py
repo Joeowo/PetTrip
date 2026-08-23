@@ -27,17 +27,17 @@ REPO_ROOT = PILOT_ROOT.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agent_service.app import create_app
-from agent_service.chat_provider import (
+from agent_service.api.app import create_app
+from agent_service.adapters.llm import (
     ChatMessage,
     ChatProviderError,
 )
-from agent_service.config import (
+from agent_service.shared.config import (
     ConfigurationError,
     Settings,
     load_settings,
 )
-from agent_service.image_provider import (
+from agent_service.adapters.image import (
     ImageGenerationRequest,
     ImageProviderError,
     ImageResult,

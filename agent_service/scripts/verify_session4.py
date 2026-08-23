@@ -28,7 +28,7 @@ REPO_ROOT = PILOT_ROOT.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from agent_service.config import ConfigurationError, load_settings
+from agent_service.shared.config import ConfigurationError, load_settings
 from agent_service.api_test_client.structured_dto import read_scene_draft_v01
 
 EVIDENCE_ROOT = PILOT_ROOT / "runs" / "pilot-multimodal-agent-session4-001"

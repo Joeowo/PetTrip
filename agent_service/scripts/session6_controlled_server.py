@@ -13,10 +13,10 @@ from typing import Any
 import uvicorn
 from PIL import Image
 
-from agent_service.app import create_app
-from agent_service.chat_provider import ChatMessage
-from agent_service.config import load_settings
-from agent_service.image_provider import (
+from agent_service.api.app import create_app
+from agent_service.adapters.llm import ChatMessage
+from agent_service.shared.config import load_settings
+from agent_service.adapters.image import (
     ImageGenerationRequest,
     ImageGenerationProvider,
     ImageResult,

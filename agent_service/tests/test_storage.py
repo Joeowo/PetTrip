@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from agent_service.auth import hash_api_key
+from agent_service.api.auth import hash_api_key
 from agent_service.storage import FileReferenceError, Storage
 
 

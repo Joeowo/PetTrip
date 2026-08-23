@@ -6,14 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from agent_service.auth import hash_api_key
-from agent_service.chat_provider import ChatMessage
+from agent_service.api.auth import hash_api_key
+from agent_service.adapters.llm import ChatMessage
 from agent_service.storage import Storage
-from agent_service.structured_output import (
+from agent_service.shared.structured_output import (
     StructuredOutputInvalid,
     StructuredOutputRegistry,
 )
-from agent_service.worker import RunWorker
+from agent_service.domain.worker import RunWorker
 
 
 VALID_SCENE_DRAFT = {

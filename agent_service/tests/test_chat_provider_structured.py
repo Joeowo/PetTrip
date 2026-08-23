@@ -5,8 +5,8 @@ import json
 
 import httpx
 
-from agent_service.chat_provider import ChatMessage, OpenAICompatibleChatProvider
-from agent_service.structured_output import StructuredOutputRegistry
+from agent_service.adapters.llm import ChatMessage, OpenAICompatibleChatProvider
+from agent_service.shared.structured_output import StructuredOutputRegistry
 
 
 def test_openai_compatible_provider_sends_versioned_schema_with_json_object(monkeypatch) -> None:

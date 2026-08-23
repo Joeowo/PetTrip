@@ -11,9 +11,9 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from agent_service.app import create_app
-from agent_service.config import Settings
-from agent_service.image_provider import ImageGenerationRequest, ImageResult
+from agent_service.api.app import create_app
+from agent_service.shared.config import Settings
+from agent_service.adapters.image import ImageGenerationRequest, ImageResult
 
 
 class RecordingImageProvider:

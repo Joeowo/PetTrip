@@ -6,7 +6,7 @@ import json
 
 import httpx
 
-from agent_service.chat_provider import (
+from agent_service.adapters.llm import (
     ChatMessage,
     OpenAICompatibleChatProvider,
     VisionImage,

@@ -14,8 +14,8 @@ import subprocess
 
 import uvicorn
 
-from agent_service.app import create_app
-from agent_service.config import ConfigurationError, load_settings
+from agent_service.api.app import create_app
+from agent_service.shared.config import ConfigurationError, load_settings
 
 PILOT_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PILOT_ROOT.parent
