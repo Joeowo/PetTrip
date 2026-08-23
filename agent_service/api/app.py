@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .auth import AuthenticatedClientId, hash_api_key
-from .schemas import CreateRunRequest
+from .schemas import CreateRunRequest, ClarificationSubmitInputCommand, ClarificationCloseCommand
 from ..adapters.llm import ChatModelProvider, OpenAICompatibleChatProvider
 from ..adapters.image import ImageGenerationProvider, OpenAICompatibleImageProvider
 from ..shared.config import Settings, load_settings
@@ -23,6 +23,8 @@ from ..shared.errors import (
     AUTHENTICATION_FAILED,
     FILE_TOO_LARGE,
     IDEMPOTENCY_KEY_REUSED,
+    CLARIFICATION_ALREADY_CLOSED,
+    INPUT_ID_CONFLICT,
     RESOURCE_NOT_FOUND,
     VALIDATION_ERROR,
     ApiError,
@@ -36,6 +38,8 @@ from ..storage import (
     AttachmentTooLargeError,
     FileReferenceError,
     IdempotencyKeyReusedError,
+    ClarificationAlreadyClosedError,
+    InputIdConflictError,
     Storage,
 )
 from ..domain.worker import RunWorker
@@ -414,38 +418,105 @@ def create_app(
     ) -> dict[str, Any]:
         if not idempotency_key or not idempotency_key.strip():
             raise ApiError(VALIDATION_ERROR, "缺少 Idempotency-Key。", status=400)
-        if len(body.input.text) > resolved_settings.max_text_chars:
-            raise ApiError(VALIDATION_ERROR, "输入文本过长。", status=400)
-        modalities = body.response_format.modalities
-        if len(set(modalities)) != len(modalities):
-            raise ApiError(VALIDATION_ERROR, "输出模态不能重复。", status=400)
+
+        # 验证会话存在
         if storage.get_session(body.session_id, api_client_id) is None:
             raise ApiError(RESOURCE_NOT_FOUND, "会话不存在。", status=404)
-        attachment_ids = [item.file_id for item in body.input.attachments]
-        if len(attachment_ids) != len(set(attachment_ids)):
-            raise ApiError(VALIDATION_ERROR, "附件不能重复。", status=400)
+
         key = idempotency_key.strip()
         body_hash = _canonical_body_hash(body)
-        try:
-            run = storage.create_run(
-                api_client_id=api_client_id,
-                session_id=body.session_id,
-                request_input=body.input.model_dump(mode="json"),
-                response_format=body.response_format.model_dump(mode="json"),
-                idempotency_key=key,
-                idempotency_body_hash=body_hash,
-                max_attachment_bytes=resolved_settings.max_upload_bytes,
-            )
-        except IdempotencyKeyReusedError as exc:
-            raise ApiError(
-                IDEMPOTENCY_KEY_REUSED,
-                "Idempotency-Key 已用于不同请求。",
-                status=409,
-            ) from exc
-        except AttachmentTooLargeError as exc:
-            raise ApiError(FILE_TOO_LARGE, "Run 附件总大小超过允许范围。") from exc
-        except FileReferenceError as exc:
-            raise ApiError(RESOURCE_NOT_FOUND, "附件不存在。", status=404) from exc
+
+        # 路由命令类型
+        if body.command is not None:
+            # 新命令模式
+            if isinstance(body.command, ClarificationSubmitInputCommand):
+                # 提交澄清输入
+                if len(body.command.text) > resolved_settings.max_text_chars:
+                    raise ApiError(VALIDATION_ERROR, "输入文本过长。", status=400)
+
+                try:
+                    run = storage.create_clarification_run(
+                        api_client_id=api_client_id,
+                        session_id=body.session_id,
+                        command=body.command.model_dump(mode="json"),
+                        idempotency_key=key,
+                        idempotency_body_hash=body_hash,
+                    )
+                except IdempotencyKeyReusedError as exc:
+                    raise ApiError(
+                        IDEMPOTENCY_KEY_REUSED,
+                        "Idempotency-Key 已用于不同请求。",
+                        status=409,
+                    ) from exc
+                except ClarificationAlreadyClosedError as exc:
+                    raise ApiError(
+                        CLARIFICATION_ALREADY_CLOSED,
+                        "澄清流程已关闭，不能提交新输入。",
+                        status=409,
+                    ) from exc
+                except InputIdConflictError as exc:
+                    raise ApiError(
+                        INPUT_ID_CONFLICT,
+                        "input_id 已用于不同的文本内容。",
+                        status=409,
+                    ) from exc
+
+            elif isinstance(body.command, ClarificationCloseCommand):
+                # Unity 主动关闭澄清
+                try:
+                    run = storage.create_clarification_run(
+                        api_client_id=api_client_id,
+                        session_id=body.session_id,
+                        command=body.command.model_dump(mode="json"),
+                        idempotency_key=key,
+                        idempotency_body_hash=body_hash,
+                    )
+                except IdempotencyKeyReusedError as exc:
+                    raise ApiError(
+                        IDEMPOTENCY_KEY_REUSED,
+                        "Idempotency-Key 已用于不同请求。",
+                        status=409,
+                    ) from exc
+            else:
+                # agent.generate 或其他未来命令类型
+                # T2 阶段仅支持澄清命令
+                raise ApiError(
+                    VALIDATION_ERROR,
+                    f"不支持的命令类型: {body.command.type}",
+                    status=400,
+                )
+        else:
+            # 向后兼容：传统模式
+            if len(body.input.text) > resolved_settings.max_text_chars:
+                raise ApiError(VALIDATION_ERROR, "输入文本过长。", status=400)
+            modalities = body.response_format.modalities
+            if len(set(modalities)) != len(modalities):
+                raise ApiError(VALIDATION_ERROR, "输出模态不能重复。", status=400)
+            attachment_ids = [item.file_id for item in body.input.attachments]
+            if len(attachment_ids) != len(set(attachment_ids)):
+                raise ApiError(VALIDATION_ERROR, "附件不能重复。", status=400)
+
+            try:
+                run = storage.create_run(
+                    api_client_id=api_client_id,
+                    session_id=body.session_id,
+                    request_input=body.input.model_dump(mode="json"),
+                    response_format=body.response_format.model_dump(mode="json"),
+                    idempotency_key=key,
+                    idempotency_body_hash=body_hash,
+                    max_attachment_bytes=resolved_settings.max_upload_bytes,
+                )
+            except IdempotencyKeyReusedError as exc:
+                raise ApiError(
+                    IDEMPOTENCY_KEY_REUSED,
+                    "Idempotency-Key 已用于不同请求。",
+                    status=409,
+                ) from exc
+            except AttachmentTooLargeError as exc:
+                raise ApiError(FILE_TOO_LARGE, "Run 附件总大小超过允许范围。") from exc
+            except FileReferenceError as exc:
+                raise ApiError(RESOURCE_NOT_FOUND, "附件不存在。", status=404) from exc
+
         output_files = (
             storage.list_output_files_for_run(run["id"], api_client_id)
             if run["status"] == "succeeded"

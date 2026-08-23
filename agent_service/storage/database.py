@@ -92,6 +92,28 @@ CREATE TABLE IF NOT EXISTS message_files (
     role       TEXT NOT NULL CHECK (role IN ('input','output')),
     PRIMARY KEY (message_id, file_id)
 );
+
+CREATE TABLE IF NOT EXISTS clarification_sessions (
+    session_id              TEXT PRIMARY KEY REFERENCES sessions(id),
+    clarification_closed    INTEGER NOT NULL DEFAULT 0 CHECK (clarification_closed IN (0, 1)),
+    accepted_wish_count     INTEGER NOT NULL DEFAULT 0 CHECK (accepted_wish_count >= 0 AND accepted_wish_count <= 3),
+    non_accepted_count      INTEGER NOT NULL DEFAULT 0 CHECK (non_accepted_count >= 0 AND non_accepted_count <= 5),
+    close_reason            TEXT CHECK (close_reason IN ('accepted_wish_limit', 'non_accepted_limit', 'unity_requested') OR close_reason IS NULL),
+    destination_id          TEXT UNIQUE,
+    closed_at               TEXT
+);
+
+CREATE TABLE IF NOT EXISTS clarification_inputs (
+    id                TEXT PRIMARY KEY,
+    session_id        TEXT NOT NULL REFERENCES sessions(id),
+    run_id            TEXT NOT NULL REFERENCES runs(id),
+    input_id          TEXT NOT NULL,
+    raw_text          TEXT NOT NULL,
+    classification    TEXT NOT NULL CHECK (classification IN ('empty', 'accepted_wish_input', 'off_topic', 'unintelligible')),
+    normalized_text   TEXT,
+    created_at        TEXT NOT NULL,
+    UNIQUE (session_id, input_id)
+);
 """
 
 
@@ -590,3 +612,169 @@ class Database:
                 (run_id, api_client_id),
             ).fetchall()
         return [dict(r) for r in rows]
+
+    # -- Clarification Sessions --------------------------------------------
+
+    def get_or_create_clarification_session(
+        self, conn: sqlite3.Connection, session_id: str
+    ) -> dict[str, Any]:
+        """在事务内获取或创建澄清会话（幂等）。"""
+        row = conn.execute(
+            "SELECT * FROM clarification_sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        if row is not None:
+            return dict(row)
+
+        # 创建新的澄清会话
+        conn.execute(
+            "INSERT INTO clarification_sessions("
+            "session_id, clarification_closed, accepted_wish_count, "
+            "non_accepted_count, close_reason, destination_id, closed_at) "
+            "VALUES(?, 0, 0, 0, NULL, NULL, NULL)",
+            (session_id,),
+        )
+        row = conn.execute(
+            "SELECT * FROM clarification_sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        return dict(row)
+
+    def get_clarification_session(
+        self, session_id: str
+    ) -> dict[str, Any] | None:
+        """查询澄清会话状态。"""
+        with self._lock:
+            row = self._conn.execute(
+                "SELECT * FROM clarification_sessions WHERE session_id = ?",
+                (session_id,),
+            ).fetchone()
+        return _row_to_dict(row)
+
+    def close_clarification_session(
+        self,
+        conn: sqlite3.Connection,
+        session_id: str,
+        close_reason: str,
+    ) -> dict[str, Any]:
+        """在事务内关闭澄清会话，创建 destination_id。
+
+        返回更新后的澄清会话（包含 destination_id）。
+        如果已经关闭，返回现有状态（幂等）。
+        """
+        from ..shared.ids import new_id
+
+        # 检查当前状态
+        row = conn.execute(
+            "SELECT * FROM clarification_sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+
+        if row is None:
+            raise ValueError(f"澄清会话不存在: {session_id}")
+
+        # 如果已经关闭，返回现有状态（幂等）
+        if row["clarification_closed"]:
+            return dict(row)
+
+        # 创建 destination_id 并关闭
+        destination_id = new_id("dest")
+        now = utcnow_iso()
+
+        conn.execute(
+            "UPDATE clarification_sessions "
+            "SET clarification_closed = 1, close_reason = ?, "
+            "destination_id = ?, closed_at = ? "
+            "WHERE session_id = ?",
+            (close_reason, destination_id, now, session_id),
+        )
+
+        # 返回更新后的状态
+        row = conn.execute(
+            "SELECT * FROM clarification_sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        return dict(row)
+
+    def increment_clarification_counter(
+        self,
+        conn: sqlite3.Connection,
+        session_id: str,
+        classification: str,
+    ) -> dict[str, Any]:
+        """在事务内根据分类增加相应计数器。
+
+        返回更新后的澄清会话状态。
+        """
+        if classification == "accepted_wish_input":
+            conn.execute(
+                "UPDATE clarification_sessions "
+                "SET accepted_wish_count = accepted_wish_count + 1 "
+                "WHERE session_id = ?",
+                (session_id,),
+            )
+        elif classification in ("off_topic", "unintelligible"):
+            conn.execute(
+                "UPDATE clarification_sessions "
+                "SET non_accepted_count = non_accepted_count + 1 "
+                "WHERE session_id = ?",
+                (session_id,),
+            )
+        # empty 不增加任何计数器
+
+        row = conn.execute(
+            "SELECT * FROM clarification_sessions WHERE session_id = ?",
+            (session_id,),
+        ).fetchone()
+        return dict(row)
+
+    # -- Clarification Inputs ----------------------------------------------
+
+    def find_clarification_input(
+        self, conn: sqlite3.Connection, session_id: str, input_id: str
+    ) -> dict[str, Any] | None:
+        """在事务内查找澄清输入（用于幂等性检查）。"""
+        row = conn.execute(
+            "SELECT * FROM clarification_inputs "
+            "WHERE session_id = ? AND input_id = ?",
+            (session_id, input_id),
+        ).fetchone()
+        return _row_to_dict(row)
+
+    def insert_clarification_input(
+        self,
+        conn: sqlite3.Connection,
+        *,
+        session_id: str,
+        run_id: str,
+        input_id: str,
+        raw_text: str,
+        classification: str,
+        normalized_text: str | None,
+    ) -> dict[str, Any]:
+        """在事务内插入澄清输入记录。"""
+        record_id = new_id("clarif_input")
+        now = utcnow_iso()
+
+        conn.execute(
+            "INSERT INTO clarification_inputs("
+            "id, session_id, run_id, input_id, raw_text, "
+            "classification, normalized_text, created_at) "
+            "VALUES(?, ?, ?, ?, ?, ?, ?, ?)",
+            (
+                record_id,
+                session_id,
+                run_id,
+                input_id,
+                raw_text,
+                classification,
+                normalized_text,
+                now,
+            ),
+        )
+
+        row = conn.execute(
+            "SELECT * FROM clarification_inputs WHERE id = ?",
+            (record_id,),
+        ).fetchone()
+        return dict(row)

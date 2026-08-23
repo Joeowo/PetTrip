@@ -11,6 +11,7 @@ from typing import Any
 from ..domain.runs import (
     complete_run_success,
     create_run,
+    create_clarification_run,
     mark_run_failed,
     recover_pending_runs,
 )
@@ -20,6 +21,8 @@ from .models import (
     AttachmentTooLargeError,
     FileReferenceError,
     IdempotencyKeyReusedError,
+    ClarificationAlreadyClosedError,
+    InputIdConflictError,
     utcnow_iso,
 )
 
@@ -28,6 +31,8 @@ __all__ = [
     "IdempotencyKeyReusedError",
     "FileReferenceError",
     "AttachmentTooLargeError",
+    "ClarificationAlreadyClosedError",
+    "InputIdConflictError",
     "utcnow_iso",
     "Database",
     "DestinationRepository",
@@ -164,6 +169,25 @@ class Storage:
             idempotency_key=idempotency_key,
             idempotency_body_hash=idempotency_body_hash,
             max_attachment_bytes=max_attachment_bytes,
+        )
+
+    def create_clarification_run(
+        self,
+        *,
+        api_client_id: str,
+        session_id: str,
+        command: dict[str, Any],
+        idempotency_key: str,
+        idempotency_body_hash: str,
+    ) -> dict[str, Any]:
+        """创建澄清命令的 Run（T2: submit_input 或 close）。"""
+        return create_clarification_run(
+            self._db,
+            api_client_id=api_client_id,
+            session_id=session_id,
+            command=command,
+            idempotency_key=idempotency_key,
+            idempotency_body_hash=idempotency_body_hash,
         )
 
     def complete_run_success(
