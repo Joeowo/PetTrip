@@ -15,9 +15,9 @@ from pathlib import Path
 
 import pytest
 
-from .destination_storage import DestinationRepository
-from .ids import new_id
-from .storage import Storage
+from agent_service.storage.destination_storage import DestinationRepository
+from agent_service.shared.ids import new_id
+from agent_service.storage import Storage
 
 
 # ============================================================================

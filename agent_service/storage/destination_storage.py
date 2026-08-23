@@ -270,7 +270,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
 
-from .ids import new_id
+from ..shared.ids import new_id
 
 
 def _utcnow_iso() -> str:
