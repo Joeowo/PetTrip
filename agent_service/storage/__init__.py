@@ -15,6 +15,7 @@ from ..domain.runs import (
     recover_pending_runs,
 )
 from .database import Database
+from .destination_storage import DestinationRepository
 from .models import (
     AttachmentTooLargeError,
     FileReferenceError,
@@ -29,6 +30,7 @@ __all__ = [
     "AttachmentTooLargeError",
     "utcnow_iso",
     "Database",
+    "DestinationRepository",
 ]
 
 
