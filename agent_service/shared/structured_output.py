@@ -119,6 +119,12 @@ class ScenePlanV10(BaseModel):
     semantic_anchor: NonEmptyText
     interaction_prompt: NonEmptyText
 
+    @model_validator(mode="after")
+    def validate_single_behavior(self) -> "ScenePlanV10":
+        if "或" in self.pet_behavior:
+            raise ValueError("ScenePlan 的 pet_behavior 必须是单一确定动作，不能包含‘或’分支")
+        return self
+
 
 class LocatorSelectionV10(BaseModel):
     model_config = ConfigDict(extra="forbid")

@@ -45,7 +45,9 @@ def write_json(name: str, value: dict) -> None:
 
 async def run_sync(settings, aperture: bytes, mask: bytes, reference: ImageReference) -> dict:
     prompt = (
-        "Edit only the masked circular area. The attached image is the canonical pet identity reference. "
+        "Use the aperture image as the complete environment base. Generate the fixed pet inside "
+        "the black circle at the exact masked location, and nowhere else. Edit only the masked circular area. "
+        "The attached image is the canonical pet identity reference. "
         "Use the exact same character design, colors, silhouette, ears, tail, facial features, and proportions; "
         "do not reinterpret it as a cat, dog, realistic animal, or any other character. "
         "Place this fixed character walking on the beach with a curious happy expression. "
@@ -94,7 +96,9 @@ async def run_sync(settings, aperture: bytes, mask: bytes, reference: ImageRefer
 
 def run_async(settings, aperture: bytes, mask: bytes, reference: ImageReference) -> dict:
     prompt = (
-        "Edit the black circle only. The attached reference is the canonical fixed pet character. "
+        "Use the aperture image as the complete environment base. Generate the fixed pet inside "
+        "the black circle at the exact masked location, and nowhere else. Edit the black circle only. "
+        "The attached reference is the canonical fixed pet character. "
         "Preserve its exact design and place it walking on the beach, curious and happy; do not render a cat or dog. "
         "Keep the unmasked environment unchanged."
     )

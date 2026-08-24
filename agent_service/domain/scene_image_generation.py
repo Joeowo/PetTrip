@@ -42,10 +42,10 @@ def build_scene_generation_prompt(pet_behavior: str, pet_emotion: str) -> str:
         str: 完整的提示词
     """
     return (
-        f"Replace the black circle with a cute pet character. "
-        f"The pet should be {pet_behavior}, showing {pet_emotion} emotion. "
-        f"Keep the surrounding environment unchanged. "
-        f"The pet should fit naturally within the circular area."
+        f"Use the aperture image as the complete environment base and replace the black circle "
+        f"at the exact masked location with the fixed pet; generate the pet inside that black-circle "
+        f"region and nowhere else. The pet should be {pet_behavior}, showing {pet_emotion} emotion. "
+        f"Keep every unmasked pixel of the surrounding environment unchanged."
     )
 
 

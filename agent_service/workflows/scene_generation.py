@@ -401,7 +401,9 @@ def generate_final_scene_node(
 
             # 构建与实际 Provider 请求一致的 PromptSnapshot。
             prompt = (
-                "Edit only the masked circular area and remove the black circle. "
+                "Use the aperture image as the complete environment base. "
+                "Generate the fixed pet inside the black circle at the exact masked location, "
+                "and nowhere else. Edit only that black-circle/mask region and remove the black circle. "
                 f"Destination: {state['destination_title']}. "
                 f"Shared environment: {state['environment_description']}. "
                 f"Scene state: {state['state_label']}. "
