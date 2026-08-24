@@ -46,6 +46,7 @@ class SceneLocatorState(TypedDict):
     environment_width: int
     environment_height: int
     semantic_anchor: str
+    visual_anchor: dict[str, str] | None
 
     # 定位参考图生成
     locator_file_id: str | None
@@ -239,11 +240,20 @@ def generate_locator_node(
                 schema_name="locator_selection",
                 schema_version="1.0",
             )
+            anchor = state.get("visual_anchor") or {}
+            anchor_context = (
+                f"Visual anchor label: {anchor.get('label', '')}. "
+                f"Landmark: {anchor.get('landmark', '')}. "
+                f"Interaction affordance: {anchor.get('interaction_affordance', '')}. "
+                f"Placement guidance: {anchor.get('placement_guidance', '')}. "
+                f"Pet activity: {anchor.get('pet_activity', '')}. "
+            )
             vision_prompt = (
                 "Use the attached environment image as the only visual source of truth. "
                 "Do not generate or edit an image. Select one integer pixel center where "
-                "the pet can be placed for this semantic anchor: "
-                f"{state['semantic_anchor']}. Choose a visible, walkable or restable area; "
+                "the pet can be placed for this semantic anchor. "
+                f"Scene semantic anchor: {state['semantic_anchor']}. {anchor_context}"
+                "Choose a visible, walkable or restable area; "
                 "avoid sky, water, lighthouse walls, buildings, existing animals, and canvas "
                 f"edges. The image dimensions are exactly {state['environment_width']}x"
                 f"{state['environment_height']}. Return only the locator_selection JSON."
@@ -495,6 +505,7 @@ def run_scene_locator_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
     vision_provider: ChatModelProvider | None = None,
+    visual_anchor: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """运行场景定位工作流。
 
@@ -525,6 +536,7 @@ def run_scene_locator_workflow(
         environment_width=env_artifact["width_px"],
         environment_height=env_artifact["height_px"],
         semantic_anchor=semantic_anchor,
+        visual_anchor=visual_anchor,
         locator_file_id=None,
         locator_sha256=None,
         locator_attempt_number=0,

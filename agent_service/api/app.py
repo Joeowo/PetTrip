@@ -224,6 +224,15 @@ def create_app(
         if spec is None or environment is None:
             return {"error": "scene_dependencies_not_found"}
         plans = destination_repository.list_scene_plans(destination_id)
+        try:
+            shared_spec = json.loads(spec.get("shared_environment_spec") or "{}")
+        except json.JSONDecodeError:
+            shared_spec = {}
+        anchors = {
+            anchor.get("anchor_id"): anchor
+            for anchor in shared_spec.get("visual_anchors", [])
+            if anchor.get("anchor_id")
+        }
         failures: list[dict[str, str]] = []
         interaction_diameter_px = compute_interaction_diameter(
             environment["width_px"], environment["height_px"]
@@ -241,6 +250,7 @@ def create_app(
                 semantic_anchor=plan["semantic_anchor"],
                 interaction_diameter_px=interaction_diameter_px,
                 repo=destination_repository,
+                visual_anchor=anchors.get(plan.get("visual_anchor_id")),
                 file_storage=file_storage,
                 vision_provider=None if use_mock_generation else resolved_provider,
             )
@@ -262,6 +272,7 @@ def create_app(
                 use_mock_final_scene=use_mock_generation,
                 storage=storage,
                 config=None if use_mock_generation else resolved_settings,
+                visual_anchor=anchors.get(plan.get("visual_anchor_id")),
             )
             if result.get("error") or not result.get("artifact_ready"):
                 failures.append({
@@ -574,7 +585,9 @@ def create_app(
                                 ChatMessage(
                                     role="system",
                                     content=(
-                                        "你是宠物旅行目的地澄清 Agent。判断用户输入是否为有效愿望，"
+                                        "你是宠物旅行目的地澄清 Agent。判断用户输入是否属于当前目的地愿望的有效补充，"
+                                        "只要内容涉及宠物、旅行、地点、景观、场景、风格、氛围或交互体验，"
+                                        "都必须 classification=accepted_wish_input；只有完全无关、无法理解或空白输入才可使用其他分类。"
                                         "提取具体事实，并用中文提出下一轮最有价值的问题或给出确认摘要。"
                                     ),
                                 ),
@@ -587,6 +600,16 @@ def create_app(
                             schema_name="clarification_turn",
                             schema_version="1.0",
                         )
+                        # A non-empty user turn that is not explicitly
+                        # off-topic or unintelligible is valid context. Do
+                        # not let a model's conservative `empty` label drop
+                        # a meaningful style or interaction preference.
+                        if (
+                            body.command.text.strip()
+                            and turn["classification"] == "empty"
+                        ):
+                            turn["classification"] = "accepted_wish_input"
+                            turn["normalized_text"] = body.command.text.strip()
                     run = storage.create_clarification_run(
                         api_client_id=api_client_id,
                         session_id=body.session_id,

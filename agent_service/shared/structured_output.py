@@ -82,16 +82,36 @@ class EnvironmentTemplateSelectionV10(BaseModel):
     rationale: NonEmptyText
 
 
+class VisualAnchorV10(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    anchor_id: NonEmptyText
+    label: NonEmptyText
+    landmark: NonEmptyText
+    interaction_affordance: NonEmptyText
+    placement_guidance: NonEmptyText
+    pet_activity: NonEmptyText
+
+
 class SharedEnvironmentV10(BaseModel):
     model_config = ConfigDict(extra="forbid")
     description: NonEmptyText
     style_constraints: list[NonEmptyText]
     composition_constraints: list[NonEmptyText]
     negative_constraints: list[NonEmptyText]
+    visual_anchors: list[VisualAnchorV10] = Field(min_length=2)
+
+
+class PetIdentityV10(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    asset_key: Literal["pet/chongwu-bottom.png"]
+    role: Literal["canonical_pet_identity"]
+    description: NonEmptyText
 
 
 class ScenePlanV10(BaseModel):
     model_config = ConfigDict(extra="forbid")
+    pet_identity: PetIdentityV10
+    visual_anchor_id: NonEmptyText
     order: Literal[0, 1]
     state_label: NonEmptyText
     pet_behavior: NonEmptyText

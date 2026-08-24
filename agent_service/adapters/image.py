@@ -8,6 +8,7 @@ import binascii
 import io
 import json
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Literal
 
 import httpx
@@ -230,19 +231,26 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
         Raises:
             ImageProviderError: 服务不可用或返回无效图片
         """
-        # 构建 multipart/form-data 请求
-        files = {
-            "image": ("image.png", io.BytesIO(request.image), "image/png"),
-            "mask": ("mask.png", io.BytesIO(request.mask), "image/png"),
-        }
+        # OpenAI-compatible image edits use repeated image[] parts for
+        # composition inputs. The first image is the aperture; references
+        # follow in deterministic order. The mask remains a separate part.
+        files: list[tuple[str, tuple[str, io.BytesIO, str]]] = [
+            ("image[]", ("aperture.png", io.BytesIO(request.image), "image/png")),
+            ("mask", ("mask.png", io.BytesIO(request.mask), "image/png")),
+        ]
         for reference in sorted(
             request.references,
             key=lambda item: (item.order_index, item.role, item.file_id),
         ):
-            files[f"reference_{reference.order_index}"] = (
-                reference.file_id,
-                io.BytesIO(reference.data),
-                reference.mime_type,
+            files.append(
+                (
+                    "image[]",
+                    (
+                        Path(reference.file_id).name or "reference.png",
+                        io.BytesIO(reference.data),
+                        reference.mime_type,
+                    ),
+                )
             )
 
         data = {
@@ -252,26 +260,6 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
             "size": request.size,
             "response_format": "b64_json",
         }
-        if request.references:
-            data["reference_manifest"] = json.dumps(
-                [
-                    {
-                        "field": f"reference_{reference.order_index}",
-                        "role": reference.role,
-                        "file_id": reference.file_id,
-                        "mime_type": reference.mime_type,
-                        "width": reference.width,
-                        "height": reference.height,
-                        "sha256": reference.sha256,
-                        "order_index": reference.order_index,
-                    }
-                    for reference in sorted(
-                        request.references,
-                        key=lambda item: (item.order_index, item.role, item.file_id),
-                    )
-                ],
-                sort_keys=True,
-            )
 
         try:
             async with httpx.AsyncClient(
@@ -286,6 +274,10 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
                 )
                 response.raise_for_status()
                 body: Any = response.json()
+        except httpx.HTTPStatusError as exc:
+            raise ImageProviderError(
+                f"图片编辑服务 HTTP {exc.response.status_code}"
+            ) from exc
         except (httpx.HTTPError, ValueError, json.JSONDecodeError) as exc:
             raise ImageProviderError("图片编辑服务暂时不可用。") from exc
 

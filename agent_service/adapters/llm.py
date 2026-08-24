@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 
 import httpx
+from jsonschema import Draft202012Validator
 
 from ..shared.structured_output import StructuredOutputRequest
 
@@ -102,9 +103,25 @@ class OpenAICompatibleChatProvider:
                 f"对象必须严格符合此 JSON Schema：{schema_json}"
             ),
         )
-        return await self._complete(
-            [instruction, *messages], response_format={"type": "json_object"}
-        )
+        encoded_messages = [instruction, *messages]
+        # The configured gateway accepts plain text completions but rejects
+        # response_format=json_object. Ask for JSON in the prompt and fail
+        # closed locally before any caller can persist the result.
+        last_error: ChatProviderError | None = None
+        for _ in range(2):
+            try:
+                raw = await self._complete(encoded_messages)
+                parsed = json.loads(raw)
+                errors = list(Draft202012Validator(request.json_schema).iter_errors(parsed))
+                if errors:
+                    last_error = ChatProviderError("结构化 Chat 输出未通过 JSON Schema 校验。")
+                    continue
+                return json.dumps(parsed, ensure_ascii=False, separators=(",", ":"))
+            except json.JSONDecodeError:
+                last_error = ChatProviderError("结构化 Chat 输出不是合法 JSON。")
+            except ChatProviderError as exc:
+                last_error = exc
+        raise last_error or ChatProviderError("结构化 Chat 输出失败。")
 
     async def _complete(
         self,

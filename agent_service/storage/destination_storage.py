@@ -117,6 +117,7 @@ CREATE TABLE IF NOT EXISTS scene_plans (
     destination_id      TEXT NOT NULL REFERENCES destinations(id),
     spec_id             TEXT NOT NULL REFERENCES destination_specs(spec_id),
     order_index         INTEGER NOT NULL CHECK (order_index IN (0, 1)),
+    visual_anchor_id    TEXT NOT NULL DEFAULT 'unspecified',
     state_label         TEXT NOT NULL,
     pet_behavior        TEXT NOT NULL,
     pet_emotion         TEXT NOT NULL,
@@ -972,7 +973,8 @@ class DestinationRepository:
         destination_id: str,
         spec_id: str,
         order_index: int,
-        state_label: str,
+        visual_anchor_id: str = "unspecified",
+        state_label: str = "",
         pet_behavior: str,
         pet_emotion: str,
         semantic_anchor: str,
@@ -1002,13 +1004,14 @@ class DestinationRepository:
         with self.transaction() as conn:
             conn.execute(
                 "INSERT INTO scene_plans(scene_id, destination_id, spec_id, order_index, "
-                "state_label, pet_behavior, pet_emotion, semantic_anchor, "
-                "interaction_prompt, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "visual_anchor_id, state_label, pet_behavior, pet_emotion, semantic_anchor, "
+                "interaction_prompt, created_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     scene_id,
                     destination_id,
                     spec_id,
                     order_index,
+                    visual_anchor_id,
                     state_label,
                     pet_behavior,
                     pet_emotion,

@@ -66,8 +66,8 @@ class SemanticProvider:
                 "negative_constraints": ["不要室内小屋"],
             },
             "scene_plans": [
-                {"order": 0, "state_label": "散步", "pet_behavior": "沿沙滩散步", "pet_emotion": "开心", "semantic_anchor": "夕阳灯塔前的海岸线", "interaction_prompt": "陪橘猫在海边散步"},
-                {"order": 1, "state_label": "休息", "pet_behavior": "在灯塔旁休息", "pet_emotion": "放松", "semantic_anchor": "灯塔基座旁的温暖沙地", "interaction_prompt": "抚摸休息中的橘猫"},
+                {"pet_identity": {"asset_key": "pet/chongwu-bottom.png", "role": "canonical_pet_identity", "description": "项目固定的小个子狸猫角色"}, "order": 0, "state_label": "散步", "pet_behavior": "沿沙滩散步", "pet_emotion": "开心", "semantic_anchor": "夕阳灯塔前的海岸线", "interaction_prompt": "陪宠物在海边散步"},
+                {"pet_identity": {"asset_key": "pet/chongwu-bottom.png", "role": "canonical_pet_identity", "description": "项目固定的小个子狸猫角色"}, "order": 1, "state_label": "休息", "pet_behavior": "在灯塔旁休息", "pet_emotion": "放松", "semantic_anchor": "灯塔基座旁的温暖沙地", "interaction_prompt": "抚摸休息中的宠物"},
             ],
         }, ensure_ascii=False)
 
@@ -90,8 +90,10 @@ def test_real_structured_contracts_preserve_seaside_cat_semantics() -> None:
             raw, schema_name=schema_name, schema_version="1.0"
         )
         serialized = json.dumps(parsed, ensure_ascii=False)
-        if schema_name in {"clarification_turn", "destination_requirements", "destination_spec"}:
+        if schema_name in {"clarification_turn", "destination_requirements"}:
             assert "橘猫" in serialized
+        if schema_name == "destination_spec":
+            assert "pet/chongwu-bottom.png" in serialized
         if schema_name == "destination_spec":
             assert "海边" in serialized
             assert "灯塔" in serialized

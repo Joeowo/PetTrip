@@ -9,7 +9,7 @@ from agent_service.adapters.llm import ChatMessage, OpenAICompatibleChatProvider
 from agent_service.shared.structured_output import StructuredOutputRegistry
 
 
-def test_openai_compatible_provider_sends_versioned_schema_with_json_object(monkeypatch) -> None:
+def test_openai_compatible_provider_sends_versioned_schema_as_plain_text_json(monkeypatch) -> None:
     captured: dict = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -63,7 +63,7 @@ def test_openai_compatible_provider_sends_versioned_schema_with_json_object(monk
     )
 
     assert json.loads(result)["title"] == "潮汐灯塔"
-    assert captured["response_format"] == {"type": "json_object"}
+    assert "response_format" not in captured
     schema_instruction = captured["messages"][0]
     assert schema_instruction["role"] == "system"
     assert "scene_draft" in schema_instruction["content"]

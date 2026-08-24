@@ -41,6 +41,7 @@ class SceneGenerationState(TypedDict):
     spec_id: str
     shared_environment_id: str
     semantic_anchor: str
+    visual_anchor: dict[str, str] | None
     pet_behavior: str
     pet_emotion: str
     state_label: str
@@ -405,8 +406,12 @@ def generate_final_scene_node(
                 f"Shared environment: {state['environment_description']}. "
                 f"Scene state: {state['state_label']}. "
                 f"Semantic anchor: {state['semantic_anchor']}. "
+                f"Visual anchor details: {json.dumps(state.get('visual_anchor') or {}, ensure_ascii=False)}. "
                 f"Place the pet {state['pet_behavior']} with {state['pet_emotion']} emotion. "
                 f"Interaction intent: {state['interaction_prompt']}. "
+                "The second input image is the canonical fixed pet identity reference. "
+                "Preserve its character design, silhouette, colors, facial features, ears, tail, and proportions. "
+                "Only change the pose, behavior, and emotion described above; do not reinterpret it as a cat, dog, realistic animal, or another character. "
                 "Keep every unmasked pixel, landmark, composition, perspective, and lighting unchanged. "
                 "Do not add extra pets, text, watermarks, or leave any black circle."
             )
@@ -789,6 +794,7 @@ def run_scene_generation_workflow(
     use_mock_final_scene: bool = True,
     storage=None,
     config=None,
+    visual_anchor: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """运行场景生成工作流。
 
@@ -829,6 +835,7 @@ def run_scene_generation_workflow(
         spec_id=spec_id,
         shared_environment_id=shared_environment_id,
         semantic_anchor=semantic_anchor,
+        visual_anchor=visual_anchor,
         pet_behavior=pet_behavior,
         pet_emotion=pet_emotion,
         state_label=plan_row.get("state_label", "场景状态"),

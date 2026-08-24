@@ -9,6 +9,7 @@ import pytest
 from PIL import Image
 
 from agent_service.adapters.image import (
+    ImageEditRequest,
     ImageGenerationRequest,
     ImageProviderError,
     ImageReference,

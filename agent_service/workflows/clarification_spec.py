@@ -12,6 +12,14 @@ from typing import Any, TypedDict
 
 from langgraph.graph import StateGraph, END
 from ..adapters.llm import ChatMessage, ChatModelProvider
+
+
+CANONICAL_PET_IDENTITY = {
+    "asset_key": "pet/chongwu-bottom.png",
+    "role": "canonical_pet_identity",
+    "description": "项目固定的小个子狸猫角色；用户输入不得改变其物种、体型或角色设计。",
+}
+
 from ..domain.template_catalog import TemplateCatalog, TemplateError
 from ..shared.structured_output import StructuredOutputRegistry
 from ..storage.destination_storage import DestinationRepository
@@ -52,6 +60,7 @@ class ClarificationSpecState(TypedDict):
     spec_id: str | None
     spec_sha256: str | None
     scene_plan_data: list[dict[str, Any]] | None  # 来自 LLM 的 scene_plans 数据
+    shared_environment_spec: dict[str, Any] | None
     scene_plan_ids: list[str] | None  # 两个 ScenePlan 的 ID
 
     # 错误处理
@@ -139,9 +148,29 @@ def mock_generate_destination_spec(
             "style_constraints": ["温馨", "舒适", "自然光"],
             "composition_constraints": ["宠物在画面中心区域", "环境元素不遮挡宠物"],
             "negative_constraints": ["杂乱", "昏暗", "过度拥挤"],
+            "visual_anchors": [
+                {
+                    "anchor_id": "anchor_rest_corner",
+                    "label": "温暖休息角",
+                    "landmark": "木地板旁的柔和光线区域",
+                    "interaction_affordance": "玩家可以靠近并轻轻抚摸宠物",
+                    "placement_guidance": "在画面下方偏中位置保留清晰、无遮挡的可休息空间",
+                    "pet_activity": "狸猫可以趴下休息并观察周围",
+                },
+                {
+                    "anchor_id": "anchor_window_view",
+                    "label": "窗边观景点",
+                    "landmark": "面向窗户的开阔区域",
+                    "interaction_affordance": "玩家可以和宠物一起眺望窗外",
+                    "placement_guidance": "靠近窗边但避开玻璃反光和边缘，保留站立空间",
+                    "pet_activity": "狸猫可以站立张望窗外",
+                },
+            ],
         },
         "scene_plans": [
             {
+                "pet_identity": CANONICAL_PET_IDENTITY,
+                "visual_anchor_id": "anchor_rest_corner",
                 "order": 0,
                 "state_label": "休息状态",
                 "pet_behavior": "趴在地上休息",
@@ -150,6 +179,8 @@ def mock_generate_destination_spec(
                 "interaction_prompt": "轻轻抚摸休息中的宠物",
             },
             {
+                "pet_identity": CANONICAL_PET_IDENTITY,
+                "visual_anchor_id": "anchor_window_view",
                 "order": 1,
                 "state_label": "活跃状态",
                 "pet_behavior": "站立张望",
@@ -238,6 +269,8 @@ def extract_wish_items_node(
                 content=(
                     "你负责把已确认的宠物旅行目的地对话整理成 Requirements。"
                     "保留地点、宠物身份、地标、时间/光线、风格、两个场景行为和排除项；"
+                    "项目宠物身份固定为一个小个子狸猫角色，canonical asset 是 pet/chongwu-bottom.png；"
+                    "用户输入只能补充旅行语义、行为、情绪和交互，不得改变该固定宠物身份。"
                     "player_input 必须引用提供的 input_id，禁止编造来源。"
                 ),
             ),
@@ -442,6 +475,11 @@ def generate_destination_spec_node(
                     content=(
                         "根据 Requirements 生成真实目的地规格和恰好两个 ScenePlan。"
                         "必须保留用户地点、宠物、地标、光线、风格和交互语义；"
+                        "项目宠物固定为 canonical asset pet/chongwu-bottom.png 对应的小个子狸猫；"
+                        "ScenePlan 只能改变该固定角色的行为、姿态、情绪和交互，不能改变物种、体型或角色设计；"
+                        "shared environment 只生成环境，不提前绘制 canonical 宠物主角；允许符合目的地语义的其他动物、人物和场景主体。"
+                        "必须设计至少两个可交互视觉锚点（如小屋门口、树下、灯塔入口、观景台等），为每个锚点提供 landmark、interaction_affordance、placement_guidance 和 pet_activity；"
+                        "环境 Prompt 应考虑固定狸猫的体型、尺度和可行走/可休息空间，但不得把 canonical 狸猫画入环境图。"
                         "template_id 必须是 default_pet_destination，template_version 必须是 1.0。"
                     ),
                 ),
@@ -452,6 +490,7 @@ def generate_destination_spec_node(
                             "requirements_id": requirements_id,
                             "requirements_sha256": requirements_sha256,
                             "requirements": state["wish_items"],
+                            "canonical_pet_identity": CANONICAL_PET_IDENTITY,
                             "template": {
                                 "style_template_id": style_template_id,
                                 "composition_template_id": composition_template_id,
@@ -466,10 +505,18 @@ def generate_destination_spec_node(
     # Issue #36 - 2.4: 添加由运行时目录产生的 environment_design.
     try:
         catalog = TemplateCatalog.default()
+        canonical_description = (
+            f"{spec_data['shared_environment_spec']['description']} "
+            "场景预留项目固定的小个子狸猫所需的可行走和可休息空间，但环境母图不得提前绘制 canonical 宠物主角；"
+            "允许符合目的地语义的其他动物、人物和场景主体，并保留视觉锚点。"
+            "宠物身份固定为项目 canonical asset pet/chongwu-bottom.png 对应的小个子狸猫，"
+            "用户输入只能决定旅行语义、行为、情绪和交互，不得改变角色身份。"
+        )
+        spec_data["shared_environment_spec"]["description"] = canonical_description
         rendered = catalog.render_environment(
             style_template_id=style_template_id or "",
             composition_template_id=composition_template_id or "",
-            slot_values={"destination_description": spec_data["shared_environment_spec"]["description"]},
+            slot_values={"destination_description": canonical_description},
         )
         references = []
         for reference in rendered.references:
@@ -500,9 +547,11 @@ def generate_destination_spec_node(
         "rendered_prompt": rendered.prompt,
     }
 
-    # 将 environment_design 添加到 shared_environment_spec
+    # 将 environment_design 添加到 shared_environment_spec，并回写工作流状态，
+    # 供后续 ScenePlan 锚点存在性校验和创建使用。
     shared_environment_spec = spec_data["shared_environment_spec"].copy()
     shared_environment_spec["environment_design"] = environment_design
+    state["shared_environment_spec"] = shared_environment_spec
 
     destination_id = state["destination_id"]
 
@@ -567,6 +616,20 @@ def validate_and_lock_spec_node(
     plan0 = scene_plan_data[0]
     plan1 = scene_plan_data[1]
 
+    anchor_ids = {anchor["anchor_id"] for anchor in state.get("shared_environment_spec", {}).get("visual_anchors", [])}
+    for plan in scene_plan_data:
+        if plan.get("visual_anchor_id") not in anchor_ids:
+            state["error"] = "ScenePlan 引用了不存在的视觉锚点"
+            return state
+        identity = plan.get("pet_identity")
+        if (
+            not isinstance(identity, dict)
+            or identity.get("asset_key") != CANONICAL_PET_IDENTITY["asset_key"]
+            or identity.get("role") != CANONICAL_PET_IDENTITY["role"]
+        ):
+            state["error"] = "ScenePlan 必须使用系统固定的小个子狸猫身份"
+            return state
+
     if (
         plan0["pet_behavior"] == plan1["pet_behavior"]
         and plan0["pet_emotion"] == plan1["pet_emotion"]
@@ -583,6 +646,7 @@ def validate_and_lock_spec_node(
             destination_id=destination_id,
             spec_id=spec_id,
             order_index=plan["order"],
+            visual_anchor_id=plan["visual_anchor_id"],
             state_label=plan["state_label"],
             pet_behavior=plan["pet_behavior"],
             pet_emotion=plan["pet_emotion"],
@@ -704,6 +768,7 @@ def run_clarification_spec_workflow(
         "spec_id": None,
         "spec_sha256": None,
         "scene_plan_data": None,
+        "shared_environment_spec": None,
         "scene_plan_ids": None,
         "error": None,
     }
