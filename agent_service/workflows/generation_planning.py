@@ -224,7 +224,16 @@ def generate_shared_environment_node(
         return state
     destination_id = state["destination_id"]
     prompt_snapshot_id = state.get("prompt_snapshot_id")
-    attempt_number = state.get("attempt_number", 0)
+    persisted_attempts = repo.count_operation_attempts(
+        destination_id,
+        "shared_environment",
+        scene_id=None,
+    )
+    attempt_number = max(state.get("attempt_number", 0), persisted_attempts)
+    if attempt_number >= 3:
+        state["error"] = "环境生成失败，已达最大重试次数"
+        return state
+    state["attempt_number"] = attempt_number
 
     # 检查是否已经有环境母图（幂等性）
     existing = repo.get_shared_environment_artifact(destination_id)
@@ -275,6 +284,7 @@ def generate_shared_environment_node(
                     ImageGenerationRequest(
                         prompt=state["rendered_prompt"],
                         references=tuple(references),
+                        size="2048x1152",
                     )
                 )
             )

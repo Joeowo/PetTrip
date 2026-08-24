@@ -182,6 +182,8 @@ class Storage:
         command: dict[str, Any],
         idempotency_key: str,
         idempotency_body_hash: str,
+        classified_result: dict[str, Any] | None = None,
+        assistant_reply: str | None = None,
     ) -> dict[str, Any]:
         """创建澄清命令的 Run（T2: submit_input 或 close）。"""
         return create_clarification_run(
@@ -191,6 +193,8 @@ class Storage:
             command=command,
             idempotency_key=idempotency_key,
             idempotency_body_hash=idempotency_body_hash,
+            classified_result=classified_result,
+            assistant_reply=assistant_reply,
         )
 
     def complete_run_success(

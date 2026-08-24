@@ -54,9 +54,12 @@ def _validate_reference_order(references: tuple[ImageReference, ...]) -> None:
 class ImageGenerationRequest:
     prompt: str
     references: tuple[ImageReference, ...] = ()
+    size: str | None = None
 
     def __post_init__(self) -> None:
         _validate_reference_order(self.references)
+        if self.size is not None and not self.size.strip():
+            raise ValueError("图片尺寸不能为空")
 
 
 @dataclass(frozen=True)
@@ -123,7 +126,7 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
         payload = {
             "model": self._model,
             "prompt": request.prompt,
-            "size": self._request_size,
+            "size": request.size or self._request_size,
             "n": 1,
             "response_format": "b64_json",
         }
@@ -156,8 +159,14 @@ class OpenAICompatibleImageProvider(ImageGenerationProvider):
                 )
                 response.raise_for_status()
                 body: Any = response.json()
-        except (httpx.HTTPError, ValueError, json.JSONDecodeError) as exc:
-            raise ImageProviderError("图片生成服务暂时不可用。") from exc
+        except httpx.HTTPStatusError as exc:
+            raise ImageProviderError(
+                f"图片生成服务 HTTP {exc.response.status_code}"
+            ) from exc
+        except httpx.HTTPError as exc:
+            raise ImageProviderError(f"图片生成服务请求失败: {exc}") from exc
+        except (ValueError, json.JSONDecodeError) as exc:
+            raise ImageProviderError(f"图片生成服务返回无效 JSON: {exc}") from exc
 
         try:
             encoded = body["data"][0]["b64_json"]

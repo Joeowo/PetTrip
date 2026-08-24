@@ -270,6 +270,15 @@ class RecordingImageProvider:
         )
 
 
+class FailingImageProvider:
+    def __init__(self):
+        self.requests = []
+
+    async def generate(self, request):
+        self.requests.append(request)
+        raise RuntimeError("provider unavailable")
+
+
 # ============================================================================
 # 测试用例（Issue #10 第 15.3 节）
 # ============================================================================
@@ -398,6 +407,39 @@ def test_environment_generation_retry_on_failure(repo, file_storage, setup_desti
     )
     # 成功时只有 1 次尝试
     assert attempts_count == 1
+
+
+def test_environment_retry_count_persists_across_workflow_dispatches(
+    repo, file_storage, setup_destination, create_run
+):
+    provider = FailingImageProvider()
+    destination_id = setup_destination["destination_id"]
+
+    results = [
+        run_generation_planning_workflow(
+            destination_id=destination_id,
+            spec_id=setup_destination["spec_id"],
+            repo=repo,
+            file_storage=file_storage,
+            run_id=create_run(),
+            image_provider=provider,
+        )
+        for _ in range(4)
+    ]
+
+    assert len(provider.requests) == 3
+    assert repo.count_operation_attempts(
+        destination_id, "shared_environment", scene_id=None
+    ) == 3
+    assert "已达最大重试次数" in results[-1]["error"]
+    with repo._lock:
+        attempts = repo._conn.execute(
+            "SELECT attempt_number FROM operation_attempts "
+            "WHERE destination_id = ? AND operation_type = 'shared_environment' "
+            "ORDER BY created_at",
+            (destination_id,),
+        ).fetchall()
+    assert [row["attempt_number"] for row in attempts] == [0, 1, 2]
 
 
 def test_retry_preserves_spec_and_scene_plans(repo, file_storage, setup_destination, create_run):
@@ -546,6 +588,7 @@ def test_provider_request_and_prompt_snapshot_use_spec_rendered_prompt(
     assert [request.prompt for request in provider.requests] == [
         "来自模板 fixture 的权威环境 Prompt"
     ]
+    assert provider.requests[0].size == "2048x1152"
     assert [reference.role for reference in provider.requests[0].references] == [
         "style_reference"
     ]

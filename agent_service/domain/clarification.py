@@ -56,6 +56,7 @@ def process_clarification_input(
     run_id: str,
     input_id: str,
     text: str,
+    classified_result: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """处理澄清输入命令的核心逻辑。
 
@@ -97,8 +98,12 @@ def process_clarification_input(
             "idempotent_replay": True,
         }
 
-    # 4. 分类输入
-    classification, normalized_text = mock_classify_input(text)
+    # 4. 使用事务外已校验的 LLM 结果；测试/离线路径保留规则分类。
+    if classified_result is None:
+        classification, normalized_text = mock_classify_input(text)
+    else:
+        classification = classified_result["classification"]
+        normalized_text = classified_result.get("normalized_text")
 
     # 5. 记录输入
     db.insert_clarification_input(

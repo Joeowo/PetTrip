@@ -273,3 +273,65 @@ def test_locator_diagnostics_available(temp_repo, temp_storage):
         assert "algorithm" in diagnostics
         assert "planned_locator_center" in diagnostics
         assert "qualified_candidate_count" in diagnostics
+
+
+class RecordingVisionLocatorProvider:
+    def __init__(self):
+        self.calls = []
+
+    async def complete_structured(self, messages, request):
+        import json
+
+        self.calls.append((messages, request))
+        return json.dumps({
+            "type": "locator_selection",
+            "schema_version": "1.0",
+            "center_x": 900,
+            "center_y": 700,
+            "confidence": 0.94,
+            "grounding": "沙滩上的平坦可行走区域",
+        }, ensure_ascii=False)
+
+
+@pytest.mark.parametrize("provider", [RecordingVisionLocatorProvider()])
+def test_real_locator_uses_vision_coordinates_and_preserves_environment_pixels(
+    temp_repo, temp_storage, provider
+):
+    from io import BytesIO
+    from PIL import Image
+    from agent_service.domain.interaction_circle import detect_black_circle
+
+    destination_id = new_id("test")
+    scene_id = new_id("test")
+    shared_env_id = create_mock_environment(temp_repo, temp_storage, destination_id)
+    environment = temp_repo.get_shared_environment_artifact(destination_id)
+    environment_bytes = temp_storage.read(environment["image_file_id"]).content
+
+    result = run_scene_locator_workflow(
+        destination_id=destination_id,
+        scene_id=scene_id,
+        shared_environment_id=shared_env_id,
+        semantic_anchor="海边灯塔旁的橘猫",
+        interaction_diameter_px=160,
+        repo=temp_repo,
+        file_storage=temp_storage,
+        vision_provider=provider,
+    )
+
+    assert result["error"] is None
+    assert result["planned_center_x"] == 900
+    assert result["planned_center_y"] == 700
+    messages, request = provider.calls[0]
+    assert request.schema_name == "locator_selection"
+    assert messages[0].images[0].data == environment_bytes
+
+    locator_bytes = temp_storage.read(result["locator_file_id"]).content
+    detection = detect_black_circle(environment_bytes, locator_bytes)
+    left, top, right, bottom = detection["bbox"]
+    environment_image = Image.open(BytesIO(environment_bytes)).convert("RGB")
+    locator_image = Image.open(BytesIO(locator_bytes)).convert("RGB")
+    for y in range(environment_image.height):
+        for x in range(environment_image.width):
+            if left <= x <= right and top <= y <= bottom:
+                continue
+            assert locator_image.getpixel((x, y)) == environment_image.getpixel((x, y))

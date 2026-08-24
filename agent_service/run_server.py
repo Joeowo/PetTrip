@@ -12,7 +12,7 @@ def main() -> None:
     """以单进程模式启动服务，避免重复 Worker 和重复模型调用。"""
     settings = load_settings()
     uvicorn.run(
-        create_app(settings=settings),
+        create_app(settings=settings, use_mock_generation=False),
         host=settings.host,
         port=settings.port,
         reload=False,

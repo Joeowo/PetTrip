@@ -111,6 +111,8 @@ def create_clarification_run(
     command: dict[str, Any],
     idempotency_key: str,
     idempotency_body_hash: str,
+    classified_result: dict[str, Any] | None = None,
+    assistant_reply: str | None = None,
 ) -> dict[str, Any]:
     """创建澄清命令的 Run（submit_input 或 close）。
 
@@ -170,6 +172,7 @@ def create_clarification_run(
                 run_id=run_id,
                 input_id=command["input_id"],
                 text=command["text"],
+                classified_result=classified_result,
             )
 
             # 创建用户消息（记录输入文本）
@@ -181,6 +184,16 @@ def create_clarification_run(
                 content_text=command["text"],
                 structured_data=None,
             )
+
+            if assistant_reply:
+                db.insert_message(
+                    conn,
+                    session_id=session_id,
+                    run_id=run_id,
+                    role="assistant",
+                    content_text=assistant_reply,
+                    structured_data=classified_result,
+                )
 
             # 立即标记为成功
             output_structured = {

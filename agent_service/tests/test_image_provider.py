@@ -58,6 +58,33 @@ async def test_image_provider_posts_generation_request_to_images_endpoint() -> N
 
 
 @pytest.mark.asyncio
+async def test_image_provider_honors_request_specific_size() -> None:
+    requests: list[httpx.Request] = []
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request)
+        return httpx.Response(200, json={"data": [{"b64_json": _image_b64((2048, 1152))}]})
+
+    provider = OpenAICompatibleImageProvider(
+        base_url="https://image.example/v1",
+        api_key="provider-secret",
+        model="gpt-image-2",
+        timeout_seconds=3,
+        request_size="1024x1024",
+        max_decoded_bytes=4_000_000,
+        max_image_pixels=5_000_000,
+        transport=httpx.MockTransport(handler),
+    )
+
+    result = await provider.generate(
+        ImageGenerationRequest(prompt="定位图", size="2048x1152")
+    )
+
+    assert (result.width, result.height) == (2048, 1152)
+    assert json.loads(requests[0].content)["size"] == "2048x1152"
+
+
+@pytest.mark.asyncio
 async def test_image_provider_posts_role_ordered_reference_metadata() -> None:
     requests: list[httpx.Request] = []
 

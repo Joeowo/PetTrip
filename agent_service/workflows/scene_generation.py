@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from typing import Any, TypedDict
 
 from langgraph.graph import StateGraph, END
@@ -42,6 +43,10 @@ class SceneGenerationState(TypedDict):
     semantic_anchor: str
     pet_behavior: str
     pet_emotion: str
+    state_label: str
+    interaction_prompt: str
+    destination_title: str
+    environment_description: str
 
     # 共享环境信息
     environment_file_id: str
@@ -395,10 +400,15 @@ def generate_final_scene_node(
 
             # 构建与实际 Provider 请求一致的 PromptSnapshot。
             prompt = (
-                "Replace the black circle with a cute pet character. "
-                f"The pet should be {state['pet_behavior']}, showing "
-                f"{state['pet_emotion']} emotion. Keep the surrounding environment "
-                "unchanged. The pet should fit naturally within the circular area."
+                "Edit only the masked circular area and remove the black circle. "
+                f"Destination: {state['destination_title']}. "
+                f"Shared environment: {state['environment_description']}. "
+                f"Scene state: {state['state_label']}. "
+                f"Semantic anchor: {state['semantic_anchor']}. "
+                f"Place the pet {state['pet_behavior']} with {state['pet_emotion']} emotion. "
+                f"Interaction intent: {state['interaction_prompt']}. "
+                "Keep every unmasked pixel, landmark, composition, perspective, and lighting unchanged. "
+                "Do not add extra pets, text, watermarks, or leave any black circle."
             )
             snapshot = repo.create_prompt_snapshot(
                 destination_id=state["destination_id"],
@@ -421,6 +431,7 @@ def generate_final_scene_node(
                 "mask_bytes": mask_bytes,
                 "pet_behavior": state["pet_behavior"],
                 "pet_emotion": state["pet_emotion"],
+                "prompt": prompt,
                 "size": size,
                 "idempotency_key": idempotency_key,
                 "pet_reference": pet_reference,
@@ -562,6 +573,9 @@ def commit_scene_artifact_node(
 
             # 2. 创建 SceneArtifact
             artifact_id = new_id("artifact")
+            if state.get("prompt_snapshot_id") is None and not state["use_mock_final_scene"]:
+                state["error"] = "missing_scene_prompt_snapshot"
+                return state
 
             conn.execute(
                 """
@@ -798,6 +812,16 @@ def run_scene_generation_workflow(
     Returns:
         最终状态字典，包含 SceneArtifact ID 或错误信息
     """
+    spec_row = repo.get_destination_spec(destination_id) or {}
+    plan_row = next(
+        (plan for plan in repo.list_scene_plans(destination_id) if plan["scene_id"] == scene_id),
+        {},
+    )
+    try:
+        environment_spec = json.loads(spec_row.get("shared_environment_spec") or "{}")
+    except json.JSONDecodeError:
+        environment_spec = {}
+
     # 构建初始状态
     initial_state = SceneGenerationState(
         destination_id=destination_id,
@@ -807,6 +831,10 @@ def run_scene_generation_workflow(
         semantic_anchor=semantic_anchor,
         pet_behavior=pet_behavior,
         pet_emotion=pet_emotion,
+        state_label=plan_row.get("state_label", "场景状态"),
+        interaction_prompt=plan_row.get("interaction_prompt", "与宠物互动"),
+        destination_title=spec_row.get("title", "宠物旅行目的地"),
+        environment_description=environment_spec.get("description", "共享环境"),
         environment_file_id="",  # 由 ensure_shared_environment 填充
         environment_sha256="",
         environment_width=0,

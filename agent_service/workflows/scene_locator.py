@@ -25,7 +25,8 @@ from ..domain.interaction_circle import (
     validate_circle_in_bounds,
     DetectionError,
 )
-from ..adapters.image import ImageGenerationProvider, ImageGenerationRequest, ImageReference
+from ..adapters.llm import ChatMessage, ChatModelProvider, VisionImage
+from ..shared.structured_output import StructuredOutputRegistry
 
 
 # ============================================================================
@@ -69,6 +70,27 @@ class SceneLocatorState(TypedDict):
 # ============================================================================
 
 
+def draw_locator_image(
+    environment_image_bytes: bytes,
+    center_x: int,
+    center_y: int,
+    diameter_px: int,
+) -> bytes:
+    """在原始环境图副本上确定性绘制精确尺寸的纯黑实心圆。"""
+    from PIL import ImageDraw
+
+    env_image = Image.open(BytesIO(environment_image_bytes)).convert("RGB")
+    radius = diameter_px // 2
+    draw = ImageDraw.Draw(env_image)
+    draw.ellipse(
+        [center_x - radius, center_y - radius, center_x + radius, center_y + radius],
+        fill=(0, 0, 0),
+    )
+    buffer = BytesIO()
+    env_image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
 def mock_generate_locator_image(
     environment_image_bytes: bytes,
     semantic_anchor: str,
@@ -91,13 +113,6 @@ def mock_generate_locator_image(
     from PIL import Image, ImageDraw
     from io import BytesIO
 
-    # 加载环境母图
-    env_image = Image.open(BytesIO(environment_image_bytes)).convert("RGB")
-
-    # 在中心偏移位置绘制黑色圆（模拟 Provider 生成的定位标记）
-    # 实际生产中，这里会调用图片生成 Provider 根据 semantic_anchor 生成带黑圈的图
-    draw = ImageDraw.Draw(env_image)
-
     # fixture 使用稳定摘要派生位置，确保跨进程重启仍可复现。
     anchor_hash = int.from_bytes(
         hashlib.sha256(semantic_anchor.encode("utf-8")).digest()[:8], "big"
@@ -107,19 +122,12 @@ def mock_generate_locator_image(
 
     center_x = width // 2 + offset_x
     center_y = height // 2 + offset_y
-    radius = 80
-
-    left = center_x - radius
-    top = center_y - radius
-    right = center_x + radius
-    bottom = center_y + radius
-
-    draw.ellipse([left, top, right, bottom], fill=(0, 0, 0))
-
-    # 转换为 PNG 字节
-    buffer = BytesIO()
-    env_image.save(buffer, format="PNG")
-    return buffer.getvalue()
+    return draw_locator_image(
+        environment_image_bytes,
+        center_x,
+        center_y,
+        diameter_px=160,
+    )
 
 
 # ============================================================================
@@ -203,7 +211,7 @@ def generate_locator_node(
     state: SceneLocatorState,
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
-    image_provider: ImageGenerationProvider | None = None,
+    vision_provider: ChatModelProvider | None = None,
 ) -> SceneLocatorState:
     """节点：生成定位参考图。
 
@@ -218,8 +226,7 @@ def generate_locator_node(
             state["destination_id"],
         )
 
-        # 真实 Provider 路径必须把环境母图和语义锚点作为具名引用传入。
-        if image_provider is None:
+        if vision_provider is None:
             locator_bytes = mock_generate_locator_image(
                 env_bytes,
                 state["semantic_anchor"],
@@ -227,28 +234,62 @@ def generate_locator_node(
                 state["environment_height"],
             )
         else:
-            result = image_provider.generate
-            locator_result = __import__("asyncio").run(
-                result(
-                    ImageGenerationRequest(
-                        prompt=(
-                            "Generate a localization reference image with exactly one "
-                            f"black circle for semantic anchor: {state['semantic_anchor']}"
-                        ),
-                        references=(ImageReference(
-                            role="environment_reference",
-                            file_id=state["environment_file_id"],
-                            mime_type="image/png",
-                            width=state["environment_width"],
-                            height=state["environment_height"],
-                            sha256=state["environment_sha256"],
-                            data=env_bytes,
-                            order_index=0,
-                        ),),
-                    )
+            registry = StructuredOutputRegistry()
+            request = registry.request_for(
+                schema_name="locator_selection",
+                schema_version="1.0",
+            )
+            vision_prompt = (
+                "Use the attached environment image as the only visual source of truth. "
+                "Do not generate or edit an image. Select one integer pixel center where "
+                "the pet can be placed for this semantic anchor: "
+                f"{state['semantic_anchor']}. Choose a visible, walkable or restable area; "
+                "avoid sky, water, lighthouse walls, buildings, existing animals, and canvas "
+                f"edges. The image dimensions are exactly {state['environment_width']}x"
+                f"{state['environment_height']}. Return only the locator_selection JSON."
+            )
+            raw = __import__("asyncio").run(
+                vision_provider.complete_structured(
+                    [
+                        ChatMessage(
+                            role="user",
+                            content=vision_prompt,
+                            images=(
+                                VisionImage(mime_type="image/png", data=env_bytes),
+                            ),
+                        )
+                    ],
+                    request,
                 )
             )
-            locator_bytes = locator_result.data
+            selection = registry.parse_and_validate(
+                raw,
+                schema_name="locator_selection",
+                schema_version="1.0",
+            )
+            center_x = selection["center_x"]
+            center_y = selection["center_y"]
+            radius = state["interaction_diameter_px"] // 2
+            if not validate_circle_in_bounds(
+                center_x,
+                center_y,
+                radius,
+                state["environment_width"],
+                state["environment_height"],
+            ):
+                state["error"] = "locator_center_out_of_bounds"
+                state["detection_diagnostics"] = selection
+                return state
+            locator_bytes = draw_locator_image(
+                env_bytes,
+                center_x,
+                center_y,
+                state["interaction_diameter_px"],
+            )
+            state["detection_diagnostics"] = {
+                "source": "chat_vision_locator_selection",
+                "selection": selection,
+            }
 
         # 存储定位参考图
         locator_sha256 = hashlib.sha256(locator_bytes).hexdigest()
@@ -278,6 +319,9 @@ def detect_circle_center_node(
     file_storage: LocalImageStorage,
 ) -> SceneLocatorState:
     """节点：检测黑圈圆心坐标。"""
+    if state["error"] is not None:
+        return state
+
     try:
         # 读取环境母图和定位参考图
         env_bytes = _read_registered_bytes(
@@ -390,7 +434,7 @@ def retry_locator_node(state: SceneLocatorState) -> SceneLocatorState:
 def build_scene_locator_workflow(
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
-    image_provider: ImageGenerationProvider | None = None,
+    vision_provider: ChatModelProvider | None = None,
 ) -> StateGraph:
     """构建场景定位工作流。
 
@@ -406,7 +450,7 @@ def build_scene_locator_workflow(
     workflow.add_node(
         "generate_locator",
         lambda state: generate_locator_node(
-            state, repo, file_storage, image_provider
+            state, repo, file_storage, vision_provider
         ),
     )
     workflow.add_node(
@@ -450,7 +494,7 @@ def run_scene_locator_workflow(
     interaction_diameter_px: int,
     repo: DestinationRepository,
     file_storage: LocalImageStorage,
-    image_provider: ImageGenerationProvider | None = None,
+    vision_provider: ChatModelProvider | None = None,
 ) -> dict[str, Any]:
     """运行场景定位工作流。
 
@@ -494,7 +538,7 @@ def run_scene_locator_workflow(
 
     # 构建并运行工作流
     workflow = build_scene_locator_workflow(
-        repo, file_storage, image_provider=image_provider
+        repo, file_storage, vision_provider=vision_provider
     )
     app = workflow.compile()
 

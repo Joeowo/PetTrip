@@ -16,7 +16,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .auth import AuthenticatedClientId, hash_api_key
 from .schemas import CreateRunRequest, ClarificationSubmitInputCommand, ClarificationCloseCommand
-from ..adapters.llm import ChatModelProvider, OpenAICompatibleChatProvider
+from ..adapters.llm import ChatMessage, ChatModelProvider, OpenAICompatibleChatProvider
 from ..adapters.image import ImageGenerationProvider, OpenAICompatibleImageProvider
 from ..shared.config import Settings, load_settings
 from ..shared.errors import (
@@ -44,6 +44,7 @@ from ..storage import (
 from ..domain.worker import RunWorker
 from ..domain.destination_coordinator import DestinationCoordinatorService
 from ..storage.destination_storage import DestinationRepository
+from ..shared.structured_output import StructuredOutputRegistry
 
 LOGGER = logging.getLogger("uvicorn.error")
 
@@ -200,7 +201,10 @@ def create_app(
 
     def run_clarification(context: dict[str, Any]) -> dict[str, Any]:
         return run_clarification_spec_workflow(
-            context["session_id"], context["destination_id"], destination_repository
+            context["session_id"],
+            context["destination_id"],
+            destination_repository,
+            provider=None if use_mock_generation else resolved_provider,
         )
 
     def run_planning(context: dict[str, Any]) -> dict[str, Any]:
@@ -238,7 +242,7 @@ def create_app(
                 interaction_diameter_px=interaction_diameter_px,
                 repo=destination_repository,
                 file_storage=file_storage,
-                image_provider=None if use_mock_generation else resolved_image_provider,
+                vision_provider=None if use_mock_generation else resolved_provider,
             )
             if locator_result.get("error"):
                 failures.append({
@@ -546,12 +550,51 @@ def create_app(
                     raise ApiError(VALIDATION_ERROR, "输入文本过长。", status=400)
 
                 try:
+                    registry = StructuredOutputRegistry()
+                    request_schema = registry.request_for(
+                        schema_name="clarification_turn", schema_version="1.0"
+                    )
+                    clarification_provider = (
+                        None if use_mock_generation else resolved_provider
+                    )
+                    if clarification_provider is None:
+                        turn = {
+                            "type": "clarification_turn",
+                            "schema_version": "1.0",
+                            "classification": "accepted_wish_input",
+                            "normalized_text": body.command.text.strip() or None,
+                            "assistant_reply": "已记录你的需求，请继续补充目的地和宠物细节。",
+                            "captured_facts": [],
+                            "missing_dimensions": [],
+                            "close_recommendation": False,
+                        }
+                    else:
+                        raw_turn = await clarification_provider.complete_structured(
+                            [
+                                ChatMessage(
+                                    role="system",
+                                    content=(
+                                        "你是宠物旅行目的地澄清 Agent。判断用户输入是否为有效愿望，"
+                                        "提取具体事实，并用中文提出下一轮最有价值的问题或给出确认摘要。"
+                                    ),
+                                ),
+                                ChatMessage(role="user", content=body.command.text),
+                            ],
+                            request_schema,
+                        )
+                        turn = registry.parse_and_validate(
+                            raw_turn,
+                            schema_name="clarification_turn",
+                            schema_version="1.0",
+                        )
                     run = storage.create_clarification_run(
                         api_client_id=api_client_id,
                         session_id=body.session_id,
                         command=body.command.model_dump(mode="json"),
                         idempotency_key=key,
                         idempotency_body_hash=body_hash,
+                        classified_result=turn,
+                        assistant_reply=turn["assistant_reply"],
                     )
                 except IdempotencyKeyReusedError as exc:
                     raise ApiError(

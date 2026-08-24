@@ -53,7 +53,10 @@ class OpenAICompatibleChatProvider:
         temperature: float,
         max_tokens: int,
     ) -> None:
-        self._base_url = base_url.rstrip("/")
+        normalized_base_url = base_url.rstrip("/")
+        if not normalized_base_url.endswith("/v1"):
+            normalized_base_url += "/v1"
+        self._base_url = normalized_base_url
         self._api_key = api_key
         self._model = model
         self._timeout_seconds = timeout_seconds
@@ -129,8 +132,13 @@ class OpenAICompatibleChatProvider:
                 )
                 response.raise_for_status()
                 body: dict[str, Any] = response.json()
+        except httpx.HTTPStatusError as exc:
+            detail = exc.response.text[:500]
+            raise ChatProviderError(
+                f"Chat Provider HTTP {exc.response.status_code}: {detail}"
+            ) from exc
         except (httpx.HTTPError, ValueError) as exc:
-            raise ChatProviderError("Chat Provider 请求失败。") from exc
+            raise ChatProviderError(f"Chat Provider 请求失败: {exc}") from exc
 
         try:
             content = body["choices"][0]["message"]["content"]

@@ -5,12 +5,15 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 from typing import Any, TypedDict
 
 from langgraph.graph import StateGraph, END
+from ..adapters.llm import ChatMessage, ChatModelProvider
 from ..domain.template_catalog import TemplateCatalog, TemplateError
+from ..shared.structured_output import StructuredOutputRegistry
 from ..storage.destination_storage import DestinationRepository
 from ..shared.ids import new_id
 
@@ -192,18 +195,61 @@ def classify_input_node(state: ClarificationSpecState) -> ClarificationSpecState
     return state
 
 
+def _structured_completion(
+    provider: ChatModelProvider,
+    schema_name: str,
+    messages: list[ChatMessage],
+) -> dict[str, Any]:
+    registry = StructuredOutputRegistry()
+    request = registry.request_for(schema_name=schema_name, schema_version="1.0")
+    raw = asyncio.run(provider.complete_structured(messages, request))
+    return registry.parse_and_validate(
+        raw, schema_name=schema_name, schema_version="1.0"
+    )
+
+
 def extract_wish_items_node(
-    state: ClarificationSpecState, repo: DestinationRepository
+    state: ClarificationSpecState,
+    repo: DestinationRepository,
+    provider: ChatModelProvider | None = None,
 ) -> ClarificationSpecState:
-    """节点：提取愿望条目。"""
-    # 从 Repository 读取澄清输入
+    """从全部澄清输入提取可追溯 Requirements 条目。"""
     inputs = repo.list_clarification_inputs(state["session_id"])
     state["clarification_inputs"] = inputs
+    if provider is None:
+        state["wish_items"] = mock_extract_wish_items(inputs)
+        return state
 
-    # 提取愿望条目
-    wish_items = mock_extract_wish_items(inputs)
-    state["wish_items"] = wish_items
-
+    accepted = [item for item in inputs if item["classification"] == "accepted_wish_input"]
+    payload = [
+        {
+            "input_id": item["input_id"],
+            "raw_text": item["raw_text"],
+            "normalized_text": item.get("normalized_text"),
+        }
+        for item in accepted
+    ]
+    result = _structured_completion(
+        provider,
+        "destination_requirements",
+        [
+            ChatMessage(
+                role="system",
+                content=(
+                    "你负责把已确认的宠物旅行目的地对话整理成 Requirements。"
+                    "保留地点、宠物身份、地标、时间/光线、风格、两个场景行为和排除项；"
+                    "player_input 必须引用提供的 input_id，禁止编造来源。"
+                ),
+            ),
+            ChatMessage(role="user", content=json.dumps(payload, ensure_ascii=False)),
+        ],
+    )
+    valid_ids = {item["input_id"] for item in accepted}
+    for item in result["items"]:
+        if not set(item["source_input_ids"]).issubset(valid_ids):
+            state["error"] = "Requirements 引用了不存在的澄清输入"
+            return state
+    state["wish_items"] = result["items"]
     return state
 
 
@@ -298,7 +344,9 @@ def freeze_requirements_node(
 
 
 def design_environment_template_node(
-    state: ClarificationSpecState, repo: DestinationRepository
+    state: ClarificationSpecState,
+    repo: DestinationRepository,
+    provider: ChatModelProvider | None = None,
 ) -> ClarificationSpecState:
     """节点：设计环境模板（Issue #36 - 2.2）。
 
@@ -318,8 +366,30 @@ def design_environment_template_node(
         "wish_items": wish_items,
     }
 
-    # 调用 LLM 选择模板（Mock 实现），随后用运行时目录校验选择结果。
-    template_selection = mock_select_environment_template(requirements_data)
+    if provider is None:
+        template_selection = mock_select_environment_template(requirements_data)
+    else:
+        template_selection = _structured_completion(
+            provider,
+            "environment_template_selection",
+            [
+                ChatMessage(
+                    role="system",
+                    content="从给定模板候选中选择画风和构图，只返回候选 ID 与理由。",
+                ),
+                ChatMessage(
+                    role="user",
+                    content=json.dumps(
+                        {
+                            **requirements_data,
+                            "style_candidates": ["style_001"],
+                            "composition_candidates": ["composition_002"],
+                        },
+                        ensure_ascii=False,
+                    ),
+                ),
+            ],
+        )
     try:
         catalog = TemplateCatalog.default()
         catalog.get_style(template_selection["style_template_id"])
@@ -346,7 +416,9 @@ def design_environment_template_node(
 
 
 def generate_destination_spec_node(
-    state: ClarificationSpecState, repo: DestinationRepository
+    state: ClarificationSpecState,
+    repo: DestinationRepository,
+    provider: ChatModelProvider | None = None,
 ) -> ClarificationSpecState:
     """节点：生成 DestinationSpec（Issue #36 - 2.4：包含 environment_design）。"""
     requirements_id = state["requirements_id"]
@@ -358,10 +430,40 @@ def generate_destination_spec_node(
         state["error"] = "Requirements 未冻结"
         return state
 
-    # 生成 Spec 内容（使用模板选择结果）
-    spec_data = mock_generate_destination_spec(requirements_id, requirements_sha256)
+    if provider is None:
+        spec_data = mock_generate_destination_spec(requirements_id, requirements_sha256)
+    else:
+        spec_data = _structured_completion(
+            provider,
+            "destination_spec",
+            [
+                ChatMessage(
+                    role="system",
+                    content=(
+                        "根据 Requirements 生成真实目的地规格和恰好两个 ScenePlan。"
+                        "必须保留用户地点、宠物、地标、光线、风格和交互语义；"
+                        "template_id 必须是 default_pet_destination，template_version 必须是 1.0。"
+                    ),
+                ),
+                ChatMessage(
+                    role="user",
+                    content=json.dumps(
+                        {
+                            "requirements_id": requirements_id,
+                            "requirements_sha256": requirements_sha256,
+                            "requirements": state["wish_items"],
+                            "template": {
+                                "style_template_id": style_template_id,
+                                "composition_template_id": composition_template_id,
+                            },
+                        },
+                        ensure_ascii=False,
+                    ),
+                ),
+            ],
+        )
 
-    # Issue #36 - 2.4: 添加由运行时目录产生的 environment_design。
+    # Issue #36 - 2.4: 添加由运行时目录产生的 environment_design.
     try:
         catalog = TemplateCatalog.default()
         rendered = catalog.render_environment(
@@ -504,6 +606,7 @@ def validate_and_lock_spec_node(
 
 def build_clarification_spec_workflow(
     repo: DestinationRepository,
+    provider: ChatModelProvider | None = None,
 ) -> StateGraph:
     """构建澄清与规格生成工作流。
 
@@ -519,7 +622,7 @@ def build_clarification_spec_workflow(
     workflow.add_node("classify_input", classify_input_node)
     workflow.add_node(
         "extract_wish_items",
-        lambda state: extract_wish_items_node(state, repo),
+        lambda state: extract_wish_items_node(state, repo, provider),
     )
     workflow.add_node(
         "evaluate_close_condition",
@@ -532,11 +635,11 @@ def build_clarification_spec_workflow(
     # Issue #36 - 2.2: 新增模板设计节点
     workflow.add_node(
         "design_environment_template",
-        lambda state: design_environment_template_node(state, repo),
+        lambda state: design_environment_template_node(state, repo, provider),
     )
     workflow.add_node(
         "generate_destination_spec",
-        lambda state: generate_destination_spec_node(state, repo),
+        lambda state: generate_destination_spec_node(state, repo, provider),
     )
     workflow.add_node(
         "validate_and_lock_spec",
@@ -568,6 +671,7 @@ def run_clarification_spec_workflow(
     session_id: str,
     destination_id: str,
     repo: DestinationRepository,
+    provider: ChatModelProvider | None = None,
 ) -> dict[str, Any]:
     """运行澄清与规格生成工作流。
 
@@ -586,7 +690,7 @@ def run_clarification_spec_workflow(
             - error: str | None
     """
     # 构建工作流
-    app = build_clarification_spec_workflow(repo)
+    app = build_clarification_spec_workflow(repo, provider)
 
     # 初始化状态
     initial_state: ClarificationSpecState = {

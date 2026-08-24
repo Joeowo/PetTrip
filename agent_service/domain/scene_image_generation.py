@@ -25,6 +25,7 @@ class SceneGenerationInput(TypedDict):
     mask_bytes: bytes
     pet_behavior: str
     pet_emotion: str
+    prompt: str
     size: str  # 例如 "2048x1152"
     idempotency_key: str  # 幂等键（可选）
     pet_reference: ImageReference
@@ -96,7 +97,7 @@ async def generate_final_scene_with_provider(
         ImageProviderError: 图片生成失败
     """
     # 构建提示词
-    prompt = build_scene_generation_prompt(
+    prompt = input_data.get("prompt") or build_scene_generation_prompt(
         input_data["pet_behavior"],
         input_data["pet_emotion"],
     )
