@@ -11,7 +11,7 @@ from typing import Annotated, Any, AsyncIterator, Literal
 
 from fastapi import BackgroundTasks, FastAPI, File, Form, Header, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from .auth import AuthenticatedClientId, hash_api_key
@@ -43,7 +43,9 @@ from ..storage import (
 )
 from ..domain.worker import RunWorker
 from ..domain.destination_coordinator import DestinationCoordinatorService
+from ..domain.panel_snapshot import PanelSnapshotService
 from ..storage.destination_storage import DestinationRepository
+from .panel_schemas import PanelSnapshotResponse
 
 LOGGER = logging.getLogger("uvicorn.error")
 
@@ -199,27 +201,58 @@ def create_app(
     from ..workflows.scene_locator import run_scene_locator_workflow
 
     def run_clarification(context: dict[str, Any]) -> dict[str, Any]:
-        return run_clarification_spec_workflow(
+        result = run_clarification_spec_workflow(
             context["session_id"], context["destination_id"], destination_repository
         )
+        if result.get("error") or not context.get("run_id"):
+            return result
+        destination = destination_repository.get_destination(context["destination_id"])
+        if destination is None:
+            return {"error": "destination_not_found"}
+        snapshot = destination_repository.seal_snapshot_for_run(
+            run_id=context["run_id"],
+            destination_id=context["destination_id"],
+            api_client_id=destination["api_client_id"],
+            requirements_id=result["requirements_id"],
+            spec_id=result["spec_id"],
+        )
+        return {**result, "snapshot_id": snapshot["snapshot_id"]}
 
     def run_planning(context: dict[str, Any]) -> dict[str, Any]:
-        spec = destination_repository.get_destination_spec(context["destination_id"])
-        if spec is None:
-            return {"error": "spec_not_found"}
-        return run_generation_planning_workflow(
-            context["destination_id"], spec["spec_id"], destination_repository,
+        snapshot = (
+            destination_repository.get_snapshot_for_run(context["run_id"])
+            if context.get("run_id")
+            else destination_repository.get_snapshot_for_destination(context["destination_id"])
+        )
+        if snapshot is None:
+            return {"error": "snapshot_not_found"}
+        result = run_generation_planning_workflow(
+            context["destination_id"], snapshot["spec_id"], destination_repository,
             file_storage, context["run_id"] or new_id("coordinator"),
             image_provider=None if use_mock_generation else resolved_image_provider,
         )
+        if not result.get("error") and result.get("shared_environment_id"):
+            destination_repository.bind_shared_environment_to_snapshot(
+                snapshot["snapshot_id"], result["shared_environment_id"]
+            )
+        return {**result, "snapshot_id": snapshot["snapshot_id"]}
 
     def run_scene_generation(context: dict[str, Any]) -> dict[str, Any]:
         destination_id = context["destination_id"]
-        spec = destination_repository.get_destination_spec(destination_id)
-        environment = destination_repository.get_shared_environment_artifact(destination_id)
+        snapshot = (
+            destination_repository.get_snapshot_for_run(context["run_id"])
+            if context.get("run_id")
+            else destination_repository.get_snapshot_for_destination(destination_id)
+        )
+        if snapshot is None:
+            return {"error": "snapshot_not_found"}
+        spec = destination_repository.get_destination_spec_by_id(snapshot["spec_id"])
+        environment = destination_repository.get_shared_environment_for_snapshot(
+            snapshot["snapshot_id"]
+        )
         if spec is None or environment is None:
             return {"error": "scene_dependencies_not_found"}
-        plans = destination_repository.list_scene_plans(destination_id)
+        plans = destination_repository.list_scene_plans_for_spec(snapshot["spec_id"])
         failures: list[dict[str, str]] = []
         interaction_diameter_px = compute_interaction_diameter(
             environment["width_px"], environment["height_px"]
@@ -294,9 +327,11 @@ def create_app(
             )
         dispatch_destination(destination_id, run_id)
 
+    panel_snapshot_service = PanelSnapshotService(storage, destination_repository)
     app.state.worker = worker
     app.state.destination_repository = destination_repository
     app.state.coordinator = coordinator
+    app.state.panel_snapshot_service = panel_snapshot_service
 
     @app.middleware("http")
     async def request_id_middleware(request: Request, call_next: Any) -> Any:
@@ -741,6 +776,30 @@ def create_app(
             "download_url": f"/api/v1/files/{artifact['render_file_id']}/content",
             "request_id": request.state.request_id,
         }
+
+    @app.get(
+        "/api/v1/runs/{run_id}/panel-snapshot",
+        response_model=PanelSnapshotResponse,
+        responses={304: {"description": "Snapshot unchanged"}},
+    )
+    async def get_run_panel_snapshot(
+        run_id: str,
+        request: Request,
+        api_client_id: AuthenticatedClientId,
+        if_none_match: Annotated[str | None, Header(alias="If-None-Match")] = None,
+    ) -> Response:
+        result = panel_snapshot_service.get_run_snapshot(
+            run_id=run_id,
+            api_client_id=api_client_id,
+            request_id=request.state.request_id,
+        )
+        headers = {"ETag": result.etag}
+        if if_none_match == result.etag:
+            return Response(status_code=304, headers=headers)
+        return JSONResponse(
+            content=result.response.model_dump(mode="json"),
+            headers=headers,
+        )
 
     @app.get("/api/v1/runs/{run_id}")
     async def get_run(
