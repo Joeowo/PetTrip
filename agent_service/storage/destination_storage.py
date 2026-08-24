@@ -246,13 +246,93 @@ CREATE INDEX IF NOT EXISTS idx_operation_attempts_destination
 
 CREATE INDEX IF NOT EXISTS idx_operation_attempts_scene
     ON operation_attempts(scene_id);
+
+-- ============================================================================
+-- Agent panel immutable Snapshot bindings (Issue #58 P0)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS destination_snapshots (
+    snapshot_id          TEXT PRIMARY KEY,
+    destination_id       TEXT NOT NULL REFERENCES destinations(id),
+    api_client_id        TEXT NOT NULL REFERENCES api_clients(id),
+    requirements_id      TEXT NOT NULL REFERENCES destination_requirements(requirements_id),
+    requirements_sha256  TEXT NOT NULL,
+    spec_id              TEXT NOT NULL UNIQUE REFERENCES destination_specs(spec_id),
+    spec_version         INTEGER NOT NULL CHECK (spec_version > 0),
+    spec_sha256          TEXT NOT NULL,
+    schema_name          TEXT NOT NULL,
+    schema_version       TEXT NOT NULL,
+    frozen_at            TEXT NOT NULL,
+    created_at           TEXT NOT NULL,
+    UNIQUE(destination_id, spec_version),
+    UNIQUE(destination_id, spec_sha256)
+);
+
+CREATE TABLE IF NOT EXISTS run_snapshot_bindings (
+    run_id       TEXT PRIMARY KEY REFERENCES runs(id),
+    snapshot_id  TEXT NOT NULL UNIQUE REFERENCES destination_snapshots(snapshot_id),
+    bound_at     TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS snapshot_shared_environment_bindings (
+    snapshot_id            TEXT PRIMARY KEY REFERENCES destination_snapshots(snapshot_id),
+    shared_environment_id  TEXT NOT NULL UNIQUE REFERENCES shared_environment_artifacts(shared_environment_id),
+    bound_at               TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS snapshot_scene_artifact_bindings (
+    snapshot_id       TEXT NOT NULL REFERENCES destination_snapshots(snapshot_id),
+    scene_id          TEXT NOT NULL REFERENCES scene_plans(scene_id),
+    scene_artifact_id TEXT NOT NULL UNIQUE REFERENCES scene_artifacts(scene_artifact_id),
+    bound_at          TEXT NOT NULL,
+    PRIMARY KEY(snapshot_id, scene_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_run_snapshot_bindings_snapshot
+    ON run_snapshot_bindings(snapshot_id);
+CREATE INDEX IF NOT EXISTS idx_snapshot_scene_artifact_bindings_scene
+    ON snapshot_scene_artifact_bindings(scene_id);
+
 """
+
+_IMMUTABLE_SNAPSHOT_TRIGGERS = (
+    """
+    CREATE TRIGGER IF NOT EXISTS prevent_destination_snapshots_update
+    BEFORE UPDATE ON destination_snapshots
+    BEGIN
+        SELECT RAISE(ABORT, 'immutable_snapshot');
+    END
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS prevent_destination_snapshots_delete
+    BEFORE DELETE ON destination_snapshots
+    BEGIN
+        SELECT RAISE(ABORT, 'immutable_snapshot');
+    END
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS prevent_run_snapshot_bindings_update
+    BEFORE UPDATE ON run_snapshot_bindings
+    BEGIN
+        SELECT RAISE(ABORT, 'immutable_snapshot_binding');
+    END
+    """,
+    """
+    CREATE TRIGGER IF NOT EXISTS prevent_run_snapshot_bindings_delete
+    BEFORE DELETE ON run_snapshot_bindings
+    BEGIN
+        SELECT RAISE(ABORT, 'immutable_snapshot_binding');
+    END
+    """,
+)
 
 
 # ============================================================================
 # Repository 层
 # ============================================================================
 
+import hashlib
+import json
 import sqlite3
 import threading
 from contextlib import contextmanager
@@ -347,8 +427,11 @@ class DestinationRepository:
                 for stmt in statements:
                     self._conn.execute(stmt)
                 self._conn.execute("COMMIT")
+                for trigger in _IMMUTABLE_SNAPSHOT_TRIGGERS:
+                    self._conn.execute(trigger)
             except Exception:
-                self._conn.execute("ROLLBACK")
+                if self._conn.in_transaction:
+                    self._conn.execute("ROLLBACK")
                 raise
 
     def close(self) -> None:
@@ -774,6 +857,21 @@ class DestinationRepository:
 
         return _row_to_dict(row)
 
+    def get_destination_requirements_by_id(
+        self, requirements_id: str, destination_id: str
+    ) -> dict[str, Any] | None:
+        """按 Snapshot 保存的 Requirements identity 精确读取。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM destination_requirements "
+                "WHERE requirements_id = ? AND destination_id = ?",
+                (requirements_id, destination_id),
+            ).fetchone()
+        return _row_to_dict(row)
+
     def list_requirement_items(self, requirements_id: str) -> list[dict[str, Any]]:
         """列出 Requirements 的所有明细项。
 
@@ -962,6 +1060,224 @@ class DestinationRepository:
             ).fetchone()
 
         return _row_to_dict(row)
+
+    def get_destination_spec_by_id(self, spec_id: str) -> dict[str, Any] | None:
+        """按不可变 Spec identity 精确读取，绝不选择 destination latest。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM destination_specs WHERE spec_id = ?",
+                (spec_id,),
+            ).fetchone()
+        return _row_to_dict(row)
+
+    def list_scene_plans_for_spec(self, spec_id: str) -> list[dict[str, Any]]:
+        """仅读取属于指定 Spec 的场景计划。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            rows = self._conn.execute(
+                "SELECT * FROM scene_plans WHERE spec_id = ? ORDER BY order_index ASC",
+                (spec_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
+
+    def get_snapshot_for_run(self, run_id: str) -> dict[str, Any] | None:
+        """读取 Run 唯一绑定的 immutable Snapshot。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT s.* FROM destination_snapshots AS s "
+                "JOIN run_snapshot_bindings AS b ON b.snapshot_id = s.snapshot_id "
+                "WHERE b.run_id = ?",
+                (run_id,),
+            ).fetchone()
+        return _row_to_dict(row)
+
+    def get_snapshot(self, snapshot_id: str) -> dict[str, Any] | None:
+        """按 Snapshot identity 精确读取 immutable root。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT * FROM destination_snapshots WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()
+        return _row_to_dict(row)
+
+    def get_snapshot_for_destination(
+        self, destination_id: str
+    ) -> dict[str, Any] | None:
+        """仅当 Destination 恰好绑定一个 Snapshot 时返回，绝不选 latest。"""
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            rows = self._conn.execute(
+                "SELECT * FROM destination_snapshots WHERE destination_id = ?",
+                (destination_id,),
+            ).fetchall()
+        if len(rows) > 1:
+            raise ValueError("Destination 存在多个 Snapshot，必须通过 Run identity 读取。")
+        return _row_to_dict(rows[0]) if rows else None
+
+    def seal_snapshot_for_run(
+        self,
+        *,
+        run_id: str,
+        destination_id: str,
+        api_client_id: str,
+        requirements_id: str,
+        spec_id: str,
+    ) -> dict[str, Any]:
+        """校验已完成 aggregate，并不可变地绑定到确认 Run。"""
+        existing = self.get_snapshot_for_run(run_id)
+        if existing is not None:
+            if existing["destination_id"] != destination_id or existing["spec_id"] != spec_id:
+                raise ValueError("Run 已绑定到不同 Snapshot。")
+            return existing
+
+        with self.transaction() as conn:
+            destination = conn.execute(
+                "SELECT * FROM destinations WHERE id = ? AND api_client_id = ?",
+                (destination_id, api_client_id),
+            ).fetchone()
+            requirements = conn.execute(
+                "SELECT * FROM destination_requirements WHERE requirements_id = ? AND destination_id = ?",
+                (requirements_id, destination_id),
+            ).fetchone()
+            spec = conn.execute(
+                "SELECT * FROM destination_specs WHERE spec_id = ? AND destination_id = ?",
+                (spec_id, destination_id),
+            ).fetchone()
+            plans = conn.execute(
+                "SELECT * FROM scene_plans WHERE spec_id = ? ORDER BY order_index ASC",
+                (spec_id,),
+            ).fetchall()
+            if destination is None or requirements is None or spec is None:
+                raise ValueError("Snapshot aggregate 不完整。")
+            if spec["requirements_id"] != requirements_id or spec["requirements_sha256"] != requirements["sha256"]:
+                raise ValueError("Requirements 与 Spec identity 不一致。")
+            if len(plans) != 2 or [row["order_index"] for row in plans] != [0, 1]:
+                raise ValueError("Snapshot 必须恰好包含两个有序 ScenePlan。")
+            if any(row["destination_id"] != destination_id for row in plans):
+                raise ValueError("ScenePlan 跨 Destination。")
+
+            snapshot_id = new_id("snapshot")
+            now = _utcnow_iso()
+            conn.execute(
+                "INSERT INTO destination_snapshots "
+                "(snapshot_id, destination_id, api_client_id, requirements_id, requirements_sha256, "
+                "spec_id, spec_version, spec_sha256, schema_name, schema_version, frozen_at, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'agent_panel_snapshot', '0.1', ?, ?)",
+                (
+                    snapshot_id,
+                    destination_id,
+                    api_client_id,
+                    requirements_id,
+                    requirements["sha256"],
+                    spec_id,
+                    spec["spec_version"],
+                    spec["sha256"],
+                    now,
+                    now,
+                ),
+            )
+            conn.execute(
+                "INSERT INTO run_snapshot_bindings(run_id, snapshot_id, bound_at) VALUES (?, ?, ?)",
+                (run_id, snapshot_id, now),
+            )
+            row = conn.execute(
+                "SELECT * FROM destination_snapshots WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()
+        return dict(row)
+
+    def bind_shared_environment_to_snapshot(
+        self, snapshot_id: str, shared_environment_id: str
+    ) -> None:
+        now = _utcnow_iso()
+        with self.transaction() as conn:
+            snapshot = conn.execute(
+                "SELECT * FROM destination_snapshots WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()
+            environment = conn.execute(
+                "SELECT * FROM shared_environment_artifacts WHERE shared_environment_id = ?",
+                (shared_environment_id,),
+            ).fetchone()
+            if snapshot is None or environment is None or environment["destination_id"] != snapshot["destination_id"]:
+                raise ValueError("共享环境不属于 Snapshot。")
+            conn.execute(
+                "INSERT OR IGNORE INTO snapshot_shared_environment_bindings "
+                "(snapshot_id, shared_environment_id, bound_at) VALUES (?, ?, ?)",
+                (snapshot_id, shared_environment_id, now),
+            )
+
+    def get_shared_environment_for_snapshot(
+        self, snapshot_id: str
+    ) -> dict[str, Any] | None:
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            row = self._conn.execute(
+                "SELECT a.* FROM shared_environment_artifacts AS a "
+                "JOIN snapshot_shared_environment_bindings AS b "
+                "ON b.shared_environment_id = a.shared_environment_id "
+                "WHERE b.snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()
+        return _row_to_dict(row)
+
+    def bind_scene_artifact_to_snapshot(
+        self, snapshot_id: str, scene_id: str, scene_artifact_id: str
+    ) -> None:
+        now = _utcnow_iso()
+        with self.transaction() as conn:
+            snapshot = conn.execute(
+                "SELECT * FROM destination_snapshots WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()
+            plan = conn.execute(
+                "SELECT * FROM scene_plans WHERE scene_id = ?",
+                (scene_id,),
+            ).fetchone()
+            artifact = conn.execute(
+                "SELECT * FROM scene_artifacts WHERE scene_artifact_id = ?",
+                (scene_artifact_id,),
+            ).fetchone()
+            if snapshot is None or plan is None or artifact is None:
+                raise ValueError("Scene artifact binding 缺少引用。")
+            if plan["spec_id"] != snapshot["spec_id"] or artifact["scene_id"] != scene_id:
+                raise ValueError("Scene artifact 跨 Snapshot。")
+            conn.execute(
+                "INSERT OR IGNORE INTO snapshot_scene_artifact_bindings "
+                "(snapshot_id, scene_id, scene_artifact_id, bound_at) VALUES (?, ?, ?, ?)",
+                (snapshot_id, scene_id, scene_artifact_id, now),
+            )
+
+    def list_scene_artifacts_for_snapshot(
+        self, snapshot_id: str
+    ) -> list[dict[str, Any]]:
+        if not self._is_open:
+            raise RuntimeError("Repository 未打开")
+        with self._lock:
+            assert self._conn is not None
+            rows = self._conn.execute(
+                "SELECT a.* FROM scene_artifacts AS a "
+                "JOIN snapshot_scene_artifact_bindings AS b "
+                "ON b.scene_artifact_id = a.scene_artifact_id "
+                "WHERE b.snapshot_id = ? ORDER BY b.scene_id ASC",
+                (snapshot_id,),
+            ).fetchall()
+        return [dict(row) for row in rows]
 
     # ========================================================================
     # ScenePlan CRUD
