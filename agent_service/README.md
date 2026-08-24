@@ -84,6 +84,7 @@ pytest tests/test_session1_*.py -v
 完整文档位于 `docs/agent_service/`:
 
 - `pettrip-agent-api.md` - Agent API 文档
+- `unity-mvp-api.md` - Patrick / Unity MVP HTTP 接入文档
 - `flowise-unity-pilot-spec.md` - Pilot 规格
 - `session7-cross-network-acceptance.md` - 跨网络验收
 
