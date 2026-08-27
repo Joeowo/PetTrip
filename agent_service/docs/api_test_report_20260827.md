@@ -52,7 +52,7 @@ GET /health
 **请求**:
 ```bash
 POST /api/v1/sessions
-Authorization: Bearer test-local-key-2024
+Authorization: Bearer <YOUR_API_KEY>
 ```
 
 **响应**: `201 Created`
@@ -73,7 +73,7 @@ Authorization: Bearer test-local-key-2024
 **请求**:
 ```bash
 POST /api/v1/files
-Authorization: Bearer test-local-key-2024
+Authorization: Bearer <YOUR_API_KEY>
 Content-Type: multipart/form-data
 
 purpose=vision_input
@@ -225,7 +225,7 @@ Idempotency-Key: test-image-run-001
 **请求**:
 ```bash
 GET /api/v1/files/file_01M10D88EEC4CD0TQTKQGB1QZS/content
-Authorization: Bearer test-local-key-2024
+Authorization: Bearer <YOUR_API_KEY>
 ```
 
 **响应**: `200 OK`
@@ -290,7 +290,7 @@ Idempotency-Key: test-structured-run-001
 **请求**:
 ```bash
 GET /api/v1/sessions/session_01M10CXBXQ90ZGBV17K30M4029/messages
-Authorization: Bearer test-local-key-2024
+Authorization: Bearer <YOUR_API_KEY>
 ```
 
 **响应**: `200 OK`
